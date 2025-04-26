@@ -1,0 +1,12 @@
+{
+    "title": "Admin Dashboard",
+    "welcome_message": "Welcome to Nuxt 4 Admin Dashboard",
+    "welcome_user": "Welcome {name}",
+    "login_message": "Please login to access all features",
+    "admin_privileges": "You have administrator privileges",
+    "logged_in_as": "Logged in as",
+    "get_started": "Get Started",
+    "dashboard_description": "Example dashboard built with Nuxt 4 and Bootstrap 5",
+    "explore_app": "Explore the app",
+    "manage_users": "Manage Users"
+  }

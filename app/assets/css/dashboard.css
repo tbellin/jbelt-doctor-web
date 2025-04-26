@@ -1,0 +1,123 @@
+/* app/assets/css/dashboard.css */
+
+/* Dashboard Layout Styles */
+.dashboard-layout {
+  --sidebar-width: 250px;
+  --header-height: 60px;
+  --footer-height: 50px;
+  --sidebar-background: var(--bs-primary);
+  --header-background: var(--bs-primary);
+  --footer-background: var(--bs-primary);
+  --main-background: #f5f7fa;
+  --text-color-light: #ffffff;
+}
+
+/* Header customizations */
+.dashboard-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background-color: var(--header-background);
+  color: var(--text-color-light);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1030;
+}
+
+.dashboard-header .header-title {
+  color: var(--text-color-light);
+}
+
+.dashboard-header .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.dashboard-header .nav-link:hover,
+.dashboard-header .nav-link.active {
+  color: var(--text-color-light);
+}
+
+/* Sidebar customizations */
+.dashboard-sidebar {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-background);
+  color: var(--text-color-light);
+  z-index: 1020;
+  transition: transform 0.3s ease;
+}
+
+/* Main area customizations */
+.app-main {
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  background-color: var(--main-background);
+  padding: 1.5rem;
+}
+
+/* Footer customizations */
+.dashboard-footer {
+  height: var(--footer-height);
+  background-color: var(--footer-background);
+  color: var(--text-color-light);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-footer .copyright {
+  color: var(--text-color-light);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .dashboard-layout {
+    --sidebar-width: 100%;
+  }
+  
+  .dashboard-sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .dashboard-sidebar.active {
+    transform: translateX(0);
+  }
+}
+
+/* Card animations and effects */
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Custom links in sidebar */
+.dashboard-sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s;
+}
+
+.dashboard-sidebar .nav-link:hover, 
+.dashboard-sidebar .nav-link.active {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Icon consistency */
+.dashboard-sidebar .nav-link i {
+  width: 20px;
+  text-align: center;
+  margin-right: 0.5rem;
+}
+
+/* Badge styling */
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+/* Version: 1.1.0 */

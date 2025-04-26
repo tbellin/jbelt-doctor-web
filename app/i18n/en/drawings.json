@@ -1,0 +1,14 @@
+{
+    "drawings": "Drawings",
+    "drawings_intro": "Manage your technical drawings and projects.",
+    "new_drawing": "New Drawing",
+    "create_new_drawing": "Create a new technical drawing or project.",
+    "create": "Create",
+    "last_modified": "Last modified",
+    "edit": "Edit",
+    "view": "View",
+    "delete": "Delete",
+    "main_assembly": "Main Assembly",
+    "components": "Components",
+    "electrical_schema": "Electrical Schema"
+  }

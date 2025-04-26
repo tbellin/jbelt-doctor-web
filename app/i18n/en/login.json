@@ -1,0 +1,10 @@
+{
+    "title": "Login",
+    "welcome_back": "Welcome back",
+    "login_instructions": "Enter your credentials to access your account",
+    "no_account": "Register here",
+    "forgot_password": "Forgot password?",
+    "login_failed": "Login failed",
+    "error_during_auth": "An error occurred during authentication",
+    "fill_required": "Please fill all required fields"
+  }

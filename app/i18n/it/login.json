@@ -1,0 +1,10 @@
+{
+    "title": "Accedi",
+    "welcome_back": "Bentornato",
+    "login_instructions": "Inserisci le tue credenziali per accedere al tuo account",
+    "no_account": "Registrati qui",
+    "forgot_password": "Password dimenticata?",
+    "login_failed": "Login fallito",
+    "error_during_auth": "Si è verificato un errore durante l'autenticazione",
+    "fill_required": "Compila tutti i campi richiesti"
+  }

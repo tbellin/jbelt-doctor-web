@@ -1,0 +1,11 @@
+{
+    "profile": "Profile",
+    "user_profile": "User Profile",
+    "account_info": "Account Information",
+    "personal_details": "Personal Details",
+    "reset_password": "Reset Password",
+    "reset_password_instructions": "Enter your new password",
+    "reset_password_submit": "Change Password",
+    "email_placeholder": "Enter your email",
+    "back_to_login": "Back to login"
+}

@@ -1,0 +1,58 @@
+# .dockerignore - Configurazione di esclusione file per Docker build
+# --------------------------------------------------------------
+
+# Node modules e dipendenze
+app/node_modules
+app/.pnpm-store
+app/npm-debug.log
+app/yarn-debug.log
+app/yarn-error.log
+app/pnpm-debug.log
+
+# Directory di build e cache Nuxt
+app/.nuxt/dev
+app/.output
+app/dist
+app/.cache
+app/.nitro
+app/.nuxt/analyze
+
+# File di sviluppo
+.git
+.github
+.vscode
+.idea
+**/*.swp
+**/*.swo
+**/*.env*
+!app/.env.example
+
+# Directory di test
+app/test
+app/tests
+app/coverage
+app/__tests__
+
+# File di configurazione editor/IDE
+app/.editorconfig
+app/.prettierrc
+app/.eslintrc
+app/.eslintcache
+
+# File di sistema
+**/.DS_Store
+**/Thumbs.db
+
+# Script e file temporanei
+**/*.log
+**/*.backup
+**/*.bak
+**/*.tmp
+
+# Devtools specifici di Nuxt che causano problemi
+app/.nuxt/devtools
+app/.nuxt/devtools/**/*
+app/node_modules/@nuxt/devtools
+app/node_modules/@nuxt/devtools/**/*
+
+# Version: 1.0.0

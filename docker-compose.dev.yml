@@ -1,13 +1,13 @@
 # docker-compose.dev.yml - Configurazione per ambiente di sviluppo
 # ----------------------------------------------------------------
-
-version: '3.8'
+name: jbeltdoctorsrv
+version: '3.3'
 
 services:
   # Servizio di sviluppo con hot-reload
   nuxt-dev:
     image: node:20-alpine
-    container_name: nuxt-jwt-frontend-dev
+    container_name: jbelt-doctor-web
     working_dir: /usr/src/app
     command: sh -c "npm install -g pnpm@10.6.3 && pnpm install && pnpm dev"
     restart: unless-stopped
@@ -28,13 +28,13 @@ services:
       - NUXT_PUBLIC_FRONTEND_HOST=localhost
       - NUXT_PUBLIC_FRONTEND_PORT=3000
       - CHOKIDAR_USEPOLLING=true # Supporto per file watching in Docker
-      - NUXT_DEBUG=true # Attiva debug
+      - NUXT_DEBUG=false # Attiva debug
     networks:
-      - nuxt-dev-network
+      - jbelt-network
 
 # Definizione rete per sviluppo
 networks:
-  nuxt-dev-network:
+  jbelt-network:
     driver: bridge
 
 # Version: 1.0.0

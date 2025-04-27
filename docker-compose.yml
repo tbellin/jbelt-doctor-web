@@ -1,52 +1,48 @@
-# docker-compose.yml - Configurazione principale per deployment Docker
-# --------------------------------------------------------------
-
+name: jbeltdoctorsrv
 version: '3.8'
 
 services:
-  # Servizio applicazione frontend Nuxt
-  nuxt-app:
+  nuxt_app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nuxt-jwt-frontend
-    restart: unless-stopped
+    image: jbelt-doctor-web:1.0.0 # Nome immagine leggermente diverso per chiarezza
+    container_name: web # Nome container leggermente diverso
+    working_dir: /usr/src/app
+
+    volumes:
+      # Volume nominato per node_modules. Può ancora essere utile per velocizzare
+      # le build successive se le dipendenze non cambiano spesso, mantenendo
+      # la cache dei moduli tra una build e l'altra.
+      - node_modules_volume:/usr/src/app/node_modules
+      - nuxt-app:/usr/src/app/app
     ports:
       - "3000:3000"
+
     environment:
-      # Configurazioni di base
-      - NODE_ENV=production
       - HOST=0.0.0.0
-      - PORT=3000
-      
-      # Configurazioni API dal nuxt.config.ts
-      - NUXT_PUBLIC_API_BASE=http://api:8080
-      - NUXT_PUBLIC_API_HOST=api
-      - NUXT_PUBLIC_API_PORT=8080
-      - NUXT_PUBLIC_FRONTEND_HOST=${FRONTEND_HOST:-localhost}
-      - NUXT_PUBLIC_FRONTEND_PORT=${FRONTEND_PORT:-3000}
-    networks:
-      - nuxt-network
+      # Nota: Anche se non c'è live reload, potresti voler eseguire
+      # il server di sviluppo per testare il build specifico.
+      # Se fosse per produzione, imposteresti NODE_ENV=production
+      # e cambieresti il Dockerfile/CMD per lanciare il server buildato.
+      - NODE_ENV=development
+      # - PORT=3000
 
-  # Servizio Nginx come reverse proxy (opzionale ma consigliato)
-  nginx:
-    image: nginx:stable-alpine
-    container_name: nuxt-nginx
+    networks:
+      - jbelt-network
+
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl:/etc/nginx/ssl
-    depends_on:
-      - nuxt-app
-    networks:
-      - nuxt-network
+    # Il comando di default del Dockerfile (CMD) verrà usato,
+    # avviando 'npx nuxi dev' con il codice presente nell'immagine.
 
-# Definizione della rete Docker
+volumes:
+  # Volume per node_modules (il nome può rimanere o cambiarlo)
+  node_modules_volume:
+    name: nuxt4-node-modules
+  nuxt-app:
+    name: nuxt4-app
+
 networks:
-  nuxt-network:
-    driver: bridge
-
-# Version: 1.0.0
+  # La rete esterna come prima
+  jbelt-network:
+    external: true

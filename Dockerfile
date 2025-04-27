@@ -1,48 +1,26 @@
-# Dockerfile per applicazione Nuxt JWT Tutorial
-# ------------------------------------------------------
+# (Posizionato nella root del progetto)
 
-# Fase di build dell'applicazione
-FROM node:20-alpine AS build
+# Usa un'immagine Node.js ufficiale recente (Alpine è più leggera)
+FROM node:lts-alpine as base
 
-# Impostazione directory di lavoro
+# Imposta la directory di lavoro all'interno del container
 WORKDIR /usr/src/app
 
-# Installazione di pnpm (gestore pacchetti come da package.json)
-RUN npm install -g pnpm@10.6.3
+# Copia prima i file di dipendenze dalla sottocartella 'app'
+COPY ./package*.json ./
+# Se usi pnpm: COPY app/package.json app/pnpm-lock.yaml ./
+# Se usi yarn: COPY app/package.json app/yarn.lock ./
 
-# Copia dei file di configurazione delle dipendenze
-COPY package.json ./
-COPY nuxt.config.ts ./
+# Installa le dipendenze (usa la versione specificata nel lock file)
+RUN npm install --frozen-lockfile
+# Se usi pnpm: RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Se usi yarn: RUN yarn install --frozen-lockfile
 
-# Installazione delle dipendenze
-RUN pnpm install
+# Copia TUTTO il contenuto della directory 'app' locale nella WORKDIR del container
+COPY ./ .
 
-# Copia di tutti i file sorgente
-COPY . .
-
-# Build dell'applicazione
-RUN pnpm build
-
-# Fase di produzione
-FROM node:20-alpine AS production
-
-# Impostazione directory di lavoro
-WORKDIR /usr/src/app
-
-# Installazione di pnpm globalmente
-RUN npm install -g pnpm@10.6.3
-
-# Copia solo file necessari dal build stage
-COPY --from=build /usr/src/app/.output /usr/src/app/.output
-COPY --from=build /usr/src/app/package.json /usr/src/app/
-
-# Esposizione porta 3000
+# Esponi la porta su cui Nuxt (Nitro) gira di default
 EXPOSE 3000
 
-# Variabili d'ambiente per la produzione (sostituibili a runtime)
-ENV NODE_ENV=production
-
-# Comando per avvio applicazione
-CMD ["node", ".output/server/index.mjs"]
-
-# Version: 1.0.0
+# Comando di default per avviare l'app in modalità sviluppo usando il codice COPIATO nell'immagine
+CMD ["npx", "nuxi", "dev", "--host", "0.0.0.0"]

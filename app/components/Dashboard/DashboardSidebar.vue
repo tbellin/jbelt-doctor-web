@@ -26,14 +26,14 @@
           <div class="accordion-item sidebar-accordion">
             <h2 class="accordion-header" id="headingMain">
               <div class="section-header">
-                <i class="bi bi-house-door me-2"></i> {{ t('main') }}
+                <i class="bi bi-buildings me-2"></i> {{ t('main') }}
               </div>
             </h2>
             <div class="section-content">
               <ul class="nav flex-column">
                 <li class="nav-item">
                   <NuxtLink to="/" class="nav-link">
-                    <i class="bi bi-house-door me-2"></i> {{ t('home') }}
+                    <i class="bi bi-building me-2"></i> {{ t('home') }}
                   </NuxtLink>
                 </li>
                 <li class="nav-item">
@@ -55,7 +55,7 @@
             </div>
           </div>
 
-          <!-- Application Section (Always Open) -->
+          <!-- Application Section (For Authenticated Users Only)  -->
           <div class="accordion-item sidebar-accordion">
             <h2 class="accordion-header" id="headingApp">
               <div class="section-header">
@@ -64,7 +64,12 @@
             </h2>
             <div class="section-content">
               <ul class="nav flex-column">
-                <li class="nav-item">
+                <li class="nav-item" v-if="isAuthenticated">
+                  <NuxtLink to="/panel" class="nav-link">
+                    <i class="bi bi-speedometer me-2"></i> {{ t('panel') }}
+                  </NuxtLink>
+                </li>               
+                <li class="nav-item" v-if="isAuthenticated">
                   <NuxtLink to="/drawings" class="nav-link">
                     <i class="bi bi-pencil-square me-2"></i> {{ t('drawings') }}
                   </NuxtLink>

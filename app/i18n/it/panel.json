@@ -1,17 +1,14 @@
 {
     "drawings": "Disegni",
     "drawings_intro": "Gestisci i tuoi disegni e progetti tecnici.",
-    "drawing_name": "Disegno",
-    "sheet_name": "Foglio",
-    "model_name": "Modello",
     "new_drawing": "Nuovo disegno",
-    "search_drawings": "Cerca disegni",
     "create_new_drawing": "Crea un nuovo disegno o progetto tecnico.",
     "create": "Crea",
     "last_modified": "Ultima modifica",
     "edit": "Modifica",
     "view": "Visualizza",
     "delete": "Elimina",
-    "model_data": "Dati associati al modello",
-    "download_excel": "Scarica Excel"
+    "main_assembly": "Assemblaggio principale",
+    "components": "Componenti",
+    "electrical_schema": "Schema elettrico"
   }

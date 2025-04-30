@@ -10,34 +10,30 @@
             title="Toggle Sidebar">
             <i class="bi bi-list fs-5"></i>
           </button>
-
           <!-- Logo -->
-          <div class="logo-container me-2">
-              <!-- Logo image -->
-              <NuxtLink to="/" class="text-decoration-none">
-                <img :src="logoPath" alt="Jbelt Logo" class="resize" />
-                <!--<AppLogo />-->
-              </NuxtLink>
-          </div>
-
+          <IvyGearIcon size="24" alt="Logo di IvyGear" />
           <!-- Title -->
-          <h1 class="header-title me-2">{{ title }}</h1>
+          <h1 class="header-title me-2">  {{ title }}</h1>
 
           <!-- Main Menu - Desktop (hide on mobile) -->
           <nav class="main-nav d-none d-md-flex">
             <ul class="nav">
               <li class="nav-item">
                 <NuxtLink to="/" class="nav-link">
-                  <BootstrapIcon name="house" class="me-1" />
+                  <BootstrapIcon name="building" class="me-1" />
                   {{ t('home') }}</NuxtLink>
               </li>
               <li class="nav-item">
                 <NuxtLink to="/about" class="nav-link">
                   <BootstrapIcon name="person-badge" class="me-1" />{{ t('about') }}</NuxtLink>
               </li>
-              <li class="nav-item">
+              <li class="nav-item" v-if="isAuthenticated">
+                <NuxtLink to="/panel" class="nav-link">
+                  <BootstrapIcon name="speedometer" class="me-1" />{{ t('panel') }}</NuxtLink>
+              </li>
+              <li class="nav-item" v-if="isAuthenticated">
                 <NuxtLink to="/drawings" class="nav-link">
-                  <BootstrapIcon name="building-gear" class="me-1" />{{ t('drawings') }}</NuxtLink>
+                  <BootstrapIcon name="pencil-square" class="me-1" />{{ t('drawings') }}</NuxtLink>
               </li>
             </ul>
           </nav>
@@ -55,10 +51,13 @@
 
 <script setup lang="ts">
 import { useI18n } from '~/composables/useI18n';
+import IvyGearIcon from '~/components/Dashboard/IvyGearIcon.vue';
 import LanguageSwitcher from '~/components/Layout/LanguageSwitcher.vue';
 import AuthMenu from '~/components/Layout/AuthMenu.vue';
 import { computed } from 'vue';
+import { useAuth } from '~/composables/useAuth';
 
+const { isAuthenticated, isAdmin, logout } = useAuth();
 const { t } = useI18n();
 
 const props = defineProps({

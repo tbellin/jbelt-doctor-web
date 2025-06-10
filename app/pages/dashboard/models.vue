@@ -392,6 +392,134 @@
     
     <!-- Backdrop del modal -->
     <div v-if="showCreateModal" class="modal-backdrop fade show"></div>
+
+    <!-- Modal per visualizzazione JSON -->
+    <div 
+      class="modal fade" 
+      :class="{ show: showViewModal }" 
+      :style="{ display: showViewModal ? 'block' : 'none' }"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-eye me-2"></i>
+              {{ t('modal.view') }} - {{ viewingModel?.code }}
+            </h5>
+            <button type="button" class="btn-close" @click="closeViewModal"></button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0">{{ t('view.jsonData') }}</h6>
+                  <div class="btn-group" role="group">
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary btn-sm"
+                      @click="copyModelJson"
+                      :title="t('view.copyToClipboard')"
+                    >
+                      <i class="bi bi-clipboard me-1"></i>
+                      {{ t('view.copy') }}
+                    </button>
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-primary btn-sm"
+                      @click="downloadModelJson"
+                      :title="t('view.downloadJson')"
+                    >
+                      <i class="bi bi-download me-1"></i>
+                      {{ t('view.download') }}
+                    </button>
+                  </div>
+                </div>
+                
+                <textarea 
+                  id="jsonContent"
+                  class="form-control font-monospace"
+                  rows="20"
+                  readonly
+                  :value="viewingModel ? JSON.stringify(viewingModel, null, 2) : ''"
+                ></textarea>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <h6>{{ t('view.modelInfo') }}</h6>
+                <table class="table table-sm">
+                  <tbody>
+                    <tr>
+                      <td><strong>ID:</strong></td>
+                      <td><span class="badge bg-light text-dark">{{ viewingModel?.id }}</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>{{ t('table.code') }}:</strong></td>
+                      <td><code>{{ viewingModel?.code }}</code></td>
+                    </tr>
+                    <tr>
+                      <td><strong>{{ t('table.name') }}:</strong></td>
+                      <td>{{ viewingModel?.name }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>{{ t('table.type') }}:</strong></td>
+                      <td>
+                        <span class="badge" :class="getTypeClass(viewingModel?.modelType || '')">
+                          <i :class="getTypeIcon(viewingModel?.modelType || '')" class="me-1"></i>
+                          {{ viewingModel?.modelType }}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><strong>{{ t('table.instance') }}:</strong></td>
+                      <td>
+                        <span class="badge bg-secondary">
+                          {{ viewingModel?.instanceType }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="col-md-6">
+                <h6>{{ t('view.fileInfo') }}</h6>
+                <div class="alert alert-info">
+                  <p class="mb-2">
+                    <strong>{{ t('view.fileName') }}:</strong><br>
+                    <code>model-{{ viewingModel?.code }}-{{ viewingModel?.id }}.json</code>
+                  </p>
+                  <p class="mb-0">
+                    <strong>{{ t('view.fileSize') }}:</strong>
+                    {{ viewingModel ? JSON.stringify(viewingModel).length : 0 }} bytes
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeViewModal">
+              {{ t('common.cancel') }}
+            </button>
+            <button type="button" class="btn btn-outline-secondary" @click="copyModelJson">
+              <i class="bi bi-clipboard me-2"></i>
+              {{ t('view.copy') }}
+            </button>
+            <button type="button" class="btn btn-primary" @click="downloadModelJson">
+              <i class="bi bi-download me-2"></i>
+              {{ t('view.download') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Backdrop del modal view -->
+    <div v-if="showViewModal" class="modal-backdrop fade show"></div>
   </div>
 </template>
 
@@ -438,6 +566,8 @@ const itemsPerPage = 20
 
 // Modal e form
 const showCreateModal = ref(false)
+const showViewModal = ref(false)
+const viewingModel = ref<Model | null>(null)
 const editingModel = ref<Model | null>(null)
 const saving = ref(false)
 const formData = ref({
@@ -683,8 +813,49 @@ const saveModel = async (): Promise<void> => {
 }
 
 const viewModel = (model: Model): void => {
-  // Naviga alla pagina di dettaglio del modello
-  navigateTo(`/dashboard/models/${model.id}`)
+  console.log('[Models] View model clicked:', model)
+  viewingModel.value = model
+  showViewModal.value = true
+}
+
+const closeViewModal = (): void => {
+  showViewModal.value = false
+  viewingModel.value = null
+}
+
+const downloadModelJson = (): void => {
+  if (!viewingModel.value) return
+  
+  const jsonData = JSON.stringify(viewingModel.value, null, 2)
+  const blob = new Blob([jsonData], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `model-${viewingModel.value.code}-${viewingModel.value.id}.json`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+  console.log('[Models] JSON file downloaded for model:', viewingModel.value.code)
+}
+
+const copyModelJson = async (): Promise<void> => {
+  if (!viewingModel.value) return
+  
+  const jsonData = JSON.stringify(viewingModel.value, null, 2)
+  try {
+    await navigator.clipboard.writeText(jsonData)
+    console.log('[Models] JSON copied to clipboard for model:', viewingModel.value.code)
+    // Qui potresti aggiungere un toast/notifica di successo
+  } catch (err) {
+    console.error('[Models] Failed to copy JSON to clipboard:', err)
+    // Fallback: seleziona il testo nel textarea
+    const textarea = document.querySelector('#jsonContent') as HTMLTextAreaElement
+    if (textarea) {
+      textarea.select()
+      document.execCommand('copy')
+    }
+  }
 }
 
 const editModel = (model: Model): void => {

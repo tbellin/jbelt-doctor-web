@@ -45,7 +45,8 @@
   },
   "modal": {
     "create": "Crea Nuovo Modello",
-    "edit": "Modifica Modello"
+    "edit": "Modifica Modello",
+    "view": "Visualizza Modello"
   },
   "form": {
     "code": "Codice",
@@ -64,5 +65,16 @@
     "updateSuccess": "Modello aggiornato con successo",
     "deleteSuccess": "Modello eliminato con successo"
   },
-  "confirmDelete": "Sei sicuro di voler eliminare il modello '{name}'? Questa azione non può essere annullata."
+  "confirmDelete": "Sei sicuro di voler eliminare il modello '{name}'? Questa azione non può essere annullata.",
+  "view": {
+    "jsonData": "Dati JSON",
+    "modelInfo": "Informazioni Modello",
+    "fileInfo": "Informazioni File",
+    "fileName": "Nome File",
+    "fileSize": "Dimensione File",
+    "copy": "Copia",
+    "download": "Scarica",
+    "copyToClipboard": "Copia JSON negli appunti",
+    "downloadJson": "Scarica file JSON"
+  }
 }

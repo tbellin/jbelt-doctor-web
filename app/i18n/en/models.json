@@ -45,7 +45,8 @@
   },
   "modal": {
     "create": "Create New Model",
-    "edit": "Edit Model"
+    "edit": "Edit Model",
+    "view": "View Model"
   },
   "form": {
     "code": "Code",
@@ -64,5 +65,16 @@
     "updateSuccess": "Model updated successfully",
     "deleteSuccess": "Model deleted successfully"
   },
-  "confirmDelete": "Are you sure you want to delete the model '{name}'? This action cannot be undone."
+  "confirmDelete": "Are you sure you want to delete the model '{name}'? This action cannot be undone.",
+  "view": {
+    "jsonData": "JSON Data",
+    "modelInfo": "Model Information",
+    "fileInfo": "File Information",
+    "fileName": "File Name",
+    "fileSize": "File Size",
+    "copy": "Copy",
+    "download": "Download",
+    "copyToClipboard": "Copy JSON to clipboard",
+    "downloadJson": "Download JSON file"
+  }
 }

@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between align-items-center">
           <h1 class="h3 mb-0">
             <i class="bi bi-box-seam me-2"></i>
-            {{ t('title') }}
+            {{ t('models:title') }}
           </h1>
           <div class="btn-group" role="group">
             <button 
@@ -22,7 +22,7 @@
               :title="t('actions.refresh')"
             >
               <i class="bi bi-arrow-clockwise me-2" :class="{ 'spin-animation': loading }"></i>
-              {{ t('actions.refresh') }}
+              {{ t('models:actions.refresh') }}
             </button>
             <button 
               class="btn btn-primary"
@@ -30,7 +30,7 @@
               :disabled="loading"
             >
               <i class="bi bi-plus-lg me-2"></i>
-              {{ t('actions.create') }}
+              {{ t('models:actions.create') }}
             </button>
           </div>
         </div>
@@ -44,7 +44,7 @@
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h6 class="card-subtitle mb-2 text-muted">{{ t('stats.total') }}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.total') }}</h6>
                 <h3 class="card-title mb-0">
                   {{ modelCount !== null ? modelCount : '-' }}
                 </h3>
@@ -62,7 +62,7 @@
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h6 class="card-subtitle mb-2 text-muted">{{ t('stats.parts') }}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.parts') }}</h6>
                 <h3 class="card-title mb-0">
                   {{ getModelTypeCount('PART') }}
                 </h3>
@@ -80,7 +80,7 @@
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h6 class="card-subtitle mb-2 text-muted">{{ t('stats.assemblies') }}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.assemblies') }}</h6>
                 <h3 class="card-title mb-0">
                   {{ getModelTypeCount('ASSEMBLY') }}
                 </h3>
@@ -98,7 +98,7 @@
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
-                <h6 class="card-subtitle mb-2 text-muted">{{ t('stats.drawings') }}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.drawings') }}</h6>
                 <h3 class="card-title mb-0">
                   {{ getModelTypeCount('DRAWING') }}
                 </h3>
@@ -117,7 +117,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-md-4">
-            <label for="searchCode" class="form-label">{{ t('search.code') }}</label>
+            <label for="searchCode" class="form-label">{{ t('models:search.code') }}</label>
             <div class="input-group">
               <input
                 id="searchCode"
@@ -134,29 +134,29 @@
           </div>
           
           <div class="col-md-3">
-            <label for="filterType" class="form-label">{{ t('filter.type') }}</label>
+            <label for="filterType" class="form-label">{{ t('models:filter.type') }}</label>
             <select id="filterType" v-model="selectedType" class="form-select" @change="applyFilters">
-              <option value="">{{ t('common:all') }}</option>
-              <option value="PART">{{ t('types.part') }}</option>
-              <option value="ASSEMBLY">{{ t('types.assembly') }}</option>
-              <option value="DRAWING">{{ t('types.drawing') }}</option>
+              <option value="">{{ t('models:common:all') }}</option>
+              <option value="PART">{{ t('models:types.part') }}</option>
+              <option value="ASSEMBLY">{{ t('models:types.assembly') }}</option>
+              <option value="DRAWING">{{ t('models:types.drawing') }}</option>
             </select>
           </div>
           
           <div class="col-md-3">
-            <label for="filterInstance" class="form-label">{{ t('filter.instance') }}</label>
+            <label for="filterInstance" class="form-label">{{ t('models:filter.instance') }}</label>
             <select id="filterInstance" v-model="selectedInstance" class="form-select" @change="applyFilters">
-              <option value="">{{ t('common:all') }}</option>
-              <option value="NORMAL">{{ t('instances.normal') }}</option>
-              <option value="GENERIC">{{ t('instances.generic') }}</option>
-              <option value="INSTANCE">{{ t('instances.instance') }}</option>
+              <option value="">{{ t('models:common:all') }}</option>
+              <option value="NORMAL">{{ t('models:instances.normal') }}</option>
+              <option value="GENERIC">{{ t('models:instances.generic') }}</option>
+              <option value="INSTANCE">{{ t('models:instances.instance') }}</option>
             </select>
           </div>
           
           <div class="col-md-2 d-flex align-items-end">
             <button class="btn btn-secondary w-100" @click="clearFilters" :disabled="loading">
               <i class="bi bi-x-circle me-2"></i>
-              {{ t('common:clear') }}
+              {{ t('models:common:clear') }}
             </button>
           </div>
         </div>
@@ -167,7 +167,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title mb-0">
-          {{ t('list.title') }}
+          {{ t('models:list.title') }}
           <span v-if="filteredModels.length" class="badge bg-secondary ms-2">
             {{ filteredModels.length }}
           </span>
@@ -178,9 +178,9 @@
         <!-- Loading state -->
         <div v-if="loading" class="text-center py-4">
           <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">{{ t('common:loading') }}</span>
+            <span class="visually-hidden">{{ t('models:common:loading') }}</span>
           </div>
-          <p class="mt-2 text-muted">{{ t('loading') }}</p>
+          <p class="mt-2 text-muted">{{ t('models:loading') }}</p>
         </div>
 
         <!-- Error state -->
@@ -188,18 +188,18 @@
           <i class="bi bi-exclamation-triangle me-2"></i>
           {{ error }}
           <button class="btn btn-sm btn-outline-danger ms-2" @click="loadModels">
-            {{ t('common:retry') }}
+            {{ t('models:common:retry') }}
           </button>
         </div>
 
         <!-- Empty state -->
         <div v-else-if="!filteredModels.length" class="text-center py-5">
           <i class="bi bi-box-seam display-1 text-muted"></i>
-          <h4 class="mt-3">{{ t('empty.title') }}</h4>
-          <p class="text-muted">{{ t('empty.message') }}</p>
+          <h4 class="mt-3">{{ t('models:empty.title') }}</h4>
+          <p class="text-muted">{{ t('models:empty.message') }}</p>
           <button class="btn btn-primary" @click="showCreateModal = true">
             <i class="bi bi-plus-lg me-2"></i>
-            {{ t('actions.createFirst') }}
+            {{ t('models:actions.createFirst') }}
           </button>
         </div>
 
@@ -209,12 +209,12 @@
             <thead>
               <tr>
                 <th style="width: 50px;"></th>
-                <th>{{ t('table.id') }}</th>
-                <th>{{ t('table.code') }}</th>
-                <th>{{ t('table.name') }}</th>
-                <th>{{ t('table.type') }}</th>
-                <th>{{ t('table.instance') }}</th>
-                <th>{{ t('common:actions') }}</th>
+                <th>{{ t('models:table.id') }}</th>
+                <th>{{ t('models:table.code') }}</th>
+                <th>{{ t('models:table.name') }}</th>
+                <th>{{ t('models:table.type') }}</th>
+                <th>{{ t('models:table.instance') }}</th>
+                <th>{{ t('models:common:actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -286,7 +286,7 @@
                       <div class="sheets-header">
                         <h6 class="mb-2">
                           <i class="bi bi-file-earmark-text me-2"></i>
-                          {{ t('table.associatedSheets') }}
+                          {{ t('models:table.associatedSheets') }}
                           <span class="badge bg-secondary ms-2">
                             {{ getSheetsForModel(model.id || 0).length }}
                           </span>
@@ -294,19 +294,19 @@
                       </div>
                       
                       <div v-if="getSheetsForModel(model.id || 0).length === 0" class="text-muted p-3">
-                        {{ t('table.noSheets') }}
+                        {{ t('models:table.noSheets') }}
                       </div>
                       
                       <div v-else class="table-responsive">
                         <table class="table table-sm mb-0">
                           <thead class="table-light">
                             <tr>
-                              <th>{{ t('sheets.table.id') }}</th>
-                              <th>{{ t('sheets.table.code') }}</th>
-                              <th>{{ t('sheets.table.name') }}</th>
-                              <th>{{ t('sheets.table.format') }}</th>
-                              <th>{{ t('sheets.table.relation') }}</th>
-                              <th>{{ t('sheets.table.creoId') }}</th>
+                              <th>{{ t('models:sheets.table.id') }}</th>
+                              <th>{{ t('models:sheets.table.code') }}</th>
+                              <th>{{ t('models:sheets.table.name') }}</th>
+                              <th>{{ t('models:sheets.table.format') }}</th>
+                              <th>{{ t('models:sheets.table.relation') }}</th>
+                              <th>{{ t('models:sheets.table.creoId') }}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -324,11 +324,11 @@
                               <td>
                                 <span v-if="model.modelType === 'DRAWING'" class="badge bg-success">
                                   <i class="bi bi-file-earmark-text me-1"></i>
-                                  {{ t('sheets.relation.hasDrawing') }}
+                                  {{ t('models:sheets.relation.hasDrawing') }}
                                 </span>
                                 <span v-else class="badge bg-warning">
                                   <i class="bi bi-link me-1"></i>
-                                  {{ t('sheets.relation.references') }}
+                                  {{ t('models:sheets.relation.references') }}
                                 </span>
                               </td>
                               <td>
@@ -397,7 +397,7 @@
             <div class="modal-body">
               <div class="row">
                 <div class="col-md-6">
-                  <label for="modelCode" class="form-label">{{ t('form.code') }} *</label>
+                  <label for="modelCode" class="form-label">{{ t('models:form.code') }} *</label>
                   <input
                     id="modelCode"
                     v-model="formData.code"
@@ -412,7 +412,7 @@
                 </div>
                 
                 <div class="col-md-6">
-                  <label for="modelName" class="form-label">{{ t('form.name') }} *</label>
+                  <label for="modelName" class="form-label">{{ t('models:form.name') }} *</label>
                   <input
                     id="modelName"
                     v-model="formData.name"
@@ -429,7 +429,7 @@
               
               <div class="row mt-3">
                 <div class="col-md-6">
-                  <label for="modelType" class="form-label">{{ t('form.type') }} *</label>
+                  <label for="modelType" class="form-label">{{ t('models:form.type') }} *</label>
                   <select
                     id="modelType"
                     v-model="formData.modelType"
@@ -437,10 +437,10 @@
                     :class="{ 'is-invalid': formErrors.modelType }"
                     required
                   >
-                    <option value="">{{ t('common:select') }}</option>
-                    <option value="PART">{{ t('types.part') }}</option>
-                    <option value="ASSEMBLY">{{ t('types.assembly') }}</option>
-                    <option value="DRAWING">{{ t('types.drawing') }}</option>
+                    <option value="">{{ t('models:common:select') }}</option>
+                    <option value="PART">{{ t('models:types.part') }}</option>
+                    <option value="ASSEMBLY">{{ t('models:types.assembly') }}</option>
+                    <option value="DRAWING">{{ t('models:types.drawing') }}</option>
                   </select>
                   <div v-if="formErrors.modelType" class="invalid-feedback">
                     {{ formErrors.modelType }}
@@ -448,7 +448,7 @@
                 </div>
                 
                 <div class="col-md-6">
-                  <label for="instanceType" class="form-label">{{ t('form.instance') }} *</label>
+                  <label for="instanceType" class="form-label">{{ t('models:form.instance') }} *</label>
                   <select
                     id="instanceType"
                     v-model="formData.instanceType"
@@ -456,10 +456,10 @@
                     :class="{ 'is-invalid': formErrors.instanceType }"
                     required
                   >
-                    <option value="">{{ t('common:select') }}</option>
-                    <option value="NORMAL">{{ t('instances.normal') }}</option>
-                    <option value="GENERIC">{{ t('instances.generic') }}</option>
-                    <option value="INSTANCE">{{ t('instances.instance') }}</option>
+                    <option value="">{{ t('models:common:select') }}</option>
+                    <option value="NORMAL">{{ t('models:instances.normal') }}</option>
+                    <option value="GENERIC">{{ t('models:instances.generic') }}</option>
+                    <option value="INSTANCE">{{ t('models:instances.instance') }}</option>
                   </select>
                   <div v-if="formErrors.instanceType" class="invalid-feedback">
                     {{ formErrors.instanceType }}
@@ -470,7 +470,7 @@
             
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">
-                {{ t('common:cancel') }}
+                {{ t('models:common:cancel') }}
               </button>
               <button type="submit" class="btn btn-primary" :disabled="saving">
                 <span v-if="saving" class="spinner-border spinner-border-sm me-2"></span>
@@ -497,7 +497,7 @@
           <div class="modal-header">
             <h5 class="modal-title">
               <i class="bi bi-eye me-2"></i>
-              {{ t('modal.view') }} - {{ viewingModel?.code }}
+              {{ t('models:modal.view') }} - {{ viewingModel?.code }}
             </h5>
             <button type="button" class="btn-close" @click="closeViewModal"></button>
           </div>
@@ -506,7 +506,7 @@
             <div class="row mb-3">
               <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h6 class="mb-0">{{ t('view.jsonData') }}</h6>
+                  <h6 class="mb-0">{{ t('models:view.jsonData') }}</h6>
                   <div class="btn-group" role="group">
                     <button 
                       type="button" 
@@ -515,7 +515,7 @@
                       :title="t('view.copyToClipboard')"
                     >
                       <i class="bi bi-clipboard me-1"></i>
-                      {{ t('view.copy') }}
+                      {{ t('models:view.copy') }}
                     </button>
                     <button 
                       type="button" 
@@ -524,7 +524,7 @@
                       :title="t('view.downloadJson')"
                     >
                       <i class="bi bi-download me-1"></i>
-                      {{ t('view.download') }}
+                      {{ t('models:view.download') }}
                     </button>
                   </div>
                 </div>
@@ -541,7 +541,7 @@
             
             <div class="row">
               <div class="col-md-6">
-                <h6>{{ t('view.modelInfo') }}</h6>
+                <h6>{{ t('models:view.modelInfo') }}</h6>
                 <table class="table table-sm">
                   <tbody>
                     <tr>
@@ -549,15 +549,15 @@
                       <td><span class="badge bg-light text-dark">{{ viewingModel?.id }}</span></td>
                     </tr>
                     <tr>
-                      <td><strong>{{ t('table.code') }}:</strong></td>
+                      <td><strong>{{ t('models:table.code') }}:</strong></td>
                       <td><code>{{ viewingModel?.code }}</code></td>
                     </tr>
                     <tr>
-                      <td><strong>{{ t('table.name') }}:</strong></td>
+                      <td><strong>{{ t('models:table.name') }}:</strong></td>
                       <td>{{ viewingModel?.name }}</td>
                     </tr>
                     <tr>
-                      <td><strong>{{ t('table.type') }}:</strong></td>
+                      <td><strong>{{ t('models:table.type') }}:</strong></td>
                       <td>
                         <span class="badge" :class="getTypeClass(viewingModel?.modelType || '')">
                           <i :class="getTypeIcon(viewingModel?.modelType || '')" class="me-1"></i>
@@ -566,7 +566,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td><strong>{{ t('table.instance') }}:</strong></td>
+                      <td><strong>{{ t('models:table.instance') }}:</strong></td>
                       <td>
                         <span class="badge bg-secondary">
                           {{ viewingModel?.instanceType }}
@@ -578,14 +578,14 @@
               </div>
               
               <div class="col-md-6">
-                <h6>{{ t('view.fileInfo') }}</h6>
+                <h6>{{ t('models:view.fileInfo') }}</h6>
                 <div class="alert alert-info">
                   <p class="mb-2">
-                    <strong>{{ t('view.fileName') }}:</strong><br>
+                    <strong>{{ t('models:view.fileName') }}:</strong><br>
                     <code>model-{{ viewingModel?.code }}-{{ viewingModel?.id }}.json</code>
                   </p>
                   <p class="mb-0">
-                    <strong>{{ t('view.fileSize') }}:</strong>
+                    <strong>{{ t('models:view.fileSize') }}:</strong>
                     {{ viewingModel ? JSON.stringify(viewingModel).length : 0 }} bytes
                   </p>
                 </div>
@@ -595,15 +595,15 @@
           
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeViewModal">
-              {{ t('common:cancel') }}
+              {{ t('models:common:cancel') }}
             </button>
             <button type="button" class="btn btn-outline-secondary" @click="copyModelJson">
               <i class="bi bi-clipboard me-2"></i>
-              {{ t('view.copy') }}
+              {{ t('models:view.copy') }}
             </button>
             <button type="button" class="btn btn-primary" @click="downloadModelJson">
               <i class="bi bi-download me-2"></i>
-              {{ t('view.download') }}
+              {{ t('models:view.download') }}
             </button>
           </div>
         </div>
@@ -622,12 +622,13 @@ import { useApi, type Model, type ApiResponse } from '~/composables/useApi'
 // CORREZIONE PRINCIPALE: Utilizzo corretto di useI18n
 import { useI18n } from '~/composables/useI18n';
 import { useAuth } from '~/composables/useAuth';
-const { t, loadNamespace } = useI18n();
+// const { t, loadNamespace } = useI18n();
+const { t, loadNamespace, isLoaded } = useI18n();
 
 // Configurazione della pagina
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth', 'i18n']
+  middleware: ['auth', 'i18n', 'translation-loader']
 })
 
 // Dati reattivi

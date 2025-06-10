@@ -136,7 +136,7 @@
           <div class="col-md-3">
             <label for="filterType" class="form-label">{{ t('filter.type') }}</label>
             <select id="filterType" v-model="selectedType" class="form-select" @change="applyFilters">
-              <option value="">{{ t('common.all') }}</option>
+              <option value="">{{ t('common:all') }}</option>
               <option value="PART">{{ t('types.part') }}</option>
               <option value="ASSEMBLY">{{ t('types.assembly') }}</option>
               <option value="DRAWING">{{ t('types.drawing') }}</option>
@@ -146,7 +146,7 @@
           <div class="col-md-3">
             <label for="filterInstance" class="form-label">{{ t('filter.instance') }}</label>
             <select id="filterInstance" v-model="selectedInstance" class="form-select" @change="applyFilters">
-              <option value="">{{ t('common.all') }}</option>
+              <option value="">{{ t('common:all') }}</option>
               <option value="NORMAL">{{ t('instances.normal') }}</option>
               <option value="GENERIC">{{ t('instances.generic') }}</option>
               <option value="INSTANCE">{{ t('instances.instance') }}</option>
@@ -156,7 +156,7 @@
           <div class="col-md-2 d-flex align-items-end">
             <button class="btn btn-secondary w-100" @click="clearFilters" :disabled="loading">
               <i class="bi bi-x-circle me-2"></i>
-              {{ t('common.clear') }}
+              {{ t('common:clear') }}
             </button>
           </div>
         </div>
@@ -178,7 +178,7 @@
         <!-- Loading state -->
         <div v-if="loading" class="text-center py-4">
           <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">{{ t('common.loading') }}</span>
+            <span class="visually-hidden">{{ t('common:loading') }}</span>
           </div>
           <p class="mt-2 text-muted">{{ t('loading') }}</p>
         </div>
@@ -188,7 +188,7 @@
           <i class="bi bi-exclamation-triangle me-2"></i>
           {{ error }}
           <button class="btn btn-sm btn-outline-danger ms-2" @click="loadModels">
-            {{ t('common.retry') }}
+            {{ t('common:retry') }}
           </button>
         </div>
 
@@ -214,7 +214,7 @@
                 <th>{{ t('table.name') }}</th>
                 <th>{{ t('table.type') }}</th>
                 <th>{{ t('table.instance') }}</th>
-                <th>{{ t('common.actions') }}</th>
+                <th>{{ t('common:actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -256,21 +256,21 @@
                       <button 
                         class="btn btn-outline-primary"
                         @click="viewModel(model)"
-                        :title="t('common.view')"
+                        :title="t('common:view')"
                       >
                         <i class="bi bi-eye"></i>
                       </button>
                       <button 
                         class="btn btn-outline-warning"
                         @click="editModel(model)"
-                        :title="t('common.edit')"
+                        :title="t('common:edit')"
                       >
                         <i class="bi bi-pencil"></i>
                       </button>
                       <button 
                         class="btn btn-outline-danger"
                         @click="confirmDelete(model)"
-                        :title="t('common.delete')"
+                        :title="t('common:delete')"
                       >
                         <i class="bi bi-trash"></i>
                       </button>
@@ -437,7 +437,7 @@
                     :class="{ 'is-invalid': formErrors.modelType }"
                     required
                   >
-                    <option value="">{{ t('common.select') }}</option>
+                    <option value="">{{ t('common:select') }}</option>
                     <option value="PART">{{ t('types.part') }}</option>
                     <option value="ASSEMBLY">{{ t('types.assembly') }}</option>
                     <option value="DRAWING">{{ t('types.drawing') }}</option>
@@ -456,7 +456,7 @@
                     :class="{ 'is-invalid': formErrors.instanceType }"
                     required
                   >
-                    <option value="">{{ t('common.select') }}</option>
+                    <option value="">{{ t('common:select') }}</option>
                     <option value="NORMAL">{{ t('instances.normal') }}</option>
                     <option value="GENERIC">{{ t('instances.generic') }}</option>
                     <option value="INSTANCE">{{ t('instances.instance') }}</option>
@@ -470,11 +470,11 @@
             
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">
-                {{ t('common.cancel') }}
+                {{ t('common:cancel') }}
               </button>
               <button type="submit" class="btn btn-primary" :disabled="saving">
                 <span v-if="saving" class="spinner-border spinner-border-sm me-2"></span>
-                {{ saving ? t('common.saving') : (editingModel ? t('common.update') : t('common.create')) }}
+                {{ saving ? t('common:saving') : (editingModel ? t('common:update') : t('common:create')) }}
               </button>
             </div>
           </form>
@@ -595,7 +595,7 @@
           
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeViewModal">
-              {{ t('common.cancel') }}
+              {{ t('common:cancel') }}
             </button>
             <button type="button" class="btn btn-outline-secondary" @click="copyModelJson">
               <i class="bi bi-clipboard me-2"></i>
@@ -622,14 +622,13 @@ import { useApi, type Model, type ApiResponse } from '~/composables/useApi'
 // CORREZIONE PRINCIPALE: Utilizzo corretto di useI18n
 import { useI18n } from '~/composables/useI18n';
 import { useAuth } from '~/composables/useAuth';
-const { t, currentLanguage } = useI18n('models');
+const { t, loadNamespace } = useI18n();
 
 // Configurazione della pagina
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth', 'i18n']
 })
-
 
 // Dati reattivi
 const { models, sheets } = useApi()
@@ -1093,7 +1092,12 @@ watch([selectedType, selectedInstance], () => {
 
 // Lifecycle hooks
 onMounted(async () => {
-  console.log('[Models] Componente montato, controllo autenticazione...')
+  console.log('[Models] Componente montato, caricamento traduzioni...')
+  
+  // Ensure required namespaces are loaded
+  console.log('[Models] Loading namespaces: common, models...')
+  await loadNamespace('common')
+  await loadNamespace('models')
   
   // Verifica stato di autenticazione
   const { isAuthenticated, user } = useAuth()

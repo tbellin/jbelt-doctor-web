@@ -182,6 +182,11 @@ export function useI18n(namespace: string = 'common') {
       return key; // Se le traduzioni non sono ancora caricate, ritorna la chiave
     }
     
+    const isDebugMode = process.env.NUXT_DEBUG === 'true';
+    if (isDebugMode) {
+      console.log(`[useI18n] Translating key: "${key}", current namespace: "${pageNamespace.value}"`);
+    }
+    
     // Determina il namespace della chiave
     let ns = 'common';
     let actualKey = key;
@@ -204,11 +209,55 @@ export function useI18n(namespace: string = 'common') {
     // Recupera la traduzione
     const langTranslations = translations.value[currentLanguage.value] || {};
     const nsTranslations = langTranslations[ns] || {};
-    let text = nsTranslations[actualKey] || actualKey;
+    
+    // Gestisci l'accesso a oggetti annidati usando la notazione con punti
+    let text = actualKey;
+    
+    // Prova ad accedere alla chiave (potrebbe essere annidata)
+    if (actualKey.includes('.')) {
+      // Naviga l'oggetto annidata usando il percorso con punti
+      const keys = actualKey.split('.');
+      let current = nsTranslations;
+      
+      for (const key of keys) {
+        if (current && typeof current === 'object' && key in current) {
+          current = current[key];
+        } else {
+          current = null;
+          break;
+        }
+      }
+      
+      if (current && typeof current === 'string') {
+        text = current;
+      }
+    } else {
+      // Accesso diretto alla chiave
+      text = nsTranslations[actualKey] || actualKey;
+    }
     
     // Se la traduzione non è trovata nel namespace specifico, cerca in common
     if (text === actualKey && ns !== 'common' && langTranslations['common']) {
-      text = langTranslations['common'][actualKey] || actualKey;
+      // Applica la stessa logica per oggetti annidati anche in common
+      if (actualKey.includes('.')) {
+        const keys = actualKey.split('.');
+        let current = langTranslations['common'];
+        
+        for (const key of keys) {
+          if (current && typeof current === 'object' && key in current) {
+            current = current[key];
+          } else {
+            current = null;
+            break;
+          }
+        }
+        
+        if (current && typeof current === 'string') {
+          text = current;
+        }
+      } else {
+        text = langTranslations['common'][actualKey] || actualKey;
+      }
     }
     
     // Sostituisci i parametri se forniti
@@ -216,6 +265,10 @@ export function useI18n(namespace: string = 'common') {
       Object.entries(params).forEach(([param, value]) => {
         text = text.replace(new RegExp(`\\{${param}\\}`, 'g'), value);
       });
+    }
+    
+    if (isDebugMode) {
+      console.log(`[useI18n] Translation result for "${key}": "${text}" (from namespace: "${ns}")`);
     }
     
     return text;

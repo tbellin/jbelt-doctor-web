@@ -23,7 +23,7 @@
   "instances": {
     "normal": "Normale",
     "generic": "Generico",
-    "parametric": "Parametrico"
+    "instance": "Istanza"
   },
   "list": {
     "title": "Lista Modelli"

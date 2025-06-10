@@ -138,7 +138,7 @@
               <option value="">{{ t('common.all') }}</option>
               <option value="NORMAL">{{ t('instances.normal') }}</option>
               <option value="GENERIC">{{ t('instances.generic') }}</option>
-              <option value="PARAMETRIC">{{ t('instances.parametric') }}</option>
+              <option value="INSTANCE">{{ t('instances.instance') }}</option>
             </select>
           </div>
           
@@ -367,7 +367,7 @@
                     <option value="">{{ t('common.select') }}</option>
                     <option value="NORMAL">{{ t('instances.normal') }}</option>
                     <option value="GENERIC">{{ t('instances.generic') }}</option>
-                    <option value="PARAMETRIC">{{ t('instances.parametric') }}</option>
+                    <option value="INSTANCE">{{ t('instances.instance') }}</option>
                   </select>
                   <div v-if="formErrors.instanceType" class="invalid-feedback">
                     {{ formErrors.instanceType }}

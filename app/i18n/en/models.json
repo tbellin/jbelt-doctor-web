@@ -23,7 +23,7 @@
   "instances": {
     "normal": "Normal",
     "generic": "Generic",
-    "parametric": "Parametric"
+    "instance": "Instance"
   },
   "list": {
     "title": "Model List"

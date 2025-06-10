@@ -1,0 +1,106 @@
+<!--
+  Componente per le cards delle statistiche dei modelli
+  @version 1.0.0
+-->
+<template>
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.total') }}</h6>
+              <h3 class="card-title mb-0">
+                {{ totalCount !== null ? totalCount : '-' }}
+              </h3>
+            </div>
+            <div class="text-primary">
+              <i class="bi bi-box-seam fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.parts') }}</h6>
+              <h3 class="card-title mb-0">
+                {{ getTypeCount('PART') }}
+              </h3>
+            </div>
+            <div class="text-success">
+              <i class="bi bi-gear fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.assemblies') }}</h6>
+              <h3 class="card-title mb-0">
+                {{ getTypeCount('ASSEMBLY') }}
+              </h3>
+            </div>
+            <div class="text-info">
+              <i class="bi bi-diagram-3 fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h6 class="card-subtitle mb-2 text-muted">{{ t('models:stats.drawings') }}</h6>
+              <h3 class="card-title mb-0">
+                {{ getTypeCount('DRAWING') }}
+              </h3>
+            </div>
+            <div class="text-warning">
+              <i class="bi bi-file-earmark-text fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { Model } from '~/composables/useApi'
+import { useI18n } from '~/composables/useI18n'
+
+const { t } = useI18n()
+
+interface Props {
+  models: Model[]
+  totalCount?: number | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  totalCount: null
+})
+
+const getTypeCount = (type: string): number => {
+  return props.models.filter((model: Model) => model.modelType === type).length
+}
+</script>
+
+<style scoped>
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+</style>

@@ -1,0 +1,68 @@
+{
+  "title": "Model Management",
+  "loading": "Loading models...",
+  "stats": {
+    "total": "Total Models",
+    "parts": "Parts",
+    "assemblies": "Assemblies",
+    "drawings": "Drawings"
+  },
+  "search": {
+    "code": "Search by Code",
+    "codePlaceholder": "Enter model code..."
+  },
+  "filter": {
+    "type": "Model Type",
+    "instance": "Instance Type"
+  },
+  "types": {
+    "part": "Part",
+    "assembly": "Assembly",
+    "drawing": "Drawing"
+  },
+  "instances": {
+    "normal": "Normal",
+    "generic": "Generic",
+    "parametric": "Parametric"
+  },
+  "list": {
+    "title": "Model List"
+  },
+  "table": {
+    "id": "ID",
+    "code": "Code",
+    "name": "Name",
+    "type": "Type",
+    "instance": "Instance"
+  },
+  "empty": {
+    "title": "No models found",
+    "message": "There are no models in the system. Start by creating a new one."
+  },
+  "actions": {
+    "create": "New Model",
+    "createFirst": "Create first model"
+  },
+  "modal": {
+    "create": "Create New Model",
+    "edit": "Edit Model"
+  },
+  "form": {
+    "code": "Code",
+    "name": "Name",
+    "type": "Model Type",
+    "instance": "Instance Type"
+  },
+  "validation": {
+    "codeRequired": "Code is required",
+    "nameRequired": "Name is required",
+    "typeRequired": "Model type is required",
+    "instanceRequired": "Instance type is required"
+  },
+  "messages": {
+    "createSuccess": "Model created successfully",
+    "updateSuccess": "Model updated successfully",
+    "deleteSuccess": "Model deleted successfully"
+  },
+  "confirmDelete": "Are you sure you want to delete the model '{name}'? This action cannot be undone."
+}

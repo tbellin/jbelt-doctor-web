@@ -1,0 +1,68 @@
+{
+  "title": "Gestione Modelli",
+  "loading": "Caricamento modelli in corso...",
+  "stats": {
+    "total": "Totale Modelli",
+    "parts": "Parti",
+    "assemblies": "Assiemi",
+    "drawings": "Disegni"
+  },
+  "search": {
+    "code": "Ricerca per Codice",
+    "codePlaceholder": "Inserisci codice modello..."
+  },
+  "filter": {
+    "type": "Tipo Modello",
+    "instance": "Tipo Istanza"
+  },
+  "types": {
+    "part": "Parte",
+    "assembly": "Assieme",
+    "drawing": "Disegno"
+  },
+  "instances": {
+    "normal": "Normale",
+    "generic": "Generico",
+    "parametric": "Parametrico"
+  },
+  "list": {
+    "title": "Lista Modelli"
+  },
+  "table": {
+    "id": "ID",
+    "code": "Codice",
+    "name": "Nome",
+    "type": "Tipo",
+    "instance": "Istanza"
+  },
+  "empty": {
+    "title": "Nessun modello trovato",
+    "message": "Non ci sono modelli nel sistema. Inizia creandone uno nuovo."
+  },
+  "actions": {
+    "create": "Nuovo Modello",
+    "createFirst": "Crea il primo modello"
+  },
+  "modal": {
+    "create": "Crea Nuovo Modello",
+    "edit": "Modifica Modello"
+  },
+  "form": {
+    "code": "Codice",
+    "name": "Nome",
+    "type": "Tipo Modello",
+    "instance": "Tipo Istanza"
+  },
+  "validation": {
+    "codeRequired": "Il codice è obbligatorio",
+    "nameRequired": "Il nome è obbligatorio",
+    "typeRequired": "Il tipo di modello è obbligatorio",
+    "instanceRequired": "Il tipo di istanza è obbligatorio"
+  },
+  "messages": {
+    "createSuccess": "Modello creato con successo",
+    "updateSuccess": "Modello aggiornato con successo",
+    "deleteSuccess": "Modello eliminato con successo"
+  },
+  "confirmDelete": "Sei sicuro di voler eliminare il modello '{name}'? Questa azione non può essere annullata."
+}

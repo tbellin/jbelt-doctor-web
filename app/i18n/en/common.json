@@ -52,5 +52,23 @@
     "back": "Back",
     "debug": "Debug",
     "debug_info": "Informazioni di debug",
-    "test_page": "Test Page"
+    "test_page": "Test Page",
+    "all": "All",
+    "select": "Select",
+    "create": "Create",
+    "update": "Update",
+    "view": "View",
+    "clear": "Clear",
+    "retry": "Retry",
+    "saving": "Saving...",
+    "filter": "Filter",
+    "main": "Main",
+    "application": "Applications",
+    "user": "User",
+    "admin": "Administration",
+    "panel": "Dashboard",
+    "manage_users": "Manage Users",
+    "navigation": {
+      "models": "Models"
+    }
   }

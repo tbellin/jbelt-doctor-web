@@ -74,6 +74,11 @@
                     <i class="bi bi-pencil-square me-2"></i> {{ t('drawings') }}
                   </NuxtLink>
                 </li>
+                <li class="nav-item" v-if="isAuthenticated">
+                  <NuxtLink to="/dashboard/models" class="nav-link">
+                    <i class="bi bi-box-seam me-2"></i> {{ t('navigation.models') }}
+                  </NuxtLink>
+                </li>
               </ul>
             </div>
           </div>

@@ -41,7 +41,8 @@
   },
   "actions": {
     "create": "New Model",
-    "createFirst": "Create first model"
+    "createFirst": "Create first model",
+    "refresh": "Refresh"
   },
   "modal": {
     "create": "Create New Model",

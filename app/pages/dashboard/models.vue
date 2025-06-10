@@ -14,14 +14,25 @@
             <i class="bi bi-box-seam me-2"></i>
             {{ t('title') }}
           </h1>
-          <button 
-            class="btn btn-primary"
-            @click="showCreateModal = true"
-            :disabled="loading"
-          >
-            <i class="bi bi-plus-lg me-2"></i>
-            {{ t('actions.create') }}
-          </button>
+          <div class="btn-group" role="group">
+            <button 
+              class="btn btn-outline-secondary"
+              @click="refreshData"
+              :disabled="loading"
+              :title="t('actions.refresh')"
+            >
+              <i class="bi bi-arrow-clockwise me-2" :class="{ 'spin-animation': loading }"></i>
+              {{ t('actions.refresh') }}
+            </button>
+            <button 
+              class="btn btn-primary"
+              @click="showCreateModal = true"
+              :disabled="loading"
+            >
+              <i class="bi bi-plus-lg me-2"></i>
+              {{ t('actions.create') }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -624,6 +635,17 @@ const getTypeIcon = (type: string): string => {
 }
 
 // Metodi per il caricamento dati
+const refreshData = async (): Promise<void> => {
+  console.log('[Models] Refresh data requested')
+  // Reset filtri e ricerca
+  searchCode.value = ''
+  selectedType.value = ''
+  selectedInstance.value = ''
+  currentPage.value = 1
+  
+  await loadModels()
+}
+
 const loadModels = async (): Promise<void> => {
   console.log('[Models] Inizio caricamento modelli...')
   loading.value = true
@@ -791,6 +813,7 @@ const saveModel = async (): Promise<void> => {
     
     if (response.success) {
       closeModal()
+      console.log('[Models] Operazione completata, aggiornamento dati...')
       await loadModels() // Ricarica la lista
       
       // Mostra messaggio di successo
@@ -880,6 +903,7 @@ const confirmDelete = async (model: Model): Promise<void> => {
   try {
     const response = await models.delete(model.id!)
     if (response.success) {
+      console.log('[Models] Modello eliminato, aggiornamento dati...')
       await loadModels() // Ricarica la lista
       console.log(t('messages.deleteSuccess'))
     } else {
@@ -966,6 +990,16 @@ useHead({
 .spinner-border-sm {
   width: 1rem;
   height: 1rem;
+}
+
+/* Animazione per l'icona di refresh */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
 }
 
 @media (max-width: 768px) {

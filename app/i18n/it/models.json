@@ -41,7 +41,8 @@
   },
   "actions": {
     "create": "Nuovo Modello",
-    "createFirst": "Crea il primo modello"
+    "createFirst": "Crea il primo modello",
+    "refresh": "Aggiorna"
   },
   "modal": {
     "create": "Crea Nuovo Modello",

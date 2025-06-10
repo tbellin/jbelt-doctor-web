@@ -33,7 +33,11 @@
     "code": "Codice",
     "name": "Nome",
     "type": "Tipo",
-    "instance": "Istanza"
+    "instance": "Istanza",
+    "expand": "Espandi per mostrare i fogli associati",
+    "collapse": "Comprimi per nascondere i fogli",
+    "associatedSheets": "Fogli Associati",
+    "noSheets": "Nessun foglio associato a questo modello"
   },
   "empty": {
     "title": "Nessun modello trovato",
@@ -77,5 +81,19 @@
     "download": "Scarica",
     "copyToClipboard": "Copia JSON negli appunti",
     "downloadJson": "Scarica file JSON"
+  },
+  "sheets": {
+    "table": {
+      "id": "ID",
+      "code": "Codice",
+      "name": "Nome",
+      "format": "Formato",
+      "relation": "Relazione",
+      "creoId": "Creo ID"
+    },
+    "relation": {
+      "hasDrawing": "Ha Disegno",
+      "references": "Referenzia"
+    }
   }
 }

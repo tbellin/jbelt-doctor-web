@@ -33,7 +33,11 @@
     "code": "Code",
     "name": "Name",
     "type": "Type",
-    "instance": "Instance"
+    "instance": "Instance",
+    "expand": "Expand to show associated sheets",
+    "collapse": "Collapse to hide sheets",
+    "associatedSheets": "Associated Sheets",
+    "noSheets": "No sheets associated with this model"
   },
   "empty": {
     "title": "No models found",
@@ -77,5 +81,19 @@
     "download": "Download",
     "copyToClipboard": "Copy JSON to clipboard",
     "downloadJson": "Download JSON file"
+  },
+  "sheets": {
+    "table": {
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "format": "Format",
+      "relation": "Relation",
+      "creoId": "Creo ID"
+    },
+    "relation": {
+      "hasDrawing": "Has Drawing",
+      "references": "References"
+    }
   }
 }

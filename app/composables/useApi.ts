@@ -40,6 +40,7 @@ export interface Sheet {
   name: string
   creoId?: string
   formatType: string
+  drawing?: Model | number  // Riferimento al Model di tipo DRAWING
 }
 
 export interface SheetStatistics {
@@ -299,6 +300,15 @@ export const useApi = () => {
       return apiCall<void>(`/api/sheets/${id}`, {
         method: 'DELETE'
       })
+    },
+
+    // Metodi specifici per le relazioni Model-Sheet
+    async getByDrawing(drawingId: number): Promise<ApiResponse<Sheet[]>> {
+      return apiCall<Sheet[]>(`/api/sheets?drawingId.equals=${drawingId}`)
+    },
+
+    async getByModel(modelId: number): Promise<ApiResponse<Sheet[]>> {
+      return apiCall<Sheet[]>(`/api/models/${modelId}/sheets`)
     }
   }
 

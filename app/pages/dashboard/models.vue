@@ -208,6 +208,7 @@
           <table class="table table-hover">
             <thead>
               <tr>
+                <th style="width: 50px;"></th>
                 <th>{{ t('table.id') }}</th>
                 <th>{{ t('table.code') }}</th>
                 <th>{{ t('table.name') }}</th>
@@ -217,51 +218,131 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="model in paginatedModels" :key="model.id">
-                <td>
-                  <span class="badge bg-light text-dark">{{ model.id }}</span>
-                </td>
-                <td>
-                  <strong>{{ model.code }}</strong>
-                </td>
-                <td>{{ model.name }}</td>
-                <td>
-                  <span class="badge" :class="getTypeClass(model.modelType)">
-                    <i :class="getTypeIcon(model.modelType)" class="me-1"></i>
-                    {{ t(`types.${model.modelType.toLowerCase()}`) }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge bg-secondary">
-                    {{ t(`instances.${model.instanceType.toLowerCase()}`) }}
-                  </span>
-                </td>
-                <td>
-                  <div class="btn-group btn-group-sm" role="group">
+              <template v-for="model in paginatedModels" :key="model.id">
+                <!-- Riga principale del modello -->
+                <tr>
+                  <td>
                     <button 
-                      class="btn btn-outline-primary"
-                      @click="viewModel(model)"
-                      :title="t('common.view')"
+                      class="btn btn-sm btn-link p-0"
+                      @click="toggleRowExpansion(model)"
+                      :title="isRowExpanded(model.id || 0) ? t('table.collapse') : t('table.expand')"
                     >
-                      <i class="bi bi-eye"></i>
+                      <i 
+                        class="bi" 
+                        :class="isRowExpanded(model.id || 0) ? 'bi-chevron-down' : 'bi-chevron-right'"
+                      ></i>
                     </button>
-                    <button 
-                      class="btn btn-outline-warning"
-                      @click="editModel(model)"
-                      :title="t('common.edit')"
-                    >
-                      <i class="bi bi-pencil"></i>
-                    </button>
-                    <button 
-                      class="btn btn-outline-danger"
-                      @click="confirmDelete(model)"
-                      :title="t('common.delete')"
-                    >
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark">{{ model.id }}</span>
+                  </td>
+                  <td>
+                    <strong>{{ model.code }}</strong>
+                  </td>
+                  <td>{{ model.name }}</td>
+                  <td>
+                    <span class="badge" :class="getTypeClass(model.modelType)">
+                      <i :class="getTypeIcon(model.modelType)" class="me-1"></i>
+                      {{ t(`types.${model.modelType.toLowerCase()}`) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge bg-secondary">
+                      {{ t(`instances.${model.instanceType.toLowerCase()}`) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button 
+                        class="btn btn-outline-primary"
+                        @click="viewModel(model)"
+                        :title="t('common.view')"
+                      >
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button 
+                        class="btn btn-outline-warning"
+                        @click="editModel(model)"
+                        :title="t('common.edit')"
+                      >
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button 
+                        class="btn btn-outline-danger"
+                        @click="confirmDelete(model)"
+                        :title="t('common.delete')"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- Riga espandibile per i sheet associati -->
+                <tr v-if="isRowExpanded(model.id || 0)" class="expanded-row">
+                  <td></td>
+                  <td colspan="6" class="p-0">
+                    <div class="sheets-container">
+                      <div class="sheets-header">
+                        <h6 class="mb-2">
+                          <i class="bi bi-file-earmark-text me-2"></i>
+                          {{ t('table.associatedSheets') }}
+                          <span class="badge bg-secondary ms-2">
+                            {{ getSheetsForModel(model.id || 0).length }}
+                          </span>
+                        </h6>
+                      </div>
+                      
+                      <div v-if="getSheetsForModel(model.id || 0).length === 0" class="text-muted p-3">
+                        {{ t('table.noSheets') }}
+                      </div>
+                      
+                      <div v-else class="table-responsive">
+                        <table class="table table-sm mb-0">
+                          <thead class="table-light">
+                            <tr>
+                              <th>{{ t('sheets.table.id') }}</th>
+                              <th>{{ t('sheets.table.code') }}</th>
+                              <th>{{ t('sheets.table.name') }}</th>
+                              <th>{{ t('sheets.table.format') }}</th>
+                              <th>{{ t('sheets.table.relation') }}</th>
+                              <th>{{ t('sheets.table.creoId') }}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="sheet in getSheetsForModel(model.id || 0)" :key="sheet.id">
+                              <td>
+                                <span class="badge bg-light text-dark">{{ sheet.id }}</span>
+                              </td>
+                              <td>
+                                <code class="text-primary">{{ sheet.code }}</code>
+                              </td>
+                              <td>{{ sheet.name }}</td>
+                              <td>
+                                <span class="badge bg-info">{{ sheet.formatType }}</span>
+                              </td>
+                              <td>
+                                <span v-if="model.modelType === 'DRAWING'" class="badge bg-success">
+                                  <i class="bi bi-file-earmark-text me-1"></i>
+                                  {{ t('sheets.relation.hasDrawing') }}
+                                </span>
+                                <span v-else class="badge bg-warning">
+                                  <i class="bi bi-link me-1"></i>
+                                  {{ t('sheets.relation.references') }}
+                                </span>
+                              </td>
+                              <td>
+                                <code v-if="sheet.creoId" class="text-muted">{{ sheet.creoId }}</code>
+                                <span v-else class="text-muted">-</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -551,12 +632,16 @@ definePageMeta({
 
 
 // Dati reattivi
-const { models } = useApi()
+const { models, sheets } = useApi()
 const allModels = ref<Model[]>([])
 const filteredModels = ref<Model[]>([])
 const modelCount = ref<number | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+// Gestione collapse e sheet associati
+const expandedRows = ref<Set<number>>(new Set())
+const modelSheets = ref<Record<number, any[]>>({})
 
 // Debug configurazione API
 const config = useRuntimeConfig()
@@ -632,6 +717,91 @@ const getTypeIcon = (type: string): string => {
     'DRAWING': 'bi-file-earmark-text'
   }
   return icons[type] || 'bi-box-seam'
+}
+
+// Metodi per gestire i collapse e sheet
+const toggleRowExpansion = async (model: Model): Promise<void> => {
+  if (!model.id) return
+  
+  const modelId = model.id
+  
+  if (expandedRows.value.has(modelId)) {
+    // Chiudi la riga
+    expandedRows.value.delete(modelId)
+    console.log('[Models] Row collapsed for model:', model.code)
+  } else {
+    // Apri la riga e carica i sheet se non già caricati
+    expandedRows.value.add(modelId)
+    console.log('[Models] Row expanded for model:', model.code)
+    
+    if (!modelSheets.value[modelId]) {
+      await loadSheetsForModel(model)
+    }
+  }
+}
+
+const loadSheetsForModel = async (model: Model): Promise<void> => {
+  if (!model.id) return
+  
+  const modelId = model.id
+  console.log('[Models] Loading sheets for model:', model.code, 'type:', model.modelType)
+  
+  try {
+    let response: any
+    
+    if (model.modelType === 'DRAWING') {
+      // Per modelli DRAWING: usa l'endpoint specifico per cercare sheet che hanno questo drawing
+      console.log('[Models] Calling API: GET /api/sheets?drawingId.equals=' + model.id)
+      response = await sheets.getByDrawing(model.id)
+      
+      if (response.success) {
+        modelSheets.value[modelId] = response.data || []
+        console.log('[Models] Found', response.data?.length || 0, 'sheets with drawing:', model.code)
+      } else {
+        console.error('[Models] Failed to load sheets by drawing:', response.error)
+        modelSheets.value[modelId] = []
+      }
+    } else if (model.modelType === 'PART' || model.modelType === 'ASSEMBLY') {
+      // Per modelli PART/ASSEMBLY: usa l'endpoint specifico per sheet associati
+      console.log('[Models] Calling API: GET /api/models/' + model.id + '/sheets')
+      response = await sheets.getByModel(model.id)
+      
+      if (response.success) {
+        modelSheets.value[modelId] = response.data || []
+        console.log('[Models] Found', response.data?.length || 0, 'sheets referencing part/assembly:', model.code)
+      } else {
+        console.error('[Models] Failed to load sheets by model:', response.error)
+        // Fallback: se l'endpoint specifico non esiste, usa logica generica
+        console.log('[Models] Fallback: using generic sheet search')
+        const allSheetsResponse = await sheets.getAll()
+        if (allSheetsResponse.success) {
+          const associatedSheets = allSheetsResponse.data?.filter(sheet => 
+            sheet.code.includes(model.code) || 
+            sheet.name.toLowerCase().includes(model.code.toLowerCase())
+          ) || []
+          modelSheets.value[modelId] = associatedSheets
+          console.log('[Models] Fallback found', associatedSheets.length, 'sheets for:', model.code)
+        } else {
+          modelSheets.value[modelId] = []
+        }
+      }
+    } else {
+      // Altri tipi di modello non hanno sheet associati
+      console.log('[Models] Model type', model.modelType, 'does not have associated sheets')
+      modelSheets.value[modelId] = []
+    }
+  } catch (err) {
+    console.error('[Models] Error loading sheets for model:', err)
+    modelSheets.value[modelId] = []
+  }
+}
+
+const isRowExpanded = (modelId: number): boolean => {
+  return expandedRows.value.has(modelId)
+}
+
+const getSheetsForModel = (modelId: number): any[] => {
+  return modelSheets.value[modelId] || []
 }
 
 // Metodi per il caricamento dati
@@ -901,7 +1071,7 @@ const confirmDelete = async (model: Model): Promise<void> => {
   
   loading.value = true
   try {
-    const response = await models.delete(model.id!)
+    const response = await models.delete(model.id || 0)
     if (response.success) {
       console.log('[Models] Modello eliminato, aggiornamento dati...')
       await loadModels() // Ricarica la lista
@@ -1000,6 +1170,50 @@ useHead({
 
 .spin-animation {
   animation: spin 1s linear infinite;
+}
+
+/* Stili per le righe espandibili */
+.expanded-row {
+  background-color: var(--bs-light);
+}
+
+.sheets-container {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-left: 4px solid var(--bs-primary);
+  margin: 0.5rem 0;
+}
+
+.sheets-header {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.sheets-container .table {
+  background-color: white;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.sheets-container .table th {
+  background-color: #e9ecef;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.sheets-container .table td {
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+/* Animazione smooth per l'espansione */
+.table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 @media (max-width: 768px) {

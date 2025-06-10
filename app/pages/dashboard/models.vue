@@ -628,7 +628,12 @@ const validateForm = (): boolean => {
 }
 
 const saveModel = async (): Promise<void> => {
+  console.log('[Models] Save model started')
+  console.log('[Models] editingModel.value:', editingModel.value)
+  console.log('[Models] formData.value:', formData.value)
+  
   if (!validateForm()) {
+    console.log('[Models] Validation failed')
     return
   }
   
@@ -638,11 +643,20 @@ const saveModel = async (): Promise<void> => {
     let response: ApiResponse<Model>
     
     if (editingModel.value) {
-      // Aggiornamento
-      response = await models.update(editingModel.value.id!, formData.value)
+      // Aggiornamento - Include l'ID nel body per JHipster
+      const updateData = {
+        ...formData.value,
+        id: editingModel.value.id
+      }
+      console.log('[Models] Updating model with ID:', editingModel.value.id)
+      console.log('[Models] Update data (with ID):', updateData)
+      response = await models.update(editingModel.value.id!, updateData)
+      console.log('[Models] Update response:', response)
     } else {
       // Creazione
+      console.log('[Models] Creating new model:', formData.value)
       response = await models.create(formData.value)
+      console.log('[Models] Create response:', response)
     }
     
     if (response.success) {
@@ -654,14 +668,17 @@ const saveModel = async (): Promise<void> => {
         ? t('messages.updateSuccess')
         : t('messages.createSuccess')
       
-      console.log(message)
+      console.log('[Models] Success message:', message)
     } else {
+      console.error('[Models] Save failed:', response.error)
       error.value = response.error || 'Errore nel salvataggio'
     }
   } catch (err) {
+    console.error('[Models] Save exception:', err)
     error.value = err instanceof Error ? err.message : 'Errore nel salvataggio'
   } finally {
     saving.value = false
+    console.log('[Models] Save model finished')
   }
 }
 
@@ -671,6 +688,7 @@ const viewModel = (model: Model): void => {
 }
 
 const editModel = (model: Model): void => {
+  console.log('[Models] Edit model clicked:', model)
   editingModel.value = model
   formData.value = {
     code: model.code,
@@ -678,6 +696,8 @@ const editModel = (model: Model): void => {
     modelType: model.modelType,
     instanceType: model.instanceType
   }
+  console.log('[Models] Form data popolato:', formData.value)
+  console.log('[Models] Editing model:', editingModel.value)
   showCreateModal.value = true
 }
 

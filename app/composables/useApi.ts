@@ -5,8 +5,14 @@
  * @version 1.0.0
  */
 
-import type { Model } from '~/types/model'
-import type { Sheet } from '~/types/sheet'
+import type { IModel } from '~/model/model.model'
+import type { ISheet } from '~/model/sheet.model'
+import type { IFormat } from '~/model/format.model'
+
+// Backward compatibility aliases
+export type Model = IModel
+export type Sheet = ISheet
+export type Format = IFormat
 
 export interface ApiResponse<T = any> {
   success: boolean
@@ -29,17 +35,8 @@ export interface User {
   langKey?: string
 }
 
-// Extended Sheet interface for API with additional fields
-export interface SheetWithRelations extends Sheet {
-  creoId?: string
-  drawingId?: number  // ID del Model di tipo DRAWING
-  modelIds?: number[]  // IDs dei modelli PART/ASSEMBLY
-  balloon?: string  // Campo balloon
-  
-  // For display purposes only (from backend response)
-  drawing?: Model  // Populated by backend for display
-  models?: Model[]  // Populated by backend for display
-}
+// Use the backend Sheet interface directly - it has everything we need
+export type SheetWithRelations = ISheet
 
 export interface SheetStatistics {
   totalCount: number
@@ -53,10 +50,34 @@ export const useApi = () => {
   const baseURL = config.public.apiBase
   const { logApiCall } = useDebug()
 
-  // Gestione token di autenticazione - Legge da localStorage come fa auth store
+  // Gestione token di autenticazione - Prima usa auth store, poi fallback localStorage
   const getAuthToken = (): string | null => {
+    // Try auth store first
+    try {
+      const { getToken } = useAuth()
+      const token = getToken()
+      if (token) {
+        console.log('[API] Token found from auth store')
+        return token
+      }
+    } catch (err) {
+      console.log('[API] Auth store not available, trying localStorage')
+    }
+    
+    // Fallback to localStorage
     if (process.client) {
-      return localStorage.getItem('auth_token')
+      const possibleKeys = ['test_token', 'auth_token', 'authenticationToken', 'jhi-authenticationToken', 'token', 'jwt-token']
+      
+      for (const key of possibleKeys) {
+        const token = localStorage.getItem(key)
+        if (token) {
+          console.log(`[API] Token found in localStorage with key: ${key}`)
+          return token
+        }
+      }
+      
+      console.log('[API] No token found anywhere')
+      return null
     }
     return null
   }
@@ -290,6 +311,7 @@ export const useApi = () => {
   // ===== GESTIONE FOGLI =====
   const sheets = {
     async getAll(): Promise<ApiResponse<SheetWithRelations[]>> {
+      // Use the standard endpoint that works
       return apiCall<SheetWithRelations[]>('/api/sheets')
     },
 

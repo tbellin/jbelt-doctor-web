@@ -66,8 +66,14 @@
                   required
                 >
                   <option value="">{{ t('common:select') }}</option>
-                  <option v-for="format in availableFormats" :key="format" :value="format">
-                    {{ format }}
+                  <!-- Use format objects if available, fallback to string array -->
+                  <option 
+                    v-for="format in (availableFormatObjects?.length ? availableFormatObjects : availableFormats.map(f => ({ formatType: f, name: f })))" 
+                    :key="format.id || format.formatType" 
+                    :value="format.formatType"
+                  >
+                    {{ format.name || format.formatType }} 
+                    <span v-if="format.dimX && format.dimY" class="text-muted">({{ format.dimX }}x{{ format.dimY }})</span>
                   </option>
                 </select>
                 <div v-if="errors.formatType" class="invalid-feedback">
@@ -103,7 +109,7 @@
                 >
                   <option value="">{{ t('sheets:form.noDrawing') }}</option>
                   <option v-for="drawing in availableDrawings" :key="drawing.id" :value="drawing.id">
-                    {{ drawing.code }} - {{ drawing.name }}
+                    [{{ drawing.modelType }}] {{ drawing.code }} - {{ drawing.name }}{{ drawing.creoId ? ` (${drawing.creoId})` : '' }}
                   </option>
                 </select>
                 <div v-if="errors.drawingId" class="invalid-feedback">
@@ -154,10 +160,12 @@
                         @change="toggleModel"
                       >
                       <label :for="`model-${model.id}`" class="form-check-label">
-                        <span class="badge me-2" :class="model.modelType === 'PART' ? 'bg-success' : 'bg-info'">
+                        <span class="badge me-2" :class="getModelBadgeClass(model.modelType)">
                           {{ model.modelType }}
                         </span>
                         <strong>{{ model.code }}</strong> - {{ model.name }}
+                        <span v-if="model.creoId" class="text-muted ms-1">({{ model.creoId }})</span>
+                        <span v-if="model.instanceType" class="badge bg-secondary ms-1">{{ model.instanceType }}</span>
                       </label>
                     </div>
                     
@@ -214,8 +222,13 @@
 
 <script setup lang="ts">
 import type { SheetWithRelations } from '~/composables/useApi'
-import type { Model } from '~/types/model'
+import type { IModel } from '~/model/model.model'
+import type { IFormat } from '~/model/format.model'
 import { useI18n } from '~/composables/useI18n'
+
+// Backward compatibility alias
+type Model = IModel
+type Format = IFormat
 
 const { t } = useI18n()
 
@@ -224,9 +237,12 @@ interface FormData {
   name: string
   formatType: string
   creoId: string
+  // Legacy fields for backward compatibility
   drawingId: string
   modelIds: string[]
   balloon: string
+  // New integrated fields
+  formatId?: string
 }
 
 interface Props {
@@ -235,6 +251,7 @@ interface Props {
   formData: FormData
   errors: Record<string, string>
   availableFormats: string[]
+  availableFormatObjects: Format[]  // Full format objects
   availableDrawings: Model[]
   availableModels: Model[]  // Modelli PART/ASSEMBLY
   saving?: boolean
@@ -313,6 +330,19 @@ const removeModel = (modelId: string) => {
 const getModelDisplay = (modelId: string): string => {
   const model = props.availableModels.find(m => m.id?.toString() === modelId)
   return model ? `${model.code} (${model.modelType})` : `ID: ${modelId}`
+}
+
+const getModelBadgeClass = (modelType: string | undefined): string => {
+  switch (modelType) {
+    case 'PART':
+      return 'bg-primary'
+    case 'ASSEMBLY':
+      return 'bg-warning text-dark'
+    case 'DRAWING':
+      return 'bg-success'
+    default:
+      return 'bg-secondary'
+  }
 }
 </script>
 

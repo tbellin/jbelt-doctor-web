@@ -214,65 +214,7 @@ const toggleTableCollapse = () => {
   isTableCollapsed.value = !isTableCollapsed.value
 }
 
-const getDrawingInfo = (drawing: Model | number | undefined): string => {
-  console.log('[SheetsTable] getDrawingInfo called with:', drawing, 'type:', typeof drawing)
-  
-  if (!drawing) {
-    console.log('[SheetsTable] No drawing found')
-    return ''
-  }
-  
-  if (typeof drawing === 'number') {
-    console.log('[SheetsTable] Drawing is number:', drawing)
-    return `ID: ${drawing}`
-  }
-  
-  if (typeof drawing === 'object') {
-    console.log('[SheetsTable] Drawing is object:', drawing)
-    
-    // Prova diversi campi possibili
-    if (drawing.code) {
-      console.log('[SheetsTable] Found code:', drawing.code)
-      return drawing.code
-    }
-    
-    if (drawing.id) {
-      console.log('[SheetsTable] Found ID in object:', drawing.id)
-      return `ID: ${drawing.id}`
-    }
-    
-    // Se è un oggetto con struttura diversa
-    console.log('[SheetsTable] Object keys:', Object.keys(drawing))
-    return `Drawing: ${drawing.id || 'Unknown'}`
-  }
-  
-  console.log('[SheetsTable] Unexpected drawing type:', typeof drawing)
-  return ''
-}
-
-// Helper functions per i modelli
-const getModelInfo = (model: Model | number | undefined): string => {
-  if (!model) return ''
-  
-  if (typeof model === 'number') {
-    return `ID: ${model}`
-  }
-  
-  if (typeof model === 'object') {
-    // Priorità: code > name > id
-    if (model.code) {
-      return model.code
-    }
-    if (model.name) {
-      return model.name
-    }
-    if (model.id) {
-      return `ID: ${model.id}`
-    }
-  }
-  
-  return String(model)
-}
+// Helper functions removed as we now display data directly in template
 
 const getModelBadgeClass = (model: Model | number | undefined): string => {
   if (!model || typeof model === 'number') {
@@ -349,7 +291,7 @@ const getModelIcon = (model: Model | number | undefined): string => {
 
 /* Stili per la colonna modelli */
 .models-list {
-  max-width: 200px;
+  max-width: 250px;
 }
 
 .models-list .badge {
@@ -359,6 +301,17 @@ const getModelIcon = (model: Model | number | undefined): string => {
   overflow: hidden;
   white-space: nowrap;
   display: inline-block;
+}
+
+.models-list .badge.smaller {
+  font-size: 0.65em;
+  padding: 0.2em 0.4em;
+}
+
+/* Font monospace per gli ID Creo */
+.font-monospace {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85em;
 }
 
 /* Stile per il pulsante di collapse */

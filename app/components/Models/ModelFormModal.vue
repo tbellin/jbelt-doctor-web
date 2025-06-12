@@ -124,10 +124,10 @@ import { useI18n } from '~/composables/useI18n'
 const { t } = useI18n()
 
 interface FormData {
-  code: string
-  name: string
-  modelType: string
-  instanceType: string
+  code: string | null
+  name: string | null
+  modelType: string | null
+  instanceType: string | null
 }
 
 interface Props {

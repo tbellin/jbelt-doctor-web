@@ -1,96 +1,266 @@
 <!--
-  Pagina Dashboard per la gestione degli sheet - Versione Modulare
-  Utilizza componenti separati per una migliore manutenibilità
-  
-  @version 1.0.0 - Modular Architecture
+  Pagina Sheet Semplificata - SENZA LOOP INFINITI
+  Versione minimalista per risolvere il problema del loop
 -->
 <template>
   <div class="sheets-dashboard">
-    <!-- Header della pagina -->
-    <SheetsPageHeader 
-      :loading="loading"
-      @refresh="refreshData"
-      @create="showCreateModal = true"
-    />
+    <!-- Simple Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="h3 mb-0">
+            <i class="bi bi-file-earmark-text me-2"></i>
+            {{ t('sheets:title') }}
+          </h1>
+          <div class="btn-group">
+            <button class="btn btn-outline-secondary" @click="handleRefresh" :disabled="loading">
+              <i class="bi bi-arrow-clockwise me-2"></i>
+              Refresh
+            </button>
+            <button class="btn btn-primary" @click="showCreateModal = true" :disabled="loading">
+              <i class="bi bi-plus-lg me-2"></i>
+              New Sheet
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Cards statistiche -->
-    <SheetsStatsCards 
-      :sheets="allSheets"
-      :total-count="sheetCount"
-    />
+    <!-- Simple Stats -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-md-3">
+                <h5 class="text-primary">{{ sheets.length }}</h5>
+                <p class="mb-0">Total Sheets</p>
+              </div>
+              <div class="col-md-3">
+                <h5 class="text-success">{{ sheetsWithDrawing }}</h5>
+                <p class="mb-0">With Drawing</p>
+              </div>
+              <div class="col-md-3">
+                <h5 class="text-warning">{{ sheetsWithoutDrawing }}</h5>
+                <p class="mb-0">Without Drawing</p>
+              </div>
+              <div class="col-md-3">
+                <h5 class="text-info">{{ formatCount }}</h5>
+                <p class="mb-0">Formats</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Filtri e ricerca -->
-    <SheetsSearchFilters 
-      v-model:search-code="searchCode"
-      v-model:search-name="searchName"
-      v-model:selected-format="selectedFormat"
-      v-model:selected-drawing="selectedDrawing"
-      :available-formats="availableFormats"
-      :loading="loading"
-      @search="performSearchByCode"
-      @search-by-name="performSearchByName"
-      @filters-changed="applyFilters"
-      @clear-filters="clearFilters"
-    />
+    <!-- Simple Table -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Sheets List ({{ sheets.length }})</h5>
+      </div>
+      <div class="card-body">
+        <!-- Loading State -->
+        <div v-if="loading" class="text-center py-4">
+          <div class="spinner-border text-primary"></div>
+          <p class="mt-2">Loading sheets...</p>
+        </div>
 
-    <!-- Tabella sheet -->
-    <SheetsTable 
-      :sheets="paginatedSheets"
-      :loading="loading"
-      :error="error"
-      :current-page="currentPage"
-      :total-pages="totalPages"
-      :visible-pages="visiblePages"
-      @view="viewSheet"
-      @edit="editSheet"
-      @delete="confirmDelete"
-      @retry="loadSheets"
-      @create-first="showCreateModal = true"
-      @change-page="changePage"
-    />
-
-    <!-- Modal per creazione/modifica sheet -->
-    <SheetFormModal 
-      :show="showCreateModal"
-      :editing-sheet="editingSheet"
-      v-model:form-data="formData"
-      :errors="formErrors"
-      :available-formats="availableFormats"
-      :available-drawings="availableDrawings"
-      :available-models="availableModels"
-      :saving="saving"
-      @close="closeModal"
-      @save="saveSheet"
-    />
-
-    <!-- Modal per visualizzazione JSON -->
-    <SheetViewModal 
-      :show="showViewModal"
-      :sheet="viewingSheet"
-      @close="closeViewModal"
-      @copy="copySheetJson"
-      @download="downloadSheetJson"
-    />
-
-    <!-- Debug Panel collassabile - solo se debug è attivo -->
-    <div v-if="isDebugMode" class="mt-4">
-      <div class="card">
-        <div class="card-header">
-          <button 
-            class="btn btn-link w-100 text-start p-0 d-flex justify-content-between align-items-center"
-            type="button" 
-            @click="showDebugPanel = !showDebugPanel"
-            :aria-expanded="showDebugPanel"
-          >
-            <span>
-              <i class="bi bi-bug me-2"></i>
-              Debug API Panel - Sheets
-            </span>
-            <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+        <!-- Error State -->
+        <div v-else-if="error" class="alert alert-danger">
+          <strong>Error:</strong> {{ error }}
+          <button class="btn btn-sm btn-outline-danger ms-2" @click="handleRefresh">
+            Retry
           </button>
         </div>
-        <div v-show="showDebugPanel" class="card-body p-0">
-          <ApiDebugPanel />
+
+        <!-- Empty State -->
+        <div v-else-if="!sheets.length" class="text-center py-5">
+          <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+          <h4 class="mt-3">No sheets found</h4>
+          <p class="text-muted">Start by creating your first sheet.</p>
+          <button class="btn btn-primary" @click="showCreateModal = true">
+            <i class="bi bi-plus-lg me-2"></i>
+            Create First Sheet
+          </button>
+        </div>
+
+        <!-- Table with Data -->
+        <div v-else class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Format</th>
+                <th>Drawing</th>
+                <th>Models</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="sheet in sheets" :key="sheet.id">
+                <td>{{ sheet.id }}</td>
+                <td>{{ sheet.code || '-' }}</td>
+                <td>{{ sheet.name || '-' }}</td>
+                <td>
+                  <span class="badge bg-info">{{ sheet.formatType || '-' }}</span>
+                </td>
+                <td>
+                  <span v-if="sheet.drawing" class="badge bg-success">
+                    {{ sheet.drawing.name }}
+                  </span>
+                  <span v-else class="text-muted">-</span>
+                </td>
+                <td>
+                  <span v-if="sheet.models && sheet.models.length" class="badge bg-primary">
+                    {{ sheet.models.length }} models
+                  </span>
+                  <span v-else class="text-muted">-</span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" @click="viewSheet(sheet)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary me-1" @click="editSheet(sheet)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" @click="deleteSheet(sheet)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <div v-if="showCreateModal" class="modal show d-block" style="background-color: rgba(0,0,0,0.5)">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>{{ editingSheet ? 'Edit Sheet' : 'Create Sheet' }}</h5>
+            <button class="btn-close" @click="closeModal"></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="saveSheet">
+              <div class="mb-3">
+                <label class="form-label">Code</label>
+                <input v-model="formData.code" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input v-model="formData.name" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Format Type</label>
+                <select v-model="formData.formatType" class="form-select" required>
+                  <option value="">Select Format</option>
+                  <option value="A0">A0</option>
+                  <option value="A1">A1</option>
+                  <option value="A2">A2</option>
+                  <option value="A3V">A3V</option>
+                  <option value="A3O">A3O</option>
+                  <option value="A4V">A4V</option>
+                  <option value="A4O">A4O</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Creo ID</label>
+                <input v-model="formData.creoId" class="form-control">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Drawing (Optional)</label>
+                <select v-model="formData.drawingId" class="form-select">
+                  <option value="">No Drawing</option>
+                  <option v-for="drawing in availableDrawings" :key="drawing.id" :value="drawing.id">
+                    [DRAWING] {{ drawing.code }} - {{ drawing.name }}{{ drawing.creoId ? ` (${drawing.creoId})` : '' }}
+                  </option>
+                </select>
+                <div class="form-text">
+                  Select a DRAWING model to associate with this sheet
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="closeModal">Cancel</button>
+            <button class="btn btn-primary" @click="saveSheet" :disabled="saving">
+              {{ saving ? 'Saving...' : (editingSheet ? 'Update' : 'Create') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug Panel (only in debug mode) -->
+    <div v-if="isDebugMode" class="mt-4">
+      <div class="card border-warning">
+        <div class="card-header bg-warning bg-opacity-10">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-bug me-2"></i>
+              Debug Panel - Sheets
+            </span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary" @click="testBackend" :disabled="loading">
+                <i class="bi bi-wifi"></i> Test Backend
+              </button>
+              <button class="btn btn-outline-success" @click="forceLogin" :disabled="loading">
+                <i class="bi bi-key"></i> Force Login
+              </button>
+              <button class="btn btn-outline-info" @click="showDebugPanel = !showDebugPanel">
+                <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row small">
+            <div class="col-md-6">
+              <strong>Auth Status:</strong> 
+              <span :class="isAuthenticated ? 'text-success' : 'text-danger'">
+                {{ isAuthenticated ? 'Authenticated' : 'Not authenticated' }}
+              </span><br>
+              <strong>User:</strong> {{ user?.login || 'None' }}<br>
+              <strong>Backend:</strong> <code>{{ useRuntimeConfig().public.apiBase }}</code><br>
+              <strong>Sheets Count:</strong> {{ sheets.length }}<br>
+              <strong>Drawings Count:</strong> {{ availableDrawings.length }}<br>
+              <strong>Loading:</strong> {{ loading }}
+            </div>
+            <div class="col-md-6">
+              <div v-if="error" class="text-danger">
+                <strong>Error:</strong> {{ error }}
+              </div>
+              <div v-if="debugInfo" class="text-info">
+                <strong>Last Test:</strong> {{ debugInfo }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-show="showDebugPanel" class="card-body border-top">
+          <h6>Loaded Data:</h6>
+          <div class="row">
+            <div class="col-6">
+              <strong>Sheets ({{ sheets.length }}):</strong>
+              <ul class="list-unstyled">
+                <li v-for="sheet in sheets.slice(0, 3)" :key="sheet.id" class="small">
+                  {{ sheet.id }}: {{ sheet.name }} ({{ sheet.formatType }})
+                </li>
+              </ul>
+            </div>
+            <div class="col-6">
+              <strong>Drawings ({{ availableDrawings.length }}):</strong>
+              <ul class="list-unstyled">
+                <li v-for="drawing in availableDrawings.slice(0, 3)" :key="drawing.id" class="small">
+                  {{ drawing.id }}: {{ drawing.name }}
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -98,574 +268,281 @@
 </template>
 
 <script setup lang="ts">
-// Import dei componenti modulari
-import SheetsPageHeader from '~/components/Sheets/SheetsPageHeader.vue'
-import SheetsStatsCards from '~/components/Sheets/SheetsStatsCards.vue'
-import SheetsSearchFilters from '~/components/Sheets/SheetsSearchFilters.vue'
-import SheetsTable from '~/components/Sheets/SheetsTable.vue'
-import SheetFormModal from '~/components/Sheets/SheetFormModal.vue'
-import SheetViewModal from '~/components/Sheets/SheetViewModal.vue'
-import ApiDebugPanel from '~/components/Debug/ApiDebugPanel.vue'
-
-// Import dei composables e tipi
-import { useApi, type SheetWithRelations, type ApiResponse } from '~/composables/useApi'
-import type { Model } from '~/types/model'
-import { useI18n } from '~/composables/useI18n'
+import { ref, computed, onMounted } from 'vue'
+import { useApi, type SheetWithRelations } from '~/composables/useApi'
+import type { IModel } from '~/model/model.model'
 import { useAuth } from '~/composables/useAuth'
+import { useI18n } from '~/composables/useI18n'
 import { useDebug } from '~/composables/useDebug'
-import { getAvailableFormats } from '~/utils/formats'
+import { testBackendConnection } from '~/utils/testBackend'
 
-const { t, loadNamespace } = useI18n()
-
-// Configurazione della pagina
+// Page setup
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth', 'i18n']
+  middleware: ['auth']
 })
 
-// Dati reattivi
-const { sheets, models } = useApi()
-const allSheets = ref<SheetWithRelations[]>([])
-const filteredSheets = ref<SheetWithRelations[]>([])
-const sheetCount = ref<number | null>(null)
+const { t } = useI18n()
+const { sheets: sheetsApi, models: modelsApi } = useApi()
+const { isAuthenticated, user, login } = useAuth()
+const { isDebugMode } = useDebug()
+
+// Simple reactive state
+const sheets = ref<SheetWithRelations[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-// Filtri e ricerca
-const searchCode = ref('')
-const searchName = ref('')
-const selectedFormat = ref('')
-const selectedDrawing = ref('')
-const availableFormats = ref<string[]>([])
-const availableDrawings = ref<Model[]>([])
-const availableModels = ref<Model[]>([])  // Per PART/ASSEMBLY
+// Models for dropdown
+const availableDrawings = ref<IModel[]>([])
 
-// Paginazione
-const currentPage = ref(1)
-const itemsPerPage = 20
-
-// Modal e form
+// Modal state
 const showCreateModal = ref(false)
-const showViewModal = ref(false)
-const viewingSheet = ref<SheetWithRelations | null>(null)
 const editingSheet = ref<SheetWithRelations | null>(null)
 const saving = ref(false)
+
+// Debug state
+const debugInfo = ref<string>('')
+const showDebugPanel = ref(false)
+
+// Form data
 const formData = ref({
   code: '',
   name: '',
   formatType: '',
   creoId: '',
-  drawingId: '',
-  modelIds: [] as string[],
-  balloon: ''
-})
-const formErrors = ref<Record<string, string>>({})
-
-// Debug panel
-const { isDebugMode } = useDebug()
-const showDebugPanel = ref(false)
-
-// Computed properties
-const paginatedSheets = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return filteredSheets.value.slice(start, end)
+  drawingId: ''
 })
 
-const totalPages = computed(() => {
-  return Math.ceil(filteredSheets.value.length / itemsPerPage)
+// Simple computed stats
+const sheetsWithDrawing = computed(() => 
+  sheets.value.filter(sheet => sheet.drawing).length
+)
+
+const sheetsWithoutDrawing = computed(() => 
+  sheets.value.filter(sheet => !sheet.drawing).length
+)
+
+const formatCount = computed(() => {
+  const formats = new Set(sheets.value.map(sheet => sheet.formatType).filter(f => f))
+  return formats.size
 })
 
-const visiblePages = computed(() => {
-  const pages = []
-  const start = Math.max(1, currentPage.value - 2)
-  const end = Math.min(totalPages.value, currentPage.value + 2)
-  
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
+// Load functions
+const loadDrawings = async (): Promise<void> => {
+  try {
+    console.log('[SimpleSheets] Loading drawings...')
+    const response = await modelsApi.getAll()
+    
+    if (response.success) {
+      const allModels = response.data || []
+      availableDrawings.value = allModels.filter(model => model.modelType === 'DRAWING')
+      console.log('[SimpleSheets] ✅ Loaded', availableDrawings.value.length, 'drawings')
+    } else {
+      console.error('[SimpleSheets] ❌ Failed to load drawings:', response.error)
+    }
+  } catch (err) {
+    console.error('[SimpleSheets] ❌ Exception loading drawings:', err)
   }
-  return pages
-})
-
-// Metodi per il caricamento dati
-const refreshData = async (): Promise<void> => {
-  console.log('[Sheets] Refresh data requested')
-  searchCode.value = ''
-  searchName.value = ''
-  selectedFormat.value = ''
-  selectedDrawing.value = ''
-  currentPage.value = 1
-  
-  await loadSheets()
 }
 
 const loadSheets = async (): Promise<void> => {
-  console.log('[Sheets] Inizio caricamento sheet...')
+  if (loading.value) return // Prevent multiple calls
+  
+  console.log('[SimpleSheets] Loading sheets...')
   loading.value = true
   error.value = null
   
   try {
-    console.log('[Sheets] Chiamata API: GET /api/sheets')
-    const sheetsResponse = await sheets.getAll()
-    console.log('[Sheets] Risposta getAll():', sheetsResponse)
-    
-    if (sheetsResponse.success) {
-      allSheets.value = sheetsResponse.data || []
-      console.log('[Sheets] Sheet caricati:', allSheets.value.length)
-      
-      // Debug: mostra la struttura dei primi sheet per vedere come vengono i campi drawing e models
-      if (allSheets.value.length > 0) {
-        console.log('[Sheets] Sample sheet structure:', allSheets.value[0])
-        allSheets.value.slice(0, 3).forEach((sheet, index) => {
-          console.log(`[Sheets] Sheet ${index + 1} drawing field:`, sheet.drawing, 'type:', typeof sheet.drawing)
-          console.log(`[Sheets] Sheet ${index + 1} models field:`, sheet.models, 'type:', typeof sheet.models)
-          console.log(`[Sheets] Sheet ${index + 1} balloon field:`, sheet.balloon, 'type:', typeof sheet.balloon)
-          if (sheet.models && Array.isArray(sheet.models)) {
-            console.log(`[Sheets] Sheet ${index + 1} models details:`, sheet.models.map(m => ({ id: m?.id, type: typeof m })))
-          }
-        })
-      }
-      
-      extractAvailableFormats()
-      applyFilters()
-    } else {
-      console.error('[Sheets] Errore getAll():', sheetsResponse.error)
-      error.value = sheetsResponse.error || 'Errore nel caricamento degli sheet'
-    }
-    
-    console.log('[Sheets] Chiamata API: GET /api/sheets/count')
-    const countResponse = await sheets.getCount()
-    console.log('[Sheets] Risposta getCount():', countResponse)
-    
-    if (countResponse.success) {
-      sheetCount.value = countResponse.data || 0
-      console.log('[Sheets] Conteggio sheet:', sheetCount.value)
-    } else {
-      console.error('[Sheets] Errore getCount():', countResponse.error)
-    }
-  } catch (err) {
-    console.error('[Sheets] Errore generale:', err)
-    error.value = err instanceof Error ? err.message : 'Errore sconosciuto'
-  } finally {
-    loading.value = false
-    console.log('[Sheets] Fine caricamento sheet')
-  }
-}
-
-const loadDrawings = async (): Promise<void> => {
-  try {
-    console.log('[Sheets] Loading models for drawings and PART/ASSEMBLY...')
-    const response = await models.getAll()
-    console.log('[Sheets] Models API response:', response)
+    const response = await sheetsApi.getAll()
     
     if (response.success) {
-      const allModels = response.data || []
-      console.log('[Sheets] Total models loaded:', allModels.length)
-      
-      availableDrawings.value = allModels.filter(model => model.modelType === 'DRAWING')
-      availableModels.value = allModels.filter(model => model.modelType === 'PART' || model.modelType === 'ASSEMBLY')
-      
-      console.log('[Sheets] Loaded', availableDrawings.value.length, 'drawings')
-      console.log('[Sheets] Loaded', availableModels.value.length, 'models (PART/ASSEMBLY)')
-      
-      if (availableModels.value.length > 0) {
-        console.log('[Sheets] Sample PART/ASSEMBLY models:', availableModels.value.slice(0, 3).map(m => ({ id: m.id, code: m.code, type: m.modelType })))
-      } else {
-        console.warn('[Sheets] No PART/ASSEMBLY models found!')
-      }
+      sheets.value = response.data || []
+      console.log('[SimpleSheets] ✅ Loaded', sheets.value.length, 'sheets')
     } else {
-      console.error('[Sheets] Failed to load models:', response.error)
+      error.value = response.error || 'Failed to load sheets'
+      console.error('[SimpleSheets] ❌ Error:', error.value)
     }
   } catch (err) {
-    console.error('[Sheets] Error loading drawings:', err)
-  }
-}
-
-const extractAvailableFormats = (): void => {
-  const existingFormats = allSheets.value.map(sheet => sheet.formatType)
-  availableFormats.value = getAvailableFormats(existingFormats)
-  
-  console.log('[Sheets] Available formats:', availableFormats.value)
-}
-
-// Metodi per i filtri
-const applyFilters = (): void => {
-  let filtered = [...allSheets.value]
-  
-  if (selectedFormat.value) {
-    filtered = filtered.filter(sheet => sheet.formatType === selectedFormat.value)
-  }
-  
-  if (selectedDrawing.value) {
-    if (selectedDrawing.value === 'WITH_DRAWING') {
-      filtered = filtered.filter(sheet => sheet.drawing)
-    } else if (selectedDrawing.value === 'WITHOUT_DRAWING') {
-      filtered = filtered.filter(sheet => !sheet.drawing)
-    }
-  }
-  
-  filteredSheets.value = filtered
-  currentPage.value = 1
-}
-
-const performSearchByCode = async (): Promise<void> => {
-  if (!searchCode.value.trim()) {
-    applyFilters()
-    return
-  }
-  
-  loading.value = true
-  try {
-    const response = await sheets.searchByCode(searchCode.value.trim())
-    if (response.success) {
-      allSheets.value = response.data || []
-      extractAvailableFormats()
-      applyFilters()
-    } else {
-      error.value = response.error || 'Errore nella ricerca per codice'
-    }
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Errore nella ricerca per codice'
+    error.value = 'Connection error'
+    console.error('[SimpleSheets] ❌ Exception:', err)
   } finally {
     loading.value = false
   }
 }
 
-const performSearchByName = async (): Promise<void> => {
-  if (!searchName.value.trim()) {
-    applyFilters()
-    return
-  }
-  
-  loading.value = true
-  try {
-    const response = await sheets.searchByName(searchName.value.trim())
-    if (response.success) {
-      allSheets.value = response.data || []
-      extractAvailableFormats()
-      applyFilters()
-    } else {
-      error.value = response.error || 'Errore nella ricerca per nome'
-    }
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Errore nella ricerca per nome'
-  } finally {
-    loading.value = false
-  }
+// Event handlers
+const handleRefresh = async () => {
+  console.log('[SimpleSheets] Manual refresh requested')
+  await loadDrawings()
+  await loadSheets()
 }
 
-const clearFilters = (): void => {
-  searchCode.value = ''
-  searchName.value = ''
-  selectedFormat.value = ''
-  selectedDrawing.value = ''
-  loadSheets()
+const viewSheet = (sheet: SheetWithRelations) => {
+  console.log('[SimpleSheets] View sheet:', sheet.id)
+  alert(`View Sheet: ${sheet.name}\nID: ${sheet.id}\nCode: ${sheet.code}`)
 }
 
-// Metodi per la paginazione
-const changePage = (page: number): void => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
-  }
-}
-
-// Metodi per il modal e CRUD
-const closeModal = (): void => {
-  showCreateModal.value = false
-  editingSheet.value = null
-  resetForm()
-}
-
-const resetForm = (): void => {
+const editSheet = (sheet: SheetWithRelations) => {
+  console.log('[SimpleSheets] Edit sheet:', sheet.id)
+  editingSheet.value = sheet
   formData.value = {
-    code: '',
-    name: '',
-    formatType: '',
-    creoId: '',
-    drawingId: '',
-    modelIds: [],
-    balloon: ''
+    code: sheet.code || '',
+    name: sheet.name || '',
+    formatType: sheet.formatType || '',
+    creoId: sheet.creoId || '',
+    drawingId: sheet.drawing?.id?.toString() || ''
   }
-  formErrors.value = {}
+  showCreateModal.value = true
 }
 
-const validateForm = (): boolean => {
-  formErrors.value = {}
+const deleteSheet = async (sheet: SheetWithRelations) => {
+  if (!confirm(`Delete sheet "${sheet.name}"?`)) return
   
-  if (!formData.value.code.trim()) {
-    formErrors.value.code = t('sheets:validation.codeRequired')
+  console.log('[SimpleSheets] Delete sheet:', sheet.id)
+  try {
+    const response = await sheetsApi.delete(sheet.id!)
+    if (response.success) {
+      sheets.value = sheets.value.filter(s => s.id !== sheet.id)
+      console.log('[SimpleSheets] ✅ Sheet deleted')
+    } else {
+      alert('Failed to delete sheet: ' + response.error)
+    }
+  } catch (err) {
+    alert('Error deleting sheet')
+    console.error(err)
   }
-  
-  if (!formData.value.name.trim()) {
-    formErrors.value.name = t('sheets:validation.nameRequired')
-  }
-  
-  if (!formData.value.formatType) {
-    formErrors.value.formatType = t('sheets:validation.formatRequired')
-  }
-  
-  return Object.keys(formErrors.value).length === 0
 }
 
-
-const saveSheet = async (): Promise<void> => {
-  console.log('[Sheets] Save sheet started')
-  
-  if (!validateForm()) {
-    console.log('[Sheets] Validation failed')
+const saveSheet = async () => {
+  if (!formData.value.code || !formData.value.name || !formData.value.formatType) {
+    alert('Please fill required fields')
     return
   }
   
+  console.log('[SimpleSheets] Save sheet:', formData.value)
   saving.value = true
   
   try {
-    // Prepara i dati del sheet
     const sheetData: any = {
       code: formData.value.code,
       name: formData.value.name,
       formatType: formData.value.formatType,
-      creoId: formData.value.creoId || undefined,
-      balloon: formData.value.balloon || undefined
+      creoId: formData.value.creoId || null
     }
     
-    // Gestione modelli associati (PART/ASSEMBLY) - invia oggetti completi
-    console.log('[Sheets] Current formData.modelIds:', formData.value.modelIds)
-    
-    if (formData.value.modelIds.length > 0) {
-      const selectedModels = formData.value.modelIds
-        .map(id => availableModels.value.find(model => model.id?.toString() === id))
-        .filter(Boolean)
-        .map(model => ({
-          id: model!.id,
-          code: model!.code,
-          name: model!.name,
-          modelType: model!.modelType,
-          instanceType: model!.instanceType,
-          file: model!.file,
-          designer: model!.designer,
-          item: model!.item,
-          parent: model!.parent,
-          instance: model!.instance
-          // NON includere sheets per evitare referenze circolari
-        }))
-      
-      sheetData.models = selectedModels
-      console.log('[Sheets] Adding models objects to sheet:', selectedModels.map(m => ({ id: m.id, name: m.name })))
-    }
-    
-    // Gestione del campo drawing - invia oggetto completo
+    // Add drawing if selected
     if (formData.value.drawingId) {
       const selectedDrawing = availableDrawings.value.find(
         drawing => drawing.id?.toString() === formData.value.drawingId
       )
-      
       if (selectedDrawing) {
         sheetData.drawing = {
           id: selectedDrawing.id,
           code: selectedDrawing.code,
           name: selectedDrawing.name,
           modelType: selectedDrawing.modelType,
-          instanceType: selectedDrawing.instanceType,
-          file: selectedDrawing.file,
-          designer: selectedDrawing.designer,
-          item: selectedDrawing.item,
-          parent: selectedDrawing.parent,
-          instance: selectedDrawing.instance
-          // NON includere sheets per evitare referenze circolari
+          instanceType: selectedDrawing.instanceType
         }
-        console.log('[Sheets] Adding drawing object to sheet:', { id: selectedDrawing.id, name: selectedDrawing.name })
       }
     }
     
-    console.log('[Sheets] Final sheet data to send:', sheetData)
-    console.log('[Sheets] JSON string of data to send:', JSON.stringify(sheetData, null, 2))
-    
-    let response: ApiResponse<SheetWithRelations>
-    
+    let response
     if (editingSheet.value) {
-      console.log('[Sheets] Updating sheet with ID:', editingSheet.value.id)
-      // Il backend vuole l'ID nel body oltre che nell'URL
-      // Metti models e drawing PRIMA dell'id
-      const updateData = {
-        ...sheetData,
-        id: editingSheet.value.id
-      }
-      console.log('[Sheets] Update payload (models first, then id):', updateData)
-      response = await sheets.update(editingSheet.value.id!, updateData)
+      response = await sheetsApi.update(editingSheet.value.id!, sheetData)
     } else {
-      console.log('[Sheets] Creating new sheet:', sheetData)
-      response = await sheets.create(sheetData)
+      response = await sheetsApi.create(sheetData)
     }
     
     if (response.success) {
+      console.log('[SimpleSheets] ✅ Sheet saved')
       closeModal()
-      console.log('[Sheets] Operazione completata, aggiornamento dati...')
-      await loadSheets()
-      
-      const message = editingSheet.value 
-        ? t('sheets:messages.updateSuccess')
-        : t('sheets:messages.createSuccess')
-      
-      console.log('[Sheets] Success message:', message)
+      await loadSheets() // Reload to get updated data
     } else {
-      console.error('[Sheets] Save failed:', response.error)
-      error.value = response.error || 'Errore nel salvataggio'
+      alert('Failed to save sheet: ' + response.error)
     }
   } catch (err) {
-    console.error('[Sheets] Save exception:', err)
-    error.value = err instanceof Error ? err.message : 'Errore nel salvataggio'
+    alert('Error saving sheet')
+    console.error(err)
   } finally {
     saving.value = false
   }
 }
 
-const viewSheet = (sheet: SheetWithRelations): void => {
-  console.log('[Sheets] View sheet clicked:', sheet)
-  viewingSheet.value = sheet
-  showViewModal.value = true
-}
-
-const closeViewModal = (): void => {
-  showViewModal.value = false
-  viewingSheet.value = null
-}
-
-const downloadSheetJson = (): void => {
-  if (!viewingSheet.value) return
-  
-  const jsonData = JSON.stringify(viewingSheet.value, null, 2)
-  const blob = new Blob([jsonData], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `sheet-${viewingSheet.value.code}-${viewingSheet.value.id}.json`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
-  console.log('[Sheets] JSON file downloaded for sheet:', viewingSheet.value.code)
-}
-
-const copySheetJson = async (): Promise<void> => {
-  if (!viewingSheet.value) return
-  
-  const jsonData = JSON.stringify(viewingSheet.value, null, 2)
-  try {
-    await navigator.clipboard.writeText(jsonData)
-    console.log('[Sheets] JSON copied to clipboard for sheet:', viewingSheet.value.code)
-  } catch (err) {
-    console.error('[Sheets] Failed to copy JSON to clipboard:', err)
-    const textarea = document.querySelector('#jsonContent') as HTMLTextAreaElement
-    if (textarea) {
-      textarea.select()
-      document.execCommand('copy')
-    }
-  }
-}
-
-const editSheet = (sheet: SheetWithRelations): void => {
-  console.log('[Sheets] Edit sheet clicked:', sheet)
-  console.log('[Sheets] Sheet models field:', sheet.models, 'type:', typeof sheet.models)
-  editingSheet.value = sheet
-  
-  // Estrai gli ID dei modelli dal sheet esistente
-  let modelIds: string[] = []
-  if (sheet.models) {
-    console.log('[Sheets] Processing existing models:', sheet.models)
-    if (Array.isArray(sheet.models)) {
-      modelIds = sheet.models.map(model => {
-        let id = ''
-        if (typeof model === 'number') {
-          id = model.toString()
-        } else if (model && typeof model === 'object' && model.id) {
-          id = model.id.toString()
-        }
-        console.log('[Sheets] Extracted model ID:', id, 'from:', model)
-        return id
-      }).filter(id => id !== '')
-    } else {
-      console.log('[Sheets] Models is not an array:', sheet.models)
-    }
-  } else {
-    console.log('[Sheets] No models found in sheet')
-  }
-  
-  console.log('[Sheets] Final extracted modelIds:', modelIds)
-  
+const closeModal = () => {
+  showCreateModal.value = false
+  editingSheet.value = null
   formData.value = {
-    code: sheet.code,
-    name: sheet.name,
-    formatType: sheet.formatType,
-    creoId: sheet.creoId || '',
-    drawingId: sheet.drawing ? (typeof sheet.drawing === 'number' ? sheet.drawing.toString() : sheet.drawing.id?.toString() || '') : '',
-    modelIds: modelIds,
-    balloon: sheet.balloon || ''
+    code: '',
+    name: '',
+    formatType: '',
+    creoId: '',
+    drawingId: ''
   }
-  
-  console.log('[Sheets] Form data set to:', formData.value)
-  showCreateModal.value = true
 }
 
-const confirmDelete = async (sheet: SheetWithRelations): Promise<void> => {
-  const confirmed = confirm(t('sheets:confirmDelete', { name: sheet.name }))
-  if (!confirmed) return
+// Debug functions (only if debug mode)
+const testBackend = async (): Promise<void> => {
+  if (!isDebugMode) return
   
-  loading.value = true
+  console.log('[SimpleSheets] Testing backend connection...')
+  debugInfo.value = 'Testing backend...'
+  
   try {
-    const response = await sheets.delete(sheet.id || 0)
-    if (response.success) {
-      console.log('[Sheets] Sheet eliminato, aggiornamento dati...')
-      await loadSheets()
-      console.log(t('sheets:messages.deleteSuccess'))
+    const result = await testBackendConnection()
+    if (result.success) {
+      debugInfo.value = `✅ Backend OK - ${result.sheetsCount} sheets found`
+      console.log('[SimpleSheets] Backend test successful:', result)
+      await handleRefresh()
     } else {
-      error.value = response.error || 'Errore nella cancellazione'
+      debugInfo.value = `❌ Backend Error: ${result.error}`
+      console.error('[SimpleSheets] Backend test failed:', result.error)
     }
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Errore nella cancellazione'
-  } finally {
-    loading.value = false
+    debugInfo.value = `❌ Test failed: ${err}`
+    console.error('[SimpleSheets] Backend test error:', err)
   }
 }
 
-// Watchers per i filtri
-watch([selectedFormat, selectedDrawing], () => {
-  applyFilters()
-})
+const forceLogin = async (): Promise<void> => {
+  if (!isDebugMode) return
+  
+  console.log('[SimpleSheets] Forcing login with admin/admin...')
+  debugInfo.value = 'Logging in...'
+  
+  try {
+    const success = await login('admin', 'admin', false)
+    if (success) {
+      debugInfo.value = '✅ Login successful'
+      console.log('[SimpleSheets] Force login successful')
+      setTimeout(async () => {
+        await handleRefresh()
+      }, 1000)
+    } else {
+      debugInfo.value = '❌ Login failed'
+      console.error('[SimpleSheets] Force login failed')
+    }
+  } catch (err) {
+    debugInfo.value = `❌ Login error: ${err}`
+    console.error('[SimpleSheets] Force login error:', err)
+  }
+}
 
-// Lifecycle hooks
+// Initialize on mount
 onMounted(async () => {
-  console.log('[Sheets] Componente montato, caricamento traduzioni...')
+  console.log('[SimpleSheets] Component mounted')
   
-  await loadNamespace('common')
-  await loadNamespace('sheets')
-  
-  const { isAuthenticated, user } = useAuth()
-  console.log('[Sheets] Stato autenticazione:', {
-    isAuthenticated: isAuthenticated.value,
-    user: user.value
-  })
-  
-  await loadDrawings()
-  await loadSheets()
-})
-
-// SEO e Meta
-useHead({
-  title: computed(() => t('sheets:title') + ' - Dashboard'),
-  meta: [
-    { name: 'description', content: 'Gestione completa degli sheet CAD nel sistema JBelt' }
-  ]
+  if (isAuthenticated.value) {
+    await loadDrawings()
+    await loadSheets()
+  } else {
+    console.log('[SimpleSheets] Not authenticated')
+    error.value = 'Authentication required'
+  }
 })
 </script>
 
 <style scoped>
-.sheets-dashboard {
-  padding: 1rem;
-}
-
-@media (max-width: 768px) {
-  .sheets-dashboard {
-    padding: 0.5rem;
-  }
+.modal.show {
+  display: block !important;
 }
 </style>

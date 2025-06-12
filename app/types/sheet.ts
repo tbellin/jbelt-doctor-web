@@ -1,18 +1,9 @@
-// types/sheet.ts
-export interface Sheet {
-    id?: number;
-    code?: string;
-    name: string;
-    formatType: DINEnum;
-    formatId?: number;
-  }
-  
-  export enum DINEnum {
-    A0 = 'A0',
-    A1 = 'A1',
-    A2 = 'A2',
-    A3V = 'A3V',
-    A3O = 'A3O',
-    A4V = 'A4V',
-    A4O = 'A4O'
-  }
+// types/sheet.ts - Direct from backend models
+export type { ISheet as Sheet } from '~/model/sheet.model'
+export type { IFormat as Format } from '~/model/format.model'
+export type { IModel as Model } from '~/model/model.model'
+
+// Re-export enums for convenience
+export { DIN as DINEnum } from '~/model/enumerations/din.model'
+export { ModelType } from '~/model/enumerations/model-type.model'
+export { InstanceType } from '~/model/enumerations/instance-type.model'

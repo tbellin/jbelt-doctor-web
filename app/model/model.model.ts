@@ -1,10 +1,9 @@
-import { type IArchive } from '@/shared/model/archive.model';
-import { type IModelVersion } from '@/shared/model/model-version.model';
-import { type IItem } from '@/shared/model/item.model';
-import { type ISheet } from '@/shared/model/sheet.model';
-
-import { type ModelType } from '@/shared/model/enumerations/model-type.model';
-import { type InstanceType } from '@/shared/model/enumerations/instance-type.model';
+import { type IArchive } from './archive.model';
+import { type IModelVersion } from './model-version.model';
+import { type IItem } from './item.model';
+import { type ISheet } from './sheet.model';
+import { type ModelType } from './enumerations/model-type.model';
+import { type InstanceType } from './enumerations/instance-type.model';
 export interface IModel {
   id?: number;
   code?: string | null;

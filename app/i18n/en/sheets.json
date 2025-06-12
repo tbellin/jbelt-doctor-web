@@ -92,6 +92,7 @@
     "sheetInfo": "Sheet Information",
     "fileInfo": "File Information",
     "drawingInfo": "Drawing Information",
+    "modelsInfo": "Associated Models",
     "fileName": "File Name",
     "fileSize": "File Size",
     "copy": "Copy",

@@ -1,7 +1,6 @@
-import { type IFormat } from '@/shared/model/format.model';
-import { type IModel } from '@/shared/model/model.model';
-
-import { type DIN } from '@/shared/model/enumerations/din.model';
+import { type IFormat } from './format.model';
+import { type IModel } from './model.model';
+import { type DIN } from './enumerations/din.model';
 export interface ISheet {
   id?: number;
   creoId?: string | null;

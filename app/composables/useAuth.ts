@@ -113,6 +113,7 @@ export function useAuth() {
     resetPasswordFinish,
     changePassword, // Esposizione della nuova funzione
     checkAuth,
+    getToken: () => authStore.getToken(),
     isAuthenticated: computed(() => authStore.isAuthenticated),
     isAdmin: computed(() => authStore.isAdmin),
     user: computed(() => authStore.getUser),

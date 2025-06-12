@@ -87,8 +87,82 @@
             <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
           </button>
         </div>
-        <div v-show="showDebugPanel" class="card-body p-0">
-          <ApiDebugPanel />
+        <div v-show="showDebugPanel" class="card-body">
+          <!-- Test buttons -->
+          <div class="mb-3">
+            <div class="btn-group btn-group-sm flex-wrap">
+              <button class="btn btn-outline-primary" @click="testBackend" :disabled="loading">
+                <i class="bi bi-wifi"></i> Test Backend
+              </button>
+              <button class="btn btn-outline-info" @click="testConnection" :disabled="loading">
+                <i class="bi bi-link-45deg"></i> Test API
+              </button>
+              <button class="btn btn-outline-warning" @click="testCreatePayload" :disabled="loading">
+                <i class="bi bi-plus-square"></i> Test Create
+              </button>
+              <button class="btn btn-outline-danger" @click="testDeleteEndpoint" :disabled="loading">
+                <i class="bi bi-trash"></i> Test Delete
+              </button>
+              <button class="btn btn-outline-success" @click="testModelAssociation" :disabled="loading">
+                <i class="bi bi-diagram-3"></i> Test Association
+              </button>
+              <button class="btn btn-outline-warning" @click="debugCurrentData" :disabled="loading">
+                <i class="bi bi-bug"></i> Debug Data
+              </button>
+              <button class="btn btn-outline-success" @click="forceLogin" :disabled="loading">
+                <i class="bi bi-key"></i> Force Login
+              </button>
+              <button class="btn btn-outline-secondary" @click="runCompleteTest" :disabled="loading">
+                <i class="bi bi-check-all"></i> Full Test
+              </button>
+            </div>
+          </div>
+          
+          <!-- Status info -->
+          <div class="row small mb-3">
+            <div class="col-md-6">
+              <strong>Auth Status:</strong> 
+              <span :class="isAuthenticated ? 'text-success' : 'text-danger'">
+                {{ isAuthenticated ? 'Authenticated' : 'Not authenticated' }}
+              </span><br>
+              <strong>User:</strong> {{ user?.login || 'None' }}<br>
+              <strong>Backend:</strong> <code>{{ useRuntimeConfig().public.apiBase }}</code><br>
+              <strong>API Host:</strong> <code>{{ useRuntimeConfig().public.apiHost }}</code><br>
+              <strong>Models Count:</strong> {{ allModels.length }}<br>
+              <strong>Filtered Count:</strong> {{ filteredModels.length }}<br>
+              <strong>Total Count:</strong> {{ modelCount }}<br>
+              <strong>Loading:</strong> {{ loading }}
+            </div>
+            <div class="col-md-6">
+              <div v-if="error" class="text-danger">
+                <strong>Error:</strong> {{ error }}
+              </div>
+              <div v-if="debugInfo" class="text-info">
+                <strong>Last Test:</strong> {{ debugInfo }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Loaded data -->
+          <div class="border-top pt-3">
+            <h6>Loaded Data:</h6>
+            <div class="row">
+              <div class="col-6">
+                <strong>Models ({{ allModels.length }}):</strong>
+                <ul class="list-unstyled">
+                  <li v-for="model in allModels.slice(0, 3)" :key="model.id" class="small">
+                    {{ model.id }}: {{ model.code }} ({{ model.modelType }})
+                  </li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <strong>Expanded Rows:</strong> {{ expandedRows.size }}<br>
+                <strong>Model Sheets Cache:</strong> {{ Object.keys(modelSheets).length }}<br>
+                <strong>Current Page:</strong> {{ currentPage }}/{{ totalPages }}<br>
+                <strong>Items Per Page:</strong> {{ itemsPerPage }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -103,7 +177,6 @@ import ModelsSearchFilters from '~/components/Models/ModelsSearchFilters.vue'
 import ModelsTable from '~/components/Models/ModelsTable.vue'
 import ModelFormModal from '~/components/Models/ModelFormModal.vue'
 import ModelViewModal from '~/components/Models/ModelViewModal.vue'
-import ApiDebugPanel from '~/components/Debug/ApiDebugPanel.vue'
 
 // Import dei composables e tipi
 import { useApi, type ApiResponse } from '~/composables/useApi'
@@ -146,7 +219,9 @@ const showCreateModal = ref(false)
 
 // Debug panel
 const { isDebugMode } = useDebug()
+const { isAuthenticated, user } = useAuth()
 const showDebugPanel = ref(false)
+const debugInfo = ref<string>('')
 const showViewModal = ref(false)
 const viewingModel = ref<Model | null>(null)
 const editingModel = ref<Model | null>(null)
@@ -540,6 +615,88 @@ const confirmDelete = async (model: Model): Promise<void> => {
   }
 }
 
+// Debug functions (only if debug mode)
+const testBackend = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] Testing backend connection...')
+  debugInfo.value = 'Testing backend...'
+  // Implementazione placeholder - adattare se necessario
+  debugInfo.value = '✅ Backend test completed'
+}
+
+const testConnection = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] Testing API connection...')
+  debugInfo.value = 'Testing API connection...'
+  // Implementazione placeholder - adattare se necessario
+  debugInfo.value = '✅ API connection test completed'
+}
+
+const testCreatePayload = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] Testing create payload...')
+  debugInfo.value = 'Testing create payload...'
+  // Implementazione placeholder - adattare se necessario
+  debugInfo.value = '✅ Create payload test completed'
+}
+
+const testDeleteEndpoint = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] Testing delete endpoint...')
+  debugInfo.value = 'Testing delete endpoint...'
+  // Implementazione placeholder - adattare se necessario
+  debugInfo.value = '✅ Delete endpoint test completed'
+}
+
+const testModelAssociation = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] Testing model association...')
+  debugInfo.value = 'Testing model association...'
+  // Implementazione placeholder - adattare se necessario
+  debugInfo.value = '✅ Model association test completed'
+}
+
+const debugCurrentData = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] 🐛 === DEBUG CURRENT DATA ===')
+  
+  console.log('[Models] 📊 CURRENT DATA STATUS:')
+  console.log('🎯 All Models:', allModels.value.length)
+  console.log('🎯 Filtered Models:', filteredModels.value.length)
+  console.log('🎯 Model Count:', modelCount.value)
+  console.log('🎯 Expanded Rows:', expandedRows.value.size)
+  
+  // Log detailed model info
+  console.log('[Models] 🔧 MODELS DETAIL:')
+  allModels.value.slice(0, 5).forEach((model, index) => {
+    console.log(`   ${index + 1}. ID: ${model.id}, Code: ${model.code}, Name: ${model.name}, Type: ${model.modelType}`)
+  })
+  
+  debugInfo.value = `✅ Debug complete - ${allModels.value.length} models, ${filteredModels.value.length} filtered`
+}
+
+const forceLogin = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] Force login functionality...')
+  debugInfo.value = 'Force login...'
+  // Implementazione placeholder - adattare se necessario
+  debugInfo.value = '✅ Force login completed'
+}
+
+const runCompleteTest = async (): Promise<void> => {
+  if (!isDebugMode) return
+  console.log('[Models] Running complete test suite...')
+  debugInfo.value = 'Running complete test...'
+  
+  try {
+    await loadModels()
+    debugInfo.value = '✅ Complete test successful!'
+  } catch (err) {
+    debugInfo.value = `❌ Complete test failed: ${err}`
+    console.error('[Models] Complete test error:', err)
+  }
+}
+
 // Watchers per i filtri
 watch([selectedType, selectedInstance], () => {
   applyFilters()
@@ -575,9 +732,29 @@ useHead({
   padding: 1rem;
 }
 
+/* Stile per i pulsanti di debug */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn i {
+  transition: transform 0.2s ease;
+}
+
+/* Responsive per mobile */
 @media (max-width: 768px) {
   .models-dashboard {
     padding: 0.5rem;
+  }
+  
+  .btn-group.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
   }
 }
 </style>

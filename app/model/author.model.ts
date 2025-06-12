@@ -1,5 +1,5 @@
-import { type IUser } from '@/shared/model/user.model';
-import { type ITeam } from '@/shared/model/team.model';
+import { type IUser } from './user.model';
+import { type ITeam } from './team.model';
 
 export interface IAuthor {
   id?: number;

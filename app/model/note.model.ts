@@ -1,5 +1,5 @@
-import { type IPosition } from '@/shared/model/position.model';
-import { type IBaloon } from '@/shared/model/baloon.model';
+import { type IPosition } from './position.model';
+import { type IBaloon } from './baloon.model';
 
 export interface INote {
   id?: number;

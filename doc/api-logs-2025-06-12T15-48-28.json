@@ -1,0 +1,464 @@
+[
+  {
+    "id": "8fk3c5asm",
+    "timestamp": "2025-06-12T15:48:01.463Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models/count",
+    "responseData": 2,
+    "responseStatus": 200,
+    "success": true,
+    "duration": 11
+  },
+  {
+    "id": "ymcljakhr",
+    "timestamp": "2025-06-12T15:48:01.450Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models",
+    "responseData": [
+      {
+        "id": 1001,
+        "code": "P001",
+        "name": "Part 001",
+        "modelType": "PART",
+        "instanceType": "PARAMETRIC",
+        "file": null,
+        "version": null,
+        "item": null,
+        "generic": null,
+        "parent": null,
+        "sheets": []
+      },
+      {
+        "id": 1002,
+        "code": "D001",
+        "name": "Disegno 001",
+        "modelType": "DRAWING",
+        "instanceType": "NORMAL",
+        "file": null,
+        "version": null,
+        "item": null,
+        "generic": null,
+        "parent": null,
+        "sheets": []
+      }
+    ],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 17
+  },
+  {
+    "id": "utdorgpq1",
+    "timestamp": "2025-06-12T15:47:49.581Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/sheets",
+    "responseData": [
+      {
+        "id": 1051,
+        "creoId": "2",
+        "code": "F001",
+        "name": "Foglio 001",
+        "formatType": "A3O",
+        "drawing": null,
+        "format": null,
+        "models": [
+          {
+            "id": 1001,
+            "code": null,
+            "name": "Part 001",
+            "modelType": null,
+            "instanceType": null,
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          }
+        ]
+      }
+    ],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 12
+  },
+  {
+    "id": "mm17ygkir",
+    "timestamp": "2025-06-12T15:47:49.567Z",
+    "method": "PUT",
+    "url": "http://localhost:8080/api/sheets/1051",
+    "requestBody": {
+      "creoId": "2",
+      "code": "F001",
+      "name": "Foglio 001",
+      "formatType": "A3O",
+      "format": null,
+      "drawing": null,
+      "models": [
+        {
+          "id": 1001,
+          "code": "P001",
+          "name": "Part 001",
+          "modelType": "PART",
+          "instanceType": "PARAMETRIC",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null
+        }
+      ],
+      "id": 1051
+    },
+    "responseData": {
+      "id": 1051,
+      "creoId": "2",
+      "code": "F001",
+      "name": "Foglio 001",
+      "formatType": "A3O",
+      "drawing": null,
+      "format": null,
+      "models": [
+        {
+          "id": 1001,
+          "code": null,
+          "name": "Part 001",
+          "modelType": null,
+          "instanceType": null,
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        }
+      ]
+    },
+    "responseStatus": 200,
+    "success": true,
+    "duration": 32
+  },
+  {
+    "id": "qdb4c0s9n",
+    "timestamp": "2025-06-12T15:47:42.779Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/sheets",
+    "responseData": [
+      {
+        "id": 1051,
+        "creoId": "2",
+        "code": "F001",
+        "name": "Foglio 001",
+        "formatType": "A3O",
+        "drawing": null,
+        "format": null,
+        "models": [
+          {
+            "id": 1001,
+            "code": null,
+            "name": "Part 001",
+            "modelType": null,
+            "instanceType": null,
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          }
+        ]
+      }
+    ],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 13
+  },
+  {
+    "id": "c85irxxqk",
+    "timestamp": "2025-06-12T15:47:42.764Z",
+    "method": "POST",
+    "url": "http://localhost:8080/api/sheets",
+    "requestBody": {
+      "creoId": "2",
+      "code": "F001",
+      "name": "Foglio 001",
+      "formatType": "A3O",
+      "format": null,
+      "drawing": null,
+      "models": [
+        {
+          "id": 1001,
+          "code": "P001",
+          "name": "Part 001",
+          "modelType": "PART",
+          "instanceType": "PARAMETRIC",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null
+        }
+      ]
+    },
+    "responseData": {
+      "id": 1051,
+      "creoId": "2",
+      "code": "F001",
+      "name": "Foglio 001",
+      "formatType": "A3O",
+      "drawing": null,
+      "format": null,
+      "models": [
+        {
+          "id": 1001,
+          "code": null,
+          "name": "Part 001",
+          "modelType": null,
+          "instanceType": null,
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        }
+      ]
+    },
+    "responseStatus": 201,
+    "success": true,
+    "duration": 23
+  },
+  {
+    "id": "fpfa6qccw",
+    "timestamp": "2025-06-12T15:47:13.480Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/sheets",
+    "responseData": [],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 14
+  },
+  {
+    "id": "sqksfnc39",
+    "timestamp": "2025-06-12T15:47:13.464Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models",
+    "responseData": [
+      {
+        "id": 1001,
+        "code": "P001",
+        "name": "Part 001",
+        "modelType": "PART",
+        "instanceType": "PARAMETRIC",
+        "file": null,
+        "version": null,
+        "item": null,
+        "generic": null,
+        "parent": null,
+        "sheets": []
+      },
+      {
+        "id": 1002,
+        "code": "D001",
+        "name": "Disegno 001",
+        "modelType": "DRAWING",
+        "instanceType": "NORMAL",
+        "file": null,
+        "version": null,
+        "item": null,
+        "generic": null,
+        "parent": null,
+        "sheets": []
+      }
+    ],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 19
+  },
+  {
+    "id": "tdwx1whiq",
+    "timestamp": "2025-06-12T15:47:07.517Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/sheets",
+    "responseData": [],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 11
+  },
+  {
+    "id": "sxhncm2a3",
+    "timestamp": "2025-06-12T15:47:07.505Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/sheets",
+    "responseData": [],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 40
+  },
+  {
+    "id": "9rv9ubjzt",
+    "timestamp": "2025-06-12T15:47:07.495Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/sheets",
+    "responseData": [],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 32
+  },
+  {
+    "id": "caf1n6lfq",
+    "timestamp": "2025-06-12T15:47:05.053Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models/count",
+    "responseData": 2,
+    "responseStatus": 200,
+    "success": true,
+    "duration": 10
+  },
+  {
+    "id": "l0ysmlcmk",
+    "timestamp": "2025-06-12T15:47:05.042Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models",
+    "responseData": [
+      {
+        "id": 1001,
+        "code": "P001",
+        "name": "Part 001",
+        "modelType": "PART",
+        "instanceType": "PARAMETRIC",
+        "file": null,
+        "version": null,
+        "item": null,
+        "generic": null,
+        "parent": null,
+        "sheets": []
+      },
+      {
+        "id": 1002,
+        "code": "D001",
+        "name": "Disegno 001",
+        "modelType": "DRAWING",
+        "instanceType": "NORMAL",
+        "file": null,
+        "version": null,
+        "item": null,
+        "generic": null,
+        "parent": null,
+        "sheets": []
+      }
+    ],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 12
+  },
+  {
+    "id": "hgz31b8jw",
+    "timestamp": "2025-06-12T15:47:05.028Z",
+    "method": "POST",
+    "url": "http://localhost:8080/api/models",
+    "requestBody": {
+      "code": "D001",
+      "name": "Disegno 001",
+      "modelType": "DRAWING",
+      "instanceType": "NORMAL"
+    },
+    "responseData": {
+      "id": 1002,
+      "code": "D001",
+      "name": "Disegno 001",
+      "modelType": "DRAWING",
+      "instanceType": "NORMAL",
+      "file": null,
+      "version": null,
+      "item": null,
+      "generic": null,
+      "parent": null,
+      "sheets": []
+    },
+    "responseStatus": 201,
+    "success": true,
+    "duration": 12
+  },
+  {
+    "id": "bu6xrat44",
+    "timestamp": "2025-06-12T15:46:49.306Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models/count",
+    "responseData": 1,
+    "responseStatus": 200,
+    "success": true,
+    "duration": 10
+  },
+  {
+    "id": "2q8xdkjlc",
+    "timestamp": "2025-06-12T15:46:49.294Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models",
+    "responseData": [
+      {
+        "id": 1001,
+        "code": "P001",
+        "name": "Part 001",
+        "modelType": "PART",
+        "instanceType": "PARAMETRIC",
+        "file": null,
+        "version": null,
+        "item": null,
+        "generic": null,
+        "parent": null,
+        "sheets": []
+      }
+    ],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 15
+  },
+  {
+    "id": "mq833hifp",
+    "timestamp": "2025-06-12T15:46:49.278Z",
+    "method": "POST",
+    "url": "http://localhost:8080/api/models",
+    "requestBody": {
+      "code": "P001",
+      "name": "Part 001",
+      "modelType": "PART",
+      "instanceType": "PARAMETRIC"
+    },
+    "responseData": {
+      "id": 1001,
+      "code": "P001",
+      "name": "Part 001",
+      "modelType": "PART",
+      "instanceType": "PARAMETRIC",
+      "file": null,
+      "version": null,
+      "item": null,
+      "generic": null,
+      "parent": null,
+      "sheets": []
+    },
+    "responseStatus": 201,
+    "success": true,
+    "duration": 71
+  },
+  {
+    "id": "dq98l0ciq",
+    "timestamp": "2025-06-12T15:46:29.985Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models/count",
+    "responseData": 0,
+    "responseStatus": 200,
+    "success": true,
+    "duration": 18
+  },
+  {
+    "id": "mg5o6ejqt",
+    "timestamp": "2025-06-12T15:46:29.965Z",
+    "method": "GET",
+    "url": "http://localhost:8080/api/models",
+    "responseData": [],
+    "responseStatus": 200,
+    "success": true,
+    "duration": 19
+  }
+]

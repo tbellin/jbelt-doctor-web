@@ -1,4 +1,4 @@
-import { type IAuthor } from '@/shared/model/author.model';
+import { type IAuthor } from './author.model';
 
 export interface IModelVersion {
   id?: number;

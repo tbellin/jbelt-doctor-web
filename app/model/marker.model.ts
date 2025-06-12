@@ -1,4 +1,4 @@
-import { type IArchive } from '@/shared/model/archive.model';
+import { type IArchive } from './archive.model';
 
 export interface IMarker {
   id?: number;

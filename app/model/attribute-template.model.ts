@@ -1,4 +1,4 @@
-import { type TypeValue } from '@/shared/model/enumerations/type-value.model';
+import { type TypeValue } from './enumerations/type-value.model';
 export interface IAttributeTemplate {
   id?: number;
   code?: string | null;

@@ -436,6 +436,9 @@
               <button class="btn btn-outline-success" @click="testDrawingAssociation" :disabled="loading">
                 <i class="bi bi-image"></i> Test Drawing
               </button>
+              <button class="btn btn-outline-warning" @click="debugCurrentData" :disabled="loading">
+                <i class="bi bi-bug"></i> Debug Data
+              </button>
               <button class="btn btn-outline-success" @click="forceLogin" :disabled="loading">
                 <i class="bi bi-key"></i> Force Login
               </button>
@@ -507,6 +510,13 @@ import { useAuth } from '~/composables/useAuth'
 import { useI18n } from '~/composables/useI18n'
 import { useDebug } from '~/composables/useDebug'
 import { testBackendConnection } from '~/utils/testBackend'
+import { 
+  enrichPartialModels, 
+  createCleanModelForUpdate, 
+  createCleanSheetForUpdate,
+  validateObjectForUpdate,
+  debugLogObject 
+} from '~/utils/objectEnrichment'
 
 // Page setup
 definePageMeta({
@@ -632,16 +642,24 @@ const viewSheet = (sheet: SheetWithRelations) => {
   showViewModal.value = true
 }
 
-const editSheet = (sheet: SheetWithRelations) => {
+const editSheet = async (sheet: SheetWithRelations) => {
   console.log('[SimpleSheets] Edit sheet:', sheet)
   console.log('[SimpleSheets] Sheet drawing:', sheet.drawing)
   console.log('[SimpleSheets] Sheet models:', sheet.models)
   
+  // Ensure drawings are loaded before proceeding
+  if (availableDrawings.value.length === 0) {
+    console.log('[SimpleSheets] ⚠️ No drawings loaded, loading now...')
+    await loadDrawings()
+    console.log('[SimpleSheets] ✅ Drawings loaded:', availableDrawings.value.length)
+  }
+  
   editingSheet.value = sheet
   
-  // Ensure drawing ID is properly extracted
-  const drawingId = sheet.drawing?.id?.toString() || ''
+  // Fix ID extraction - ensure consistent number comparison
+  const drawingId = sheet.drawing?.id ? sheet.drawing.id.toString() : ''
   console.log('[SimpleSheets] Extracted drawing ID:', drawingId)
+  console.log('[SimpleSheets] Available drawing IDs:', availableDrawings.value.map(d => ({ id: d.id, name: d.name })))
   
   // Ensure model IDs are properly extracted
   const modelIds = sheet.models?.map(model => model.id?.toString()).filter(id => id) as string[] || []
@@ -707,6 +725,20 @@ const saveSheet = async () => {
   
   console.log('[SimpleSheets] Save sheet - Form data:', formData.value)
   console.log('[SimpleSheets] Editing sheet:', editingSheet.value)
+  
+  // Ensure data is loaded before proceeding
+  if (availableDrawings.value.length === 0) {
+    console.log('[SimpleSheets] ⚠️ No drawings loaded, loading now...')
+    await loadDrawings()
+    console.log('[SimpleSheets] ✅ Drawings loaded for save:', availableDrawings.value.length)
+  }
+  
+  if (availableModels.value.length === 0) {
+    console.log('[SimpleSheets] ⚠️ No models loaded, loading now...')
+    await loadDrawings() // This loads both drawings and models
+    console.log('[SimpleSheets] ✅ Models loaded for save:', availableModels.value.length)
+  }
+  
   saving.value = true
   
   try {
@@ -730,44 +762,44 @@ const saveSheet = async () => {
     console.log('[SimpleSheets] Base sheet data:', sheetData)
     
     // Add drawing association - complete object approach as user specified
-    console.log('[SimpleSheets] Processing drawing ID:', formData.value.drawingId)
-    console.log('[SimpleSheets] Available drawings:', availableDrawings.value.length)
-    console.log('[SimpleSheets] Available drawings list:', availableDrawings.value.map(d => ({ id: d.id, name: d.name })))
+    console.log('[SimpleSheets] 🎯 Processing drawing ID:', formData.value.drawingId)
+    console.log('[SimpleSheets] 🎯 Available drawings count:', availableDrawings.value.length)
+    console.log('[SimpleSheets] 🎯 Available drawings list:', availableDrawings.value.map(d => ({ id: d.id, name: d.name, modelType: d.modelType })))
     
     if (formData.value.drawingId && formData.value.drawingId !== '') {
+      // Convert both IDs to numbers for consistent comparison
+      const selectedDrawingId = parseInt(formData.value.drawingId)
+      console.log('[SimpleSheets] 🔍 Looking for drawing with ID (as number):', selectedDrawingId)
+      
       const selectedDrawing = availableDrawings.value.find(
-        drawing => drawing.id?.toString() === formData.value.drawingId
+        drawing => drawing.id === selectedDrawingId
       )
-      console.log('[SimpleSheets] Found drawing for ID', formData.value.drawingId, ':', selectedDrawing)
+      console.log('[SimpleSheets] 🔍 Found drawing for ID', selectedDrawingId, ':', selectedDrawing)
       
       if (selectedDrawing) {
-        // Use complete drawing object as user specified - "il file Json da passare deve essere completo"
-        console.log('[SimpleSheets] Selected drawing object (COMPLETE):', selectedDrawing)
-        
-        // Create clean drawing object without circular references
-        const cleanDrawing = {
-          id: selectedDrawing.id,
-          creoId: selectedDrawing.creoId,
-          code: selectedDrawing.code,
-          name: selectedDrawing.name,
-          modelType: selectedDrawing.modelType,
-          instanceType: selectedDrawing.instanceType,
-          file: selectedDrawing.file,
-          version: selectedDrawing.version,
-          item: selectedDrawing.item,
-          generic: selectedDrawing.generic,
-          parent: selectedDrawing.parent
-          // Exclude 'sheets' to avoid circular references
+        // Validate the drawing object has required fields
+        if (!selectedDrawing.id || !selectedDrawing.modelType || selectedDrawing.modelType !== 'DRAWING') {
+          console.error('[SimpleSheets] ❌ Invalid drawing object:', selectedDrawing)
+          alert('Selected drawing is invalid. Please refresh and try again.')
+          sheetData.drawing = null
+        } else {
+          // Use complete drawing object as user specified - "il file Json da passare deve essere completo"
+          console.log('[SimpleSheets] ✅ Selected drawing object (COMPLETE):', selectedDrawing)
+          
+          const completeDrawing = createCleanModelForUpdate(selectedDrawing)
+          sheetData.drawing = completeDrawing
+          debugLogObject(completeDrawing, 'Complete drawing for association')
+          console.log('[SimpleSheets] ✅ Setting COMPLETE drawing association with ID:', completeDrawing.id)
+          console.log('[SimpleSheets] ✅ Drawing payload:', JSON.stringify(completeDrawing, null, 2))
         }
-        
-        sheetData.drawing = cleanDrawing
-        console.log('[SimpleSheets] ✅ Setting COMPLETE drawing association (clean):', sheetData.drawing)
       } else {
-        console.log('[SimpleSheets] ❌ Drawing not found for ID:', formData.value.drawingId)
+        console.error('[SimpleSheets] ❌ Drawing NOT FOUND for ID:', selectedDrawingId)
+        console.error('[SimpleSheets] ❌ Available drawing IDs:', availableDrawings.value.map(d => d.id))
+        alert(`Drawing with ID ${selectedDrawingId} not found. Please refresh and try again.`)
         sheetData.drawing = null
       }
     } else {
-      console.log('[SimpleSheets] No drawing selected, explicitly setting to null')
+      console.log('[SimpleSheets] ℹ️ No drawing selected, explicitly setting to null')
       sheetData.drawing = null
     }
     
@@ -783,24 +815,27 @@ const saveSheet = async () => {
         // Send complete model objects - "ricerca e inserimento di tutto l'oggetto da associare"
         console.log('[SimpleSheets] Selected models objects (COMPLETE):', selectedModels)
         
-        // Create clean model objects without circular references
-        const cleanModels = selectedModels.map(model => ({
-          id: model.id,
-          creoId: model.creoId,
-          code: model.code,
-          name: model.name,
-          modelType: model.modelType,
-          instanceType: model.instanceType,
-          file: model.file,
-          version: model.version,
-          item: model.item,
-          generic: model.generic,
-          parent: model.parent
-          // Exclude 'sheets' to avoid circular references
-        }))
+        // Validate and create complete model objects
+        const validModels = selectedModels.filter(model => {
+          const isValid = validateObjectForUpdate(model, 'Selected Model')
+          if (!isValid) {
+            console.error('[SimpleSheets] Invalid model in selection:', model)
+          }
+          return isValid
+        })
         
-        sheetData.models = cleanModels
-        console.log('[SimpleSheets] ✅ Setting COMPLETE models association (clean):', sheetData.models)
+        if (validModels.length !== selectedModels.length) {
+          console.warn(`[SimpleSheets] Filtered out ${selectedModels.length - validModels.length} invalid models`)
+        }
+        
+        const completeModels = validModels.map(model => {
+          const cleanModel = createCleanModelForUpdate(model)
+          debugLogObject(cleanModel, `Model ${model.id} for association`)
+          return cleanModel
+        })
+        
+        sheetData.models = completeModels
+        console.log('[SimpleSheets] ✅ Setting COMPLETE models association with IDs:', completeModels.map(m => `${m.id}(${m.code})`))
       } else {
         console.log('[SimpleSheets] ❌ No models found for selected IDs')
         sheetData.models = []
@@ -833,6 +868,28 @@ const saveSheet = async () => {
     if (response.success) {
       console.log('[SimpleSheets] ✅ Sheet saved successfully')
       console.log('[SimpleSheets] Saved sheet data:', response.data)
+      
+      // Specifically check if drawing association was saved
+      if (formData.value.drawingId && formData.value.drawingId !== '') {
+        if (response.data?.drawing) {
+          console.log('[SimpleSheets] ✅ Drawing association saved correctly:', response.data.drawing)
+        } else {
+          console.warn('[SimpleSheets] ⚠️ Drawing association NOT saved in response!')
+          console.warn('[SimpleSheets] ⚠️ Expected drawing ID:', formData.value.drawingId)
+          console.warn('[SimpleSheets] ⚠️ Response data:', response.data)
+        }
+      }
+      
+      // Check if models associations were saved
+      if (formData.value.modelIds && formData.value.modelIds.length > 0) {
+        if (response.data?.models && response.data.models.length > 0) {
+          console.log('[SimpleSheets] ✅ Models associations saved correctly:', response.data.models.length, 'models')
+        } else {
+          console.warn('[SimpleSheets] ⚠️ Models associations NOT saved in response!')
+          console.warn('[SimpleSheets] ⚠️ Expected model IDs:', formData.value.modelIds)
+        }
+      }
+      
       closeModal()
       await loadSheets() // Reload to get updated data
     } else {
@@ -1191,6 +1248,62 @@ const forceLogin = async (): Promise<void> => {
     debugInfo.value = `❌ Login error: ${err}`
     console.error('[SimpleSheets] Force login error:', err)
   }
+}
+
+const debugCurrentData = async (): Promise<void> => {
+  if (!isDebugMode) return
+  
+  console.log('[SimpleSheets] 🐛 === DEBUG CURRENT DATA ===')
+  
+  // Force reload all data
+  console.log('[SimpleSheets] 🔄 Reloading all data...')
+  await loadDrawings()
+  await loadSheets()
+  
+  console.log('[SimpleSheets] 📊 CURRENT DATA STATUS:')
+  console.log('🎯 Available Drawings:', availableDrawings.value.length)
+  console.log('🎯 Available Models:', availableModels.value.length)
+  console.log('🎯 Current Sheets:', sheets.value.length)
+  
+  // Log detailed drawing info
+  console.log('[SimpleSheets] 🎨 DRAWINGS DETAIL:')
+  availableDrawings.value.forEach((drawing, index) => {
+    console.log(`   ${index + 1}. ID: ${drawing.id}, Code: ${drawing.code}, Name: ${drawing.name}, Type: ${drawing.modelType}`)
+  })
+  
+  // Log detailed model info  
+  console.log('[SimpleSheets] 🔧 MODELS DETAIL:')
+  availableModels.value.slice(0, 5).forEach((model, index) => {
+    console.log(`   ${index + 1}. ID: ${model.id}, Code: ${model.code}, Name: ${model.name}, Type: ${model.modelType}`)
+  })
+  
+  // Log sheet associations
+  console.log('[SimpleSheets] 📄 SHEETS WITH ASSOCIATIONS:')
+  sheets.value.forEach((sheet, index) => {
+    const hasDrawing = sheet.drawing ? `Drawing: ${sheet.drawing.id}(${sheet.drawing.code})` : 'No Drawing'
+    const hasModels = sheet.models ? `Models: ${sheet.models.length}` : 'No Models'
+    console.log(`   ${index + 1}. Sheet ${sheet.id}: ${sheet.code} - ${hasDrawing}, ${hasModels}`)
+  })
+  
+  // Test form data if in edit mode
+  if (editingSheet.value) {
+    console.log('[SimpleSheets] 📝 CURRENT FORM DATA:')
+    console.log('   FormData:', formData.value)
+    console.log('   Editing Sheet:', editingSheet.value)
+    
+    // Check if current drawing ID exists in available drawings
+    if (formData.value.drawingId) {
+      const foundDrawing = availableDrawings.value.find(d => d.id?.toString() === formData.value.drawingId)
+      console.log(`   Drawing ID ${formData.value.drawingId} found:`, !!foundDrawing)
+      if (foundDrawing) {
+        console.log('   Found drawing:', foundDrawing)
+      } else {
+        console.error('   ❌ Drawing NOT found in available drawings!')
+      }
+    }
+  }
+  
+  debugInfo.value = `✅ Debug complete - ${availableDrawings.value.length} drawings, ${availableModels.value.length} models, ${sheets.value.length} sheets`
 }
 
 const runCompleteTest = async (): Promise<void> => {

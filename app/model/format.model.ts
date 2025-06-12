@@ -1,6 +1,6 @@
-import { type IArchive } from '@/shared/model/archive.model';
+import { type IArchive } from './archive.model';
 
-import { type DIN } from '@/shared/model/enumerations/din.model';
+import { type DIN } from './enumerations/din.model';
 export interface IFormat {
   id?: number;
   creoId?: string | null;

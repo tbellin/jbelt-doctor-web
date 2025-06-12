@@ -168,6 +168,13 @@ import { useI18n } from '~/composables/useI18n'
 import { useApi, type SheetWithRelations } from '~/composables/useApi'
 import AdvancedAddSheetsModal from './AdvancedAddSheetsModal.vue'
 import SheetViewModal from '../Sheets/SheetViewModal.vue'
+import { 
+  enrichPartialSheets, 
+  createCleanModelForUpdate, 
+  createCleanSheetForUpdate,
+  validateObjectForUpdate,
+  debugLogObject 
+} from '~/utils/objectEnrichment'
 
 const { t } = useI18n()
 const { sheets: sheetsApi } = useApi()
@@ -213,43 +220,42 @@ const loadModelSheets = async (): Promise<void> => {
   try {
     console.log(`[ModelSheetsAssoc] Loading sheets for model ${props.model.id} (${props.model.code})`)
     
-    // Method 1: Use sheets already in model object if available
-    if (props.model.sheets && Array.isArray(props.model.sheets) && props.model.sheets.length > 0) {
-      console.log(`[ModelSheetsAssoc] Found ${props.model.sheets.length} sheets in model object`)
-      sheets.value = props.model.sheets.map(sheet => ({
-        ...sheet,
-        // Ensure required properties are present
-        id: sheet.id,
-        code: sheet.code || undefined,
-        name: sheet.name || undefined,
-        formatType: sheet.formatType || undefined,
-        creoId: sheet.creoId || undefined,
-        format: sheet.format || undefined,
-        drawing: sheet.drawing || undefined,
-        models: sheet.models || undefined
-      })) as SheetWithRelations[]
-    } else {
-      // Method 2: Search through all sheets for those referencing this model
-      console.log('[ModelSheetsAssoc] Searching for sheets referencing this model...')
-      const allSheetsResponse = await sheetsApi.getAll()
+    // Always search through all sheets for most up-to-date associations
+    const allSheetsResponse = await sheetsApi.getAll()
+    
+    if (allSheetsResponse.success) {
+      const allSheets = allSheetsResponse.data || []
       
-      if (allSheetsResponse.success) {
-        const modelSheets = allSheetsResponse.data?.filter(sheet => {
-          if (sheet.models && Array.isArray(sheet.models)) {
-            return sheet.models.some((sheetModel: any) => {
-              const sheetModelId = typeof sheetModel === 'object' ? sheetModel.id : sheetModel
-              return sheetModelId === props.model.id
-            })
-          }
-          return false
-        }) || []
-        
-        sheets.value = modelSheets
-        console.log(`[ModelSheetsAssoc] Found ${modelSheets.length} sheets referencing model ${props.model.id}`)
-      } else {
-        console.error('[ModelSheetsAssoc] Failed to load sheets:', allSheetsResponse.error)
-        sheets.value = []
+      // Find sheets that reference this model
+      const modelSheets = allSheets.filter(sheet => {
+        if (sheet.models && Array.isArray(sheet.models)) {
+          return sheet.models.some((sheetModel: any) => {
+            const sheetModelId = typeof sheetModel === 'object' ? sheetModel.id : sheetModel
+            return sheetModelId === props.model.id
+          })
+        }
+        return false
+      })
+      
+      // Enrich partial sheet data if we have model sheets from props
+      let enrichedSheets = modelSheets
+      
+      if (props.model.sheets && Array.isArray(props.model.sheets) && props.model.sheets.length > 0) {
+        console.log(`[ModelSheetsAssoc] Enriching ${props.model.sheets.length} partial sheets with complete data`)
+        enrichedSheets = enrichPartialSheets(props.model.sheets, allSheets)
+        debugLogObject(enrichedSheets[0], 'First enriched sheet')
       }
+      
+      sheets.value = enrichedSheets
+      console.log(`[ModelSheetsAssoc] Loaded ${sheets.value.length} sheets for model ${props.model.id}`)
+      
+      // Debug log each sheet
+      sheets.value.forEach((sheet, index) => {
+        debugLogObject(sheet, `Sheet ${index + 1}`)
+      })
+    } else {
+      console.error('[ModelSheetsAssoc] Failed to load sheets:', allSheetsResponse.error)
+      sheets.value = []
     }
   } catch (error) {
     console.error('[ModelSheetsAssoc] Error loading model sheets:', error)
@@ -299,36 +305,30 @@ const handleAddSheets = async (selectedSheetIds: number[]): Promise<void> => {
         continue
       }
 
-      // Create clean model object to add (avoid circular references)
-      const modelToAdd = {
-        id: props.model.id,
-        creoId: props.model.creoId,
-        code: props.model.code,
-        name: props.model.name,
-        modelType: props.model.modelType,
-        instanceType: props.model.instanceType,
-        file: props.model.file,
-        version: props.model.version,
-        item: props.model.item,
-        generic: props.model.generic,
-        parent: props.model.parent
-        // Exclude 'sheets' to prevent circular references
+      // Validate and create clean model object to add
+      if (!validateObjectForUpdate(props.model, 'Model')) {
+        console.error('[ModelSheetsAssoc] Invalid model for association:', props.model)
+        continue
       }
+      
+      const modelToAdd = createCleanModelForUpdate(props.model)
+      debugLogObject(modelToAdd, 'Model to add')
 
       // Create updated models array
       const updatedModels = [...currentModels, modelToAdd]
 
-      // Update sheet with complete data preservation
+      // Validate target sheet and create update payload with complete data preservation
+      if (!validateObjectForUpdate(targetSheet, 'Target Sheet')) {
+        console.error('[ModelSheetsAssoc] Invalid target sheet for update:', targetSheet)
+        continue
+      }
+      
       const updatePayload = {
-        id: targetSheet.id,
-        creoId: targetSheet.creoId,
-        code: targetSheet.code,
-        name: targetSheet.name,
-        formatType: targetSheet.formatType, // Preserve format
-        format: targetSheet.format,
-        drawing: targetSheet.drawing,        // Preserve drawing association
+        ...createCleanSheetForUpdate(targetSheet),
         models: updatedModels               // Add new model
       }
+      
+      debugLogObject(updatePayload, 'Sheet update payload')
 
       console.log(`[ModelSheetsAssoc] Updating sheet ${sheetId} with payload:`, updatePayload)
       const updateResponse = await sheetsApi.update(sheetId, updatePayload)
@@ -379,17 +379,18 @@ const confirmRemoveAssociation = async (sheet: SheetWithRelations): Promise<void
       return modelId !== props.model.id
     })
 
-    // Update sheet preserving all other data
+    // Validate sheet and create update payload preserving all other data
+    if (!validateObjectForUpdate(sheet, 'Sheet for model removal')) {
+      console.error('[ModelSheetsAssoc] Invalid sheet for model removal:', sheet)
+      return
+    }
+    
     const updatePayload = {
-      id: sheet.id,
-      creoId: sheet.creoId,
-      code: sheet.code,
-      name: sheet.name,
-      formatType: sheet.formatType, // Preserve format
-      format: sheet.format,
-      drawing: sheet.drawing,       // Preserve drawing association
+      ...createCleanSheetForUpdate(sheet),
       models: updatedModels         // Remove the model
     }
+    
+    debugLogObject(updatePayload, 'Model removal payload')
 
     console.log(`[ModelSheetsAssoc] Removing association with payload:`, updatePayload)
     const response = await sheetsApi.update(sheet.id!, updatePayload)

@@ -1,6 +1,6 @@
-import { type IPosition } from '@/shared/model/position.model';
-import { type ISheet } from '@/shared/model/sheet.model';
-import { type IMarker } from '@/shared/model/marker.model';
+import { type IPosition } from './position.model';
+import { type ISheet } from './sheet.model';
+import { type IMarker } from './marker.model';
 
 export interface IBaloon {
   id?: number;

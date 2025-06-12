@@ -86,9 +86,11 @@
                   required
                 >
                   <option value="">{{ t('common:select') }}</option>
+                  <option value="PARAMETRIC">{{ t('models:instances.parametric') }}</option>
                   <option value="NORMAL">{{ t('models:instances.normal') }}</option>
                   <option value="GENERIC">{{ t('models:instances.generic') }}</option>
                   <option value="INSTANCE">{{ t('models:instances.instance') }}</option>
+                  <option value="BULK">{{ t('models:instances.bulk') }}</option>
                 </select>
                 <div v-if="errors.instanceType" class="invalid-feedback">
                   {{ errors.instanceType }}

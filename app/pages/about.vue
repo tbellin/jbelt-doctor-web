@@ -3,7 +3,7 @@
   <div>
     <div class="card">
       <div class="card-body">
-        <h1 class="mb-4">{{ t('about.title') }}</h1>
+        <h1 class="mb-4">{{ t('title') }}</h1>
         
         <p>
           {{ t('home:title') }}

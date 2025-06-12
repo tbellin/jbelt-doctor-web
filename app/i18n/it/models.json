@@ -29,9 +29,11 @@
     "drawing": "Disegno"
   },
   "instances": {
+    "parametric": "Parametrico",
     "normal": "Normale",
     "generic": "Generico",
-    "instance": "Istanza"
+    "instance": "Istanza",
+    "bulk": "Bulk"
   },
   "list": {
     "title": "Lista Modelli"

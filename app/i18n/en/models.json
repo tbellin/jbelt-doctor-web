@@ -29,9 +29,11 @@
     "drawing": "Drawing"
   },
   "instances": {
+    "parametric": "Parametric",
     "normal": "Normal",
     "generic": "Generic",
-    "instance": "Instance"
+    "instance": "Instance",
+    "bulk": "Bulk"
   },
   "list": {
     "title": "Model List"

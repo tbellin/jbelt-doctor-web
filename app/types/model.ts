@@ -19,7 +19,9 @@ export interface Model {
   }
   
   export enum InstanceTypeEnum {
+    PARAMETRIC = 'PARAMETRIC',
     NORMAL = 'NORMAL',
     GENERIC = 'GENERIC',
-    INSTANCE = 'INSTANCE'
+    INSTANCE = 'INSTANCE',
+    BULK = 'BULK'
   }

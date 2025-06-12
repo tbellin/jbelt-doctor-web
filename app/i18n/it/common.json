@@ -48,7 +48,7 @@
     "status": "Stato",
     "roles": "Ruoli",
     "created_by": "Creato da",
-    "creatd_date": "Data di creazione",
+    "created_date": "Data di creazione",
     "back": "Indietro",
     "debug": "Debug",
     "debug_info": "Informazioni di debug",
@@ -67,10 +67,9 @@
     "user": "Utente",
     "admin": "Amministrazione",
     "panel": "Pannello",
-    "navigation.models": "Modelli",
-    "navigation.sheets": "Fogli",
     "manage_users": "Gestione Utenti",
     "navigation": {
-      "models": "Modelli"
+      "models": "Modelli",
+      "sheets": "Fogli"
     }
   }

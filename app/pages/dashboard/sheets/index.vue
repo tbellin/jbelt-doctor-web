@@ -26,63 +26,83 @@
       </div>
     </div>
 
-    <!-- Enhanced Stats Cards -->
-    <div class="row mb-4">
-      <div class="col-md-3">
-        <div class="card bg-primary text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h4 class="card-title mb-1">{{ sheets.length }}</h4>
-                <p class="card-text mb-0">{{ t('sheets:stats.total') }}</p>
-              </div>
-              <div class="fs-1 opacity-50">
-                <i class="bi bi-file-earmark-text"></i>
+    <!-- Stats Cards - Style matching Models -->
+    <div class="stats-section mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="stats-title mb-0">
+          <i class="bi bi-graph-up me-2"></i>
+          {{ t('sheets:stats.title') }}
+        </h6>
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          @click="toggleStatsCollapse"
+          :title="isStatsCollapsed ? 'Espandi statistiche' : 'Comprimi statistiche'"
+        >
+          <i class="bi" :class="isStatsCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+          {{ isStatsCollapsed ? 'Mostra' : 'Nascondi' }}
+        </button>
+      </div>
+      
+      <div class="row collapse-content" v-show="!isStatsCollapsed">
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('sheets:stats.total') }}</h6>
+                  <h3 class="card-title mb-0">{{ sheets.length }}</h3>
+                </div>
+                <div class="text-primary">
+                  <i class="bi bi-file-earmark-text fs-1"></i>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-success text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h4 class="card-title mb-1">{{ sheetsWithDrawing }}</h4>
-                <p class="card-text mb-0">{{ t('sheets:stats.withDrawing') }}</p>
-              </div>
-              <div class="fs-1 opacity-50">
-                <i class="bi bi-image"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-warning text-dark">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h4 class="card-title mb-1">{{ totalModelsAssociated }}</h4>
-                <p class="card-text mb-0">{{ t('sheets:stats.modelsAssociated') }}</p>
-              </div>
-              <div class="fs-1 opacity-50">
-                <i class="bi bi-gear-fill"></i>
+        
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('sheets:stats.withDrawing') }}</h6>
+                  <h3 class="card-title mb-0">{{ sheetsWithDrawing }}</h3>
+                </div>
+                <div class="text-success">
+                  <i class="bi bi-image fs-1"></i>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-info text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h4 class="card-title mb-1">{{ formatCount }}</h4>
-                <p class="card-text mb-0">{{ t('sheets:stats.formats') }}</p>
+        
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('sheets:stats.modelsAssociated') }}</h6>
+                  <h3 class="card-title mb-0">{{ totalModelsAssociated }}</h3>
+                </div>
+                <div class="text-warning">
+                  <i class="bi bi-gear-fill fs-1"></i>
+                </div>
               </div>
-              <div class="fs-1 opacity-50">
-                <i class="bi bi-rulers"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('sheets:stats.formats') }}</h6>
+                  <h3 class="card-title mb-0">{{ formatCount }}</h3>
+                </div>
+                <div class="text-info">
+                  <i class="bi bi-rulers fs-1"></i>
+                </div>
               </div>
             </div>
           </div>
@@ -411,16 +431,27 @@
       </div>
     </div>
 
-    <!-- Debug Panel (only in debug mode) -->
+    <!-- Debug Panel collassabile - solo se debug è attivo -->
     <div v-if="isDebugMode" class="mt-4">
-      <div class="card border-warning">
-        <div class="card-header bg-warning bg-opacity-10">
-          <div class="d-flex justify-content-between align-items-center">
+      <div class="card">
+        <div class="card-header">
+          <button 
+            class="btn btn-link w-100 text-start p-0 d-flex justify-content-between align-items-center"
+            type="button" 
+            @click="showDebugPanel = !showDebugPanel"
+            :aria-expanded="showDebugPanel"
+          >
             <span>
               <i class="bi bi-bug me-2"></i>
-              Debug Panel - Sheets
+              Debug API Panel - Sheets
             </span>
-            <div class="btn-group btn-group-sm">
+            <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+          </button>
+        </div>
+        <div v-show="showDebugPanel" class="card-body">
+          <!-- Test buttons -->
+          <div class="mb-3">
+            <div class="btn-group btn-group-sm flex-wrap">
               <button class="btn btn-outline-primary" @click="testBackend" :disabled="loading">
                 <i class="bi bi-wifi"></i> Test Backend
               </button>
@@ -445,14 +476,11 @@
               <button class="btn btn-outline-secondary" @click="runCompleteTest" :disabled="loading">
                 <i class="bi bi-check-all"></i> Full Test
               </button>
-              <button class="btn btn-outline-info" @click="showDebugPanel = !showDebugPanel">
-                <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
-              </button>
             </div>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="row small">
+          
+          <!-- Status info -->
+          <div class="row small mb-3">
             <div class="col-md-6">
               <strong>Auth Status:</strong> 
               <span :class="isAuthenticated ? 'text-success' : 'text-danger'">
@@ -475,25 +503,27 @@
               </div>
             </div>
           </div>
-        </div>
-        <div v-show="showDebugPanel" class="card-body border-top">
-          <h6>Loaded Data:</h6>
-          <div class="row">
-            <div class="col-6">
-              <strong>Sheets ({{ sheets.length }}):</strong>
-              <ul class="list-unstyled">
-                <li v-for="sheet in sheets.slice(0, 3)" :key="sheet.id" class="small">
-                  {{ sheet.id }}: {{ sheet.name }} ({{ sheet.formatType }})
-                </li>
-              </ul>
-            </div>
-            <div class="col-6">
-              <strong>Drawings ({{ availableDrawings.length }}):</strong>
-              <ul class="list-unstyled">
-                <li v-for="drawing in availableDrawings.slice(0, 3)" :key="drawing.id" class="small">
-                  {{ drawing.id }}: {{ drawing.name }}
-                </li>
-              </ul>
+          
+          <!-- Loaded data -->
+          <div class="border-top pt-3">
+            <h6>Loaded Data:</h6>
+            <div class="row">
+              <div class="col-6">
+                <strong>Sheets ({{ sheets.length }}):</strong>
+                <ul class="list-unstyled">
+                  <li v-for="sheet in sheets.slice(0, 3)" :key="sheet.id" class="small">
+                    {{ sheet.id }}: {{ sheet.name }} ({{ sheet.formatType }})
+                  </li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <strong>Drawings ({{ availableDrawings.length }}):</strong>
+                <ul class="list-unstyled">
+                  <li v-for="drawing in availableDrawings.slice(0, 3)" :key="drawing.id" class="small">
+                    {{ drawing.id }}: {{ drawing.name }}
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -548,6 +578,9 @@ const saving = ref(false)
 // Debug state
 const debugInfo = ref<string>('')
 const showDebugPanel = ref(false)
+
+// Stats collapse state
+const isStatsCollapsed = ref(false)
 
 // Form data - extended with models support
 const formData = ref({
@@ -992,6 +1025,11 @@ const getModelDisplayName = (modelId: string): string => {
   return model ? `${model.code} (${model.modelType})` : `ID: ${modelId}`
 }
 
+// Stats collapse function
+const toggleStatsCollapse = () => {
+  isStatsCollapsed.value = !isStatsCollapsed.value
+}
+
 // Debug functions (only if debug mode)
 const testBackend = async (): Promise<void> => {
   if (!isDebugMode) return
@@ -1418,5 +1456,61 @@ onMounted(async () => {
 <style scoped>
 .modal.show {
   display: block !important;
+}
+
+/* Stili per la sezione statistiche - matching Models */
+.stats-section {
+  padding: 1rem;
+  border-radius: 0.375rem;
+  background-color: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.stats-title {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Stile per le cards - matching Models */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Animazione per il collapse delle statistiche */
+.collapse-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Stile per i pulsanti di collapse */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn i {
+  transition: transform 0.2s ease;
+}
+
+/* Responsive per mobile */
+@media (max-width: 768px) {
+  .stats-section .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem;
+  }
+  
+  .stats-section .btn {
+    align-self: center;
+  }
+  
+  .btn-group.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
 }
 </style>

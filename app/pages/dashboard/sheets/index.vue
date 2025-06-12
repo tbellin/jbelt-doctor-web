@@ -112,9 +112,18 @@
     <!-- Simple Table -->
     <div class="card">
       <div class="card-header">
-        <h5 class="mb-0">Sheets List ({{ sheets.length }})</h5>
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Sheets List ({{ sheets.length }})</h5>
+          <button 
+            class="btn btn-sm btn-outline-secondary"
+            @click="toggleTableCollapse"
+            :title="isTableCollapsed ? 'Espandi tabella' : 'Comprimi tabella'"
+          >
+            <i class="bi" :class="isTableCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+          </button>
+        </div>
       </div>
-      <div class="card-body">
+      <div class="card-body collapse-content" v-show="!isTableCollapsed">
         <!-- Loading State -->
         <div v-if="loading" class="text-center py-4">
           <div class="spinner-border text-primary"></div>
@@ -581,6 +590,9 @@ const showDebugPanel = ref(false)
 // Stats collapse state
 const isStatsCollapsed = ref(false)
 
+// Table collapse state
+const isTableCollapsed = ref(false)
+
 // Form data - extended with models support
 const formData = ref({
   code: '',
@@ -1027,6 +1039,11 @@ const getModelDisplayName = (modelId: string): string => {
 // Stats collapse function
 const toggleStatsCollapse = () => {
   isStatsCollapsed.value = !isStatsCollapsed.value
+}
+
+// Table collapse function
+const toggleTableCollapse = () => {
+  isTableCollapsed.value = !isTableCollapsed.value
 }
 
 // Debug functions (only if debug mode)

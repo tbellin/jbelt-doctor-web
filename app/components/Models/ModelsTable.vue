@@ -5,15 +5,25 @@
 <template>
   <div class="card">
     <div class="card-header">
-      <h5 class="card-title mb-0">
-        {{ t('models:list.title') }}
-        <span v-if="models.length" class="badge bg-secondary ms-2">
-          {{ models.length }}
-        </span>
-      </h5>
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+          {{ t('models:list.title') }}
+          <span v-if="models.length" class="badge bg-secondary ms-2">
+            {{ models.length }}
+          </span>
+        </h5>
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          @click="toggleTableCollapse"
+          :title="isTableCollapsed ? t('models:table.expandTable') : t('models:table.collapseTable')"
+        >
+          <i class="bi" :class="isTableCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+          {{ isTableCollapsed ? t('models:table.show') : t('models:table.hide') }}
+        </button>
+      </div>
     </div>
     
-    <div class="card-body">
+    <div class="card-body collapse-content" v-show="!isTableCollapsed">
       <!-- Loading state -->
       <div v-if="loading" class="text-center py-4">
         <div class="spinner-border text-primary" role="status">
@@ -120,11 +130,25 @@
               <!-- Riga espandibile per i sheet associati -->
               <tr v-if="isExpanded(model.id || 0)" class="expanded-row">
                 <td></td>
-                <td colspan="6" class="p-0">
-                  <ModelSheetsList 
-                    :sheets="getModelSheets(model.id || 0)"
-                    :model-type="model.modelType"
+                <td colspan="6" class="p-3">
+                  <!-- Gestione fogli per modelli PART/ASSEMBLY -->
+                  <ModelSheetsManager 
+                    v-if="canHaveSheets(model.modelType)"
+                    :model="model"
+                    @update="handleSheetsUpdate"
                   />
+                  
+                  <!-- Vista semplice per altri tipi di modello -->
+                  <div v-else class="text-center text-muted py-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    {{ t('models:sheets.onlyPartAssemblyCanHaveSheets') }}
+                    <div class="small mt-1">
+                      {{ t('models:sheets.currentModelType') }}: 
+                      <span class="badge" :class="getTypeClass(model.modelType)">
+                        {{ t(`models:types.${model.modelType.toLowerCase()}`) }}
+                      </span>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </template>
@@ -172,9 +196,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Model } from '~/composables/useApi'
+import type { Model } from '~/types/model'
 import { useI18n } from '~/composables/useI18n'
-import ModelSheetsList from './ModelSheetsList.vue'
+import ModelSheetsManager from './ModelSheetsManager.vue'
 
 const { t } = useI18n()
 
@@ -201,6 +225,14 @@ defineEmits<{
   'changePage': [page: number]
 }>()
 
+// Stato del collapse della tabella
+const isTableCollapsed = ref(false)
+
+// Metodo per toggle del collapse della tabella
+const toggleTableCollapse = () => {
+  isTableCollapsed.value = !isTableCollapsed.value
+}
+
 const isExpanded = (modelId: number): boolean => {
   return props.expandedRows.has(modelId)
 }
@@ -225,6 +257,18 @@ const getTypeIcon = (type: string): string => {
     'DRAWING': 'bi-file-earmark-text'
   }
   return icons[type] || 'bi-box-seam'
+}
+
+// Controlla se un modello può avere fogli associati
+const canHaveSheets = (modelType: string): boolean => {
+  return modelType === 'PART' || modelType === 'ASSEMBLY'
+}
+
+// Gestisce aggiornamenti dai fogli
+const handleSheetsUpdate = () => {
+  // Notifica il componente parent che i fogli sono stati aggiornati
+  // Il parent potrebbe voler ricaricare i dati
+  console.log('[ModelsTable] Sheets updated, notifying parent')
 }
 </script>
 
@@ -265,6 +309,24 @@ const getTypeIcon = (type: string): string => {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
+/* Animazione per il collapse della tabella */
+.collapse-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Stile per il pulsante di collapse */
+.card-header .btn {
+  transition: all 0.2s ease;
+}
+
+.card-header .btn:hover {
+  transform: translateY(-1px);
+}
+
+.card-header .btn i {
+  transition: transform 0.2s ease;
+}
+
 @media (max-width: 768px) {
   .table-responsive {
     font-size: 0.875rem;
@@ -272,6 +334,20 @@ const getTypeIcon = (type: string): string => {
   
   .btn-group-sm > .btn {
     padding: 0.125rem 0.25rem;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .card-header .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  .card-header .btn {
+    align-self: center;
   }
 }
 </style>

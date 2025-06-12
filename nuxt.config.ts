@@ -57,7 +57,8 @@ export default defineNuxtConfig({
       apiHost: process.env.NUXT_PUBLIC_API_HOST || 'jbelt.org',
       apiPort: process.env.NUXT_PUBLIC_API_PORT || '8080',
       frontendHost: process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost',
-      frontendPort: process.env.NUXT_PUBLIC_FRONTEND_PORT || '3000'
+      frontendPort: process.env.NUXT_PUBLIC_FRONTEND_PORT || '3000',
+      debug: process.env.NUXT_DEBUG || 'false'
     }
   },
 
@@ -68,22 +69,8 @@ export default defineNuxtConfig({
     transpile: ['@popperjs/core'],
   },
 
-  // Opzioni di debug avanzate
-  // debug: process.env.NUXT_DEBUG === 'true',
-
   // Log dettagliati in modalità debug
-  logLevel: process.env.NUXT_DEBUG === 'true' ? 'verbose' : 'info',
-
-  vite: {
-    logLevel: process.env.NUXT_DEBUG === 'true' ? 'info' : 'warn'
-  },
-
-  // Assicurarsi che il middleware i18n sia eseguito per tutte le rotte
-  router: {
-    options: {
-      middleware: ['i18n']
-    }
-  }
+  logLevel: process.env.NUXT_DEBUG === 'true' ? 'verbose' : 'info'
 })
 
 // Version: 1.2.0

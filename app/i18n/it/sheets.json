@@ -1,0 +1,103 @@
+{
+  "title": "Gestione Fogli",
+  "loading": "Caricamento fogli in corso...",
+  "stats": {
+    "title": "Statistiche",
+    "total": "Totale Fogli",
+    "withDrawing": "Con Disegno",
+    "withoutDrawing": "Senza Disegno",
+    "formats": "Formati Diversi",
+    "expandStats": "Espandi statistiche",
+    "collapseStats": "Comprimi statistiche"
+  },
+  "search": {
+    "code": "Ricerca per Codice",
+    "codePlaceholder": "Inserisci codice foglio...",
+    "name": "Ricerca per Nome",
+    "namePlaceholder": "Inserisci nome foglio..."
+  },
+  "filter": {
+    "format": "Formato",
+    "drawing": "Disegno",
+    "withDrawing": "Con Disegno",
+    "withoutDrawing": "Senza Disegno"
+  },
+  "filters": {
+    "title": "Filtri e Ricerca",
+    "expandFilters": "Espandi filtri",
+    "collapseFilters": "Comprimi filtri"
+  },
+  "list": {
+    "title": "Lista Fogli"
+  },
+  "table": {
+    "id": "ID",
+    "code": "Codice",
+    "name": "Nome",
+    "format": "Formato",
+    "drawing": "Disegno",
+    "models": "Modelli",
+    "creoId": "Creo ID",
+    "noDrawing": "Nessun disegno",
+    "noModels": "Nessun modello",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "expandTable": "Espandi tabella fogli",
+    "collapseTable": "Comprimi tabella fogli"
+  },
+  "empty": {
+    "title": "Nessun foglio trovato",
+    "message": "Non ci sono fogli nel sistema. Inizia creandone uno nuovo."
+  },
+  "actions": {
+    "create": "Nuovo Foglio",
+    "createFirst": "Crea il primo foglio",
+    "refresh": "Aggiorna"
+  },
+  "modal": {
+    "create": "Crea Nuovo Foglio",
+    "edit": "Modifica Foglio",
+    "view": "Visualizza Foglio"
+  },
+  "form": {
+    "code": "Codice",
+    "name": "Nome",
+    "format": "Formato",
+    "creoId": "ID Creo",
+    "drawing": "Disegno Associato",
+    "noDrawing": "Nessun disegno",
+    "drawingHelp": "Seleziona opzionalmente un disegno da associare a questo foglio",
+    "balloon": "Balloon",
+    "balloonPlaceholder": "Inserisci riferimento balloon...",
+    "balloonHelp": "Riferimento balloon per annotazione CAD",
+    "models": "Modelli Associati",
+    "modelsHelp": "Seleziona modelli PART e ASSEMBLY da associare a questo foglio",
+    "selectedModels": "Modelli selezionati",
+    "removeModel": "Rimuovi modello",
+    "noModels": "Nessun modello PART o ASSEMBLY disponibile"
+  },
+  "validation": {
+    "codeRequired": "Il codice è obbligatorio",
+    "nameRequired": "Il nome è obbligatorio",
+    "formatRequired": "Il formato è obbligatorio"
+  },
+  "messages": {
+    "createSuccess": "Foglio creato con successo",
+    "updateSuccess": "Foglio aggiornato con successo",
+    "deleteSuccess": "Foglio eliminato con successo"
+  },
+  "confirmDelete": "Sei sicuro di voler eliminare il foglio '{name}'? Questa azione non può essere annullata.",
+  "view": {
+    "jsonData": "Dati JSON",
+    "sheetInfo": "Informazioni Foglio",
+    "fileInfo": "Informazioni File",
+    "drawingInfo": "Informazioni Disegno",
+    "fileName": "Nome File",
+    "fileSize": "Dimensione File",
+    "copy": "Copia",
+    "download": "Scarica",
+    "copyToClipboard": "Copia JSON negli appunti",
+    "downloadJson": "Scarica file JSON",
+    "associatedWith": "Associato con il disegno:"
+  }
+}

@@ -79,6 +79,11 @@
                     <i class="bi bi-box-seam me-2"></i> {{ t('navigation.models') }}
                   </NuxtLink>
                 </li>
+                <li class="nav-item" v-if="isAuthenticated">
+                  <NuxtLink to="/dashboard/sheets" class="nav-link">
+                    <i class="bi bi-file-earmark-text me-2"></i> {{ t('navigation.sheets') }}
+                  </NuxtLink>
+                </li>
               </ul>
             </div>
           </div>

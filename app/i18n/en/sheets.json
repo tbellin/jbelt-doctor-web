@@ -1,0 +1,103 @@
+{
+  "title": "Sheet Management",
+  "loading": "Loading sheets...",
+  "stats": {
+    "title": "Statistics",
+    "total": "Total Sheets",
+    "withDrawing": "With Drawing",
+    "withoutDrawing": "Without Drawing",
+    "formats": "Different Formats",
+    "expandStats": "Expand statistics",
+    "collapseStats": "Collapse statistics"
+  },
+  "search": {
+    "code": "Search by Code",
+    "codePlaceholder": "Enter sheet code...",
+    "name": "Search by Name",
+    "namePlaceholder": "Enter sheet name..."
+  },
+  "filter": {
+    "format": "Format",
+    "drawing": "Drawing",
+    "withDrawing": "With Drawing",
+    "withoutDrawing": "Without Drawing"
+  },
+  "filters": {
+    "title": "Filters and Search",
+    "expandFilters": "Expand filters",
+    "collapseFilters": "Collapse filters"
+  },
+  "list": {
+    "title": "Sheet List"
+  },
+  "table": {
+    "id": "ID",
+    "code": "Code",
+    "name": "Name",
+    "format": "Format",
+    "drawing": "Drawing",
+    "models": "Models",
+    "creoId": "Creo ID",
+    "noDrawing": "No drawing",
+    "noModels": "No models",
+    "show": "Show",
+    "hide": "Hide",
+    "expandTable": "Expand sheets table",
+    "collapseTable": "Collapse sheets table"
+  },
+  "empty": {
+    "title": "No sheets found",
+    "message": "There are no sheets in the system. Start by creating a new one."
+  },
+  "actions": {
+    "create": "New Sheet",
+    "createFirst": "Create first sheet",
+    "refresh": "Refresh"
+  },
+  "modal": {
+    "create": "Create New Sheet",
+    "edit": "Edit Sheet",
+    "view": "View Sheet"
+  },
+  "form": {
+    "code": "Code",
+    "name": "Name",
+    "format": "Format",
+    "creoId": "Creo ID",
+    "drawing": "Associated Drawing",
+    "noDrawing": "No drawing",
+    "drawingHelp": "Optionally select a drawing to associate with this sheet",
+    "balloon": "Balloon",
+    "balloonPlaceholder": "Enter balloon reference...",
+    "balloonHelp": "Balloon reference for CAD annotation",
+    "models": "Associated Models",
+    "modelsHelp": "Select PART and ASSEMBLY models to associate with this sheet",
+    "selectedModels": "Selected models",
+    "removeModel": "Remove model",
+    "noModels": "No PART or ASSEMBLY models available"
+  },
+  "validation": {
+    "codeRequired": "Code is required",
+    "nameRequired": "Name is required",
+    "formatRequired": "Format is required"
+  },
+  "messages": {
+    "createSuccess": "Sheet created successfully",
+    "updateSuccess": "Sheet updated successfully",
+    "deleteSuccess": "Sheet deleted successfully"
+  },
+  "confirmDelete": "Are you sure you want to delete the sheet '{name}'? This action cannot be undone.",
+  "view": {
+    "jsonData": "JSON Data",
+    "sheetInfo": "Sheet Information",
+    "fileInfo": "File Information",
+    "drawingInfo": "Drawing Information",
+    "fileName": "File Name",
+    "fileSize": "File Size",
+    "copy": "Copy",
+    "download": "Download",
+    "copyToClipboard": "Copy JSON to clipboard",
+    "downloadJson": "Download JSON file",
+    "associatedWith": "Associated with drawing:"
+  }
+}

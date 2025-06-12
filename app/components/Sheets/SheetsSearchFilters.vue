@@ -1,5 +1,5 @@
 <!--
-  Componente per i filtri di ricerca e selezione dei modelli
+  Componente per i filtri di ricerca e selezione degli sheet
   @version 1.0.0
 -->
 <template>
@@ -8,30 +8,30 @@
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="card-title mb-0">
           <i class="bi bi-funnel me-2"></i>
-          {{ t('models:filters.title') }}
+          {{ t('sheets:filters.title') }}
         </h6>
         <button 
           class="btn btn-sm btn-outline-secondary"
           @click="toggleFiltersCollapse"
-          :title="isFiltersCollapsed ? t('models:filters.expandFilters') : t('models:filters.collapseFilters')"
+          :title="isFiltersCollapsed ? t('sheets:filters.expandFilters') : t('sheets:filters.collapseFilters')"
         >
           <i class="bi" :class="isFiltersCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
-          {{ isFiltersCollapsed ? t('models:table.show') : t('models:table.hide') }}
+          {{ isFiltersCollapsed ? t('sheets:table.show') : t('sheets:table.hide') }}
         </button>
       </div>
     </div>
     <div class="card-body collapse-content" v-show="!isFiltersCollapsed">
       <div class="row">
-        <div class="col-md-4">
-          <label for="searchCode" class="form-label">{{ t('models:search.code') }}</label>
+        <div class="col-md-3">
+          <label for="searchCode" class="form-label">{{ t('sheets:search.code') }}</label>
           <div class="input-group">
             <input
               id="searchCode"
               :value="searchCode"
-              @input="handleSearchInput"
+              @input="handleSearchCodeInput"
               type="text"
               class="form-control"
-              :placeholder="t('models:search.codePlaceholder')"
+              :placeholder="t('sheets:search.codePlaceholder')"
               @keyup.enter="$emit('search')"
             >
             <button 
@@ -45,32 +45,53 @@
         </div>
         
         <div class="col-md-3">
-          <label for="filterType" class="form-label">{{ t('models:filter.type') }}</label>
+          <label for="searchName" class="form-label">{{ t('sheets:search.name') }}</label>
+          <div class="input-group">
+            <input
+              id="searchName"
+              :value="searchName"
+              @input="handleSearchNameInput"
+              type="text"
+              class="form-control"
+              :placeholder="t('sheets:search.namePlaceholder')"
+              @keyup.enter="$emit('searchByName')"
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              @click="$emit('searchByName')" 
+              :disabled="loading"
+            >
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="col-md-2">
+          <label for="filterFormat" class="form-label">{{ t('sheets:filter.format') }}</label>
           <select 
-            id="filterType" 
-            :model-value="selectedType" 
-            @change="handleTypeChange"
+            id="filterFormat" 
+            :value="selectedFormat" 
+            @change="handleFormatChange"
             class="form-select"
           >
             <option value="">{{ t('common:all') }}</option>
-            <option value="PART">{{ t('models:types.part') }}</option>
-            <option value="ASSEMBLY">{{ t('models:types.assembly') }}</option>
-            <option value="DRAWING">{{ t('models:types.drawing') }}</option>
+            <option v-for="format in availableFormats" :key="format" :value="format">
+              {{ format }}
+            </option>
           </select>
         </div>
         
-        <div class="col-md-3">
-          <label for="filterInstance" class="form-label">{{ t('models:filter.instance') }}</label>
+        <div class="col-md-2">
+          <label for="filterDrawing" class="form-label">{{ t('sheets:filter.drawing') }}</label>
           <select 
-            id="filterInstance" 
-            :model-value="selectedInstance" 
-            @change="handleInstanceChange"
+            id="filterDrawing" 
+            :value="selectedDrawing" 
+            @change="handleDrawingChange"
             class="form-select"
           >
             <option value="">{{ t('common:all') }}</option>
-            <option value="NORMAL">{{ t('models:instances.normal') }}</option>
-            <option value="GENERIC">{{ t('models:instances.generic') }}</option>
-            <option value="INSTANCE">{{ t('models:instances.instance') }}</option>
+            <option value="WITH_DRAWING">{{ t('sheets:filter.withDrawing') }}</option>
+            <option value="WITHOUT_DRAWING">{{ t('sheets:filter.withoutDrawing') }}</option>
           </select>
         </div>
         
@@ -96,8 +117,10 @@ const { t } = useI18n()
 
 interface Props {
   searchCode: string
-  selectedType: string
-  selectedInstance: string
+  searchName: string
+  selectedFormat: string
+  selectedDrawing: string
+  availableFormats: string[]
   loading?: boolean
 }
 
@@ -105,28 +128,35 @@ defineProps<Props>()
 
 const emit = defineEmits<{
   'update:searchCode': [value: string]
-  'update:selectedType': [value: string]
-  'update:selectedInstance': [value: string]
+  'update:searchName': [value: string]
+  'update:selectedFormat': [value: string]
+  'update:selectedDrawing': [value: string]
   'search': []
+  'searchByName': []
   'filtersChanged': []
   'clearFilters': []
 }>()
 
-const handleTypeChange = (event: Event) => {
+const handleFormatChange = (event: Event) => {
   const target = event.target as HTMLSelectElement
-  emit('update:selectedType', target.value)
+  emit('update:selectedFormat', target.value)
   emit('filtersChanged')
 }
 
-const handleInstanceChange = (event: Event) => {
+const handleDrawingChange = (event: Event) => {
   const target = event.target as HTMLSelectElement
-  emit('update:selectedInstance', target.value)
+  emit('update:selectedDrawing', target.value)
   emit('filtersChanged')
 }
 
-const handleSearchInput = (event: Event) => {
+const handleSearchCodeInput = (event: Event) => {
   const target = event.target as HTMLInputElement
   emit('update:searchCode', target.value)
+}
+
+const handleSearchNameInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  emit('update:searchName', target.value)
 }
 
 // Stato del collapse dei filtri

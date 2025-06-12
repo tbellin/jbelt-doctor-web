@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Model } from '~/composables/useApi'
+import type { Model } from '~/types/model'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n()

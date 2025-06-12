@@ -1,0 +1,260 @@
+// JDL model for the jbeltMap application
+// JHipster version: 8.10.0
+// Jbelt version: 0.6.0-SNAPSHOT
+// Jbelt project name: jbeltMapSrv
+
+application {
+  config {
+    baseName jbeltMapSrv,
+    applicationType monolith,
+    packageName org.jbelt.map,
+    authenticationType jwt,
+    prodDatabaseType postgresql,
+    devDatabaseType h2Disk,
+    buildTool maven,
+    clientFramework vue,
+    nativeLanguage it,
+    languages [en, it]
+  }
+  entities *
+}
+
+/*
+ * Elenchi predefiniti
+ */
+enum ModelType {
+  PART,
+  ASSEMBLY,
+  DRAWING,
+  FORMAT
+}
+
+enum DIN {
+  A0,
+  A1,
+  A2,
+  A3V,
+  A3O,
+  A4V,
+  A4O
+}
+
+enum TypeValue {
+  STRING,
+  INTEGER,
+  DOUBLE,
+  BOOLEAN,
+  DATE,
+  CONTENT,
+  URL
+}
+
+enum InstanceType {
+  PARAMETRIC,
+  NORMAL,
+  GENERIC,
+  INSTANCE,
+  BULK
+}
+
+/*
+ * Entità
+ */ 
+entity Item {
+  itemCode String
+  itemName String
+  itemActive Boolean
+  code String
+  active Boolean
+  createdAt Instant
+  updatedAt Instant
+  expirationDate Instant
+}
+
+entity Sheet {
+  creoId String
+  code String
+  name String
+  formatType DIN
+}
+
+entity Model {
+  code String
+  name String
+  modelType ModelType
+  instanceType InstanceType
+}
+
+entity ModelVersion {
+  versionNumber String
+  createdAt Instant
+  modifiedAt Instant
+  active Boolean
+  changeLog TextBlob
+}
+
+entity Format {
+  code String
+  name String
+  formatType DIN
+}
+
+entity Note {
+  creoId String
+  code String
+  name String
+  noteName String
+  noteValue String
+  noteType String
+  order Integer
+}
+
+entity Baloon {
+  creoId String
+  code String
+  name String
+  baloonName String
+  baloonValue String
+  baloonType String
+}
+
+entity Marker {
+  code String
+  name String
+  symbolName String
+}
+
+entity AttributeEntity {  // Rinominato da "Attributo" a "AttributeEntity"
+  creoId String
+  code String
+  name String
+  typeValue TypeValue
+  attributeValue String // Rinominato da "value" a "attributeValue"
+  category String
+  order Integer
+  kind String
+}
+
+entity AttributeTemplate {
+  code String
+  name String
+  typeValue TypeValue
+  category String
+  attributeValue String
+  order Integer
+}
+
+
+entity Archive{
+  code String
+  name String
+  type String
+  category String
+  fileName String
+  extension String
+  folder String
+  content AnyBlob
+}
+
+entity Author {
+  firstName String
+  lastName String
+  email String
+  phoneNumber String
+}
+
+entity Team {
+  name String
+  description String
+  address String
+  city String
+  country String
+}
+
+relationship OneToOne {
+  Model{file(name)} to Archive  
+  Format{file(name)} to Archive
+  Sheet{format(name)} to Format
+  Marker{file(name)} to Archive
+  Model{version(versionNumber)} to ModelVersion
+}
+
+relationship ManyToOne {
+  Author{user(login)} to User with builtInEntity
+  Author{team(name)} to Team
+  Team{headQuarter(name)} to Team
+  ModelVersion{designer(lastName)} to Author 
+  Model{item(itemCode)}  to Item
+  Sheet{drawing(name)} to Model
+  Note{baloon(name)} to Baloon
+  Baloon{sheet(name)} to Sheet
+  Baloon{symbol(name)} to Marker
+
+  AttributeEntity{note(name)} to Note   // Aggiornato per riflettere il nuovo nome dell'entità
+  AttributeEntity{model(name)} to Model // Aggiornato per riflettere il nuovo nome dell'entità
+  AttributeEntity{post(title)} to Post  // Aggiornato per riflettere il nuovo nome dell'entità
+  Model{generic(name)} to Model
+  Model{parent(name)} to Model
+}
+
+relationship ManyToMany {
+  Sheet{models(name)} to Model{sheets(name)}
+}
+
+entity Post {
+  title String
+  subTitle String
+  content TextBlob
+  publishedAt Instant
+  expiresAt Instant
+}
+
+entity PostType {
+  name String required
+}
+
+entity PostCategory {
+  name String required
+}
+
+entity NewsletterSubscriber {
+  email String
+  firstName String
+  lastName String
+  isSubscribed Boolean
+}
+
+entity Tracker {
+  name String
+  description String
+  modelId String
+  processId String
+  processName String
+  status String
+  createdAt Instant
+  updatedAt Instant
+}
+
+
+entity CallToAction {
+  title String
+  description String
+  content TextBlob
+  buttonLabel String
+  targetUrl String
+  senderEmail String
+  submittedAt Instant
+}
+
+relationship ManyToOne {
+  Post{type(name)} to PostType
+  Post{category(name)} to PostCategory
+  Post{author(firstName)} to Author
+  Tracker{author(lastName)} to Author
+}
+
+//paginate Post with pagination
+service * with serviceImpl
+search * with elasticsearch
+dto * with mapstruct
+filter *

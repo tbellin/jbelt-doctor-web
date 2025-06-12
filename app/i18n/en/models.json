@@ -2,10 +2,13 @@
   "title": "Model Management",
   "loading": "Loading models...",
   "stats": {
+    "title": "Statistics",
     "total": "Total Models",
     "parts": "Parts",
     "assemblies": "Assemblies",
-    "drawings": "Drawings"
+    "drawings": "Drawings",
+    "expandStats": "Expand statistics",
+    "collapseStats": "Collapse statistics"
   },
   "search": {
     "code": "Search by Code",
@@ -14,6 +17,11 @@
   "filter": {
     "type": "Model Type",
     "instance": "Instance Type"
+  },
+  "filters": {
+    "title": "Filters and Search",
+    "expandFilters": "Expand filters",
+    "collapseFilters": "Collapse filters"
   },
   "types": {
     "part": "Part",
@@ -37,7 +45,11 @@
     "expand": "Expand to show associated sheets",
     "collapse": "Collapse to hide sheets",
     "associatedSheets": "Associated Sheets",
-    "noSheets": "No sheets associated with this model"
+    "noSheets": "No sheets associated with this model",
+    "show": "Show",
+    "hide": "Hide",
+    "expandTable": "Expand models table",
+    "collapseTable": "Collapse models table"
   },
   "empty": {
     "title": "No models found",
@@ -94,6 +106,23 @@
     "relation": {
       "hasDrawing": "Has Drawing",
       "references": "References"
-    }
+    },
+    "associatedSheets": "Associated Sheets",
+    "addSheet": "Add Sheet",
+    "noSheetsAssociated": "No sheets associated",
+    "clickAddToAssociate": "Click 'Add Sheet' to associate sheets to this model",
+    "removeAssociation": "Remove association",
+    "confirmRemoveAssociation": "Remove association between sheet '{sheetName}' and model '{modelName}'?",
+    "addSheetsToModel": "Add Sheets to Model",
+    "addingToModel": "Adding sheets to model",
+    "modelType": "Model Type",
+    "searchSheets": "Search sheets...",
+    "noSheetsFound": "No sheets found",
+    "associatedModels": "associated models",
+    "alreadyAssociated": "Already associated",
+    "selectedCount": "{count} selected",
+    "addSelected": "Add Selected",
+    "onlyPartAssemblyCanHaveSheets": "Only PART and ASSEMBLY models can have associated sheets",
+    "currentModelType": "Current model type"
   }
 }

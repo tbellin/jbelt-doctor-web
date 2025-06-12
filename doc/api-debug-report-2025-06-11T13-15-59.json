@@ -1,0 +1,1402 @@
+{
+  "generatedAt": "2025-06-11T13:15:59.513Z",
+  "summary": {
+    "totalApiCalls": 21,
+    "sheetOperations": 13,
+    "modelOperations": 8,
+    "successfulCalls": 15,
+    "failedCalls": 6
+  },
+  "analysis": {
+    "sheetDataLossIssues": 3,
+    "drawingDataLossIssues": 0
+  },
+  "detailedLogs": {
+    "sheetOperations": [
+      {
+        "id": "uqiybb5oo",
+        "timestamp": "2025-06-11T13:15:51.541Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "o9so4kpjx",
+        "timestamp": "2025-06-11T13:15:51.532Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "u8pbi0x9z",
+        "timestamp": "2025-06-11T13:15:31.890Z",
+        "method": "PUT",
+        "url": "http://localhost:8080/api/sheets/1201",
+        "success": false,
+        "requestData": {
+          "models": {
+            "items": [
+              {
+                "id": 1252,
+                "code": "P004",
+                "name": "Part 004",
+                "modelType": "PART",
+                "instanceType": "NORMAL",
+                "file": null,
+                "item": null,
+                "parent": null
+              }
+            ]
+          },
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "el7b3oeju",
+        "timestamp": "2025-06-11T13:15:31.874Z",
+        "method": "PUT",
+        "url": "http://localhost:8080/api/sheets/1201",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": [
+            1252
+          ],
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": [],
+          "drawing": null,
+          "id": 1201
+        },
+        "dataLoss": {
+          "models": true,
+          "drawing": false
+        }
+      },
+      {
+        "id": "8vmoc8x2i",
+        "timestamp": "2025-06-11T13:15:31.863Z",
+        "method": "PUT",
+        "url": "http://localhost:8080/api/sheets/1201",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": [],
+          "drawing": null,
+          "id": 1201
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "nc13xin0s",
+        "timestamp": "2025-06-11T13:15:31.852Z",
+        "method": "PUT",
+        "url": "http://localhost:8080/api/sheets/1201",
+        "success": true,
+        "requestData": {
+          "models": [
+            {
+              "id": 1252,
+              "code": "P004",
+              "name": "Part 004",
+              "modelType": "PART",
+              "instanceType": "NORMAL",
+              "file": null,
+              "item": null,
+              "parent": null
+            }
+          ],
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": [],
+          "drawing": null,
+          "id": 1201
+        },
+        "dataLoss": {
+          "models": true,
+          "drawing": false
+        }
+      },
+      {
+        "id": "8ty3ejdof",
+        "timestamp": "2025-06-11T13:15:25.849Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "sqd2uqs6v",
+        "timestamp": "2025-06-11T13:15:25.840Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "v3sby8pc1",
+        "timestamp": "2025-06-11T13:15:01.812Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets/count",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "bt25m7t9v",
+        "timestamp": "2025-06-11T13:15:01.803Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "6bcd4r72u",
+        "timestamp": "2025-06-11T13:15:01.792Z",
+        "method": "PUT",
+        "url": "http://localhost:8080/api/sheets/1201",
+        "success": true,
+        "requestData": {
+          "models": [
+            {
+              "id": 1251,
+              "code": "P003",
+              "name": "Part 003",
+              "modelType": "PART",
+              "instanceType": "NORMAL",
+              "file": null,
+              "item": null,
+              "parent": null
+            }
+          ],
+          "modelIds": null,
+          "drawing": {
+            "id": 1101,
+            "code": "d001",
+            "name": "Disegno 001",
+            "modelType": "DRAWING",
+            "instanceType": "NORMAL",
+            "file": null,
+            "item": null,
+            "parent": null
+          },
+          "drawingId": null,
+          "code": "S002",
+          "name": "Sheet 002"
+        },
+        "responseData": {
+          "models": [],
+          "drawing": {
+            "id": 1101,
+            "code": null,
+            "name": "Disegno 001",
+            "modelType": null,
+            "instanceType": null,
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          "id": 1201
+        },
+        "dataLoss": {
+          "models": true,
+          "drawing": false
+        }
+      },
+      {
+        "id": "0y42y8vm4",
+        "timestamp": "2025-06-11T13:14:48.240Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets/count",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      },
+      {
+        "id": "8kkmtzxi5",
+        "timestamp": "2025-06-11T13:14:48.229Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/sheets",
+        "success": true,
+        "requestData": {
+          "models": null,
+          "modelIds": null,
+          "drawing": null,
+          "drawingId": null,
+          "code": null,
+          "name": null
+        },
+        "responseData": {
+          "models": null,
+          "drawing": null,
+          "id": null
+        },
+        "dataLoss": {
+          "models": false,
+          "drawing": false
+        }
+      }
+    ],
+    "modelOperations": [
+      {
+        "id": "63po32wnc",
+        "timestamp": "2025-06-11T13:15:51.537Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models/1102/sheets",
+        "success": false,
+        "responseData": {
+          "type": "https://www.jhipster.tech/problem/problem-with-message",
+          "title": "Not Found",
+          "status": 404,
+          "detail": "No static resource api/models/1102/sheets.",
+          "instance": "/api/models/1102/sheets",
+          "message": "error.http.404",
+          "path": "/api/models/1102/sheets"
+        }
+      },
+      {
+        "id": "3etwrvoek",
+        "timestamp": "2025-06-11T13:15:51.531Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models/1102/sheets",
+        "success": false,
+        "responseData": {
+          "type": "https://www.jhipster.tech/problem/problem-with-message",
+          "title": "Not Found",
+          "status": 404,
+          "detail": "No static resource api/models/1102/sheets.",
+          "instance": "/api/models/1102/sheets",
+          "message": "error.http.404",
+          "path": "/api/models/1102/sheets"
+        }
+      },
+      {
+        "id": "wwvetz94x",
+        "timestamp": "2025-06-11T13:15:31.897Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models/1252/sheets",
+        "success": false,
+        "responseData": {
+          "type": "https://www.jhipster.tech/problem/problem-with-message",
+          "title": "Not Found",
+          "status": 404,
+          "detail": "No static resource api/models/1252/sheets.",
+          "instance": "/api/models/1252/sheets",
+          "message": "error.http.404",
+          "path": "/api/models/1252/sheets"
+        }
+      },
+      {
+        "id": "ou1ufadnt",
+        "timestamp": "2025-06-11T13:15:25.844Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models/1252/sheets",
+        "success": false,
+        "responseData": {
+          "type": "https://www.jhipster.tech/problem/problem-with-message",
+          "title": "Not Found",
+          "status": 404,
+          "detail": "No static resource api/models/1252/sheets.",
+          "instance": "/api/models/1252/sheets",
+          "message": "error.http.404",
+          "path": "/api/models/1252/sheets"
+        }
+      },
+      {
+        "id": "oj17io13c",
+        "timestamp": "2025-06-11T13:15:25.837Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models/1252/sheets",
+        "success": false,
+        "responseData": {
+          "type": "https://www.jhipster.tech/problem/problem-with-message",
+          "title": "Not Found",
+          "status": 404,
+          "detail": "No static resource api/models/1252/sheets.",
+          "instance": "/api/models/1252/sheets",
+          "message": "error.http.404",
+          "path": "/api/models/1252/sheets"
+        }
+      },
+      {
+        "id": "3gwdhufkp",
+        "timestamp": "2025-06-11T13:15:18.631Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models/count",
+        "success": true,
+        "responseData": 4
+      },
+      {
+        "id": "eldu5g2td",
+        "timestamp": "2025-06-11T13:15:18.612Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models",
+        "success": true,
+        "responseData": [
+          {
+            "id": 1101,
+            "code": "d001",
+            "name": "Disegno 001",
+            "modelType": "DRAWING",
+            "instanceType": "NORMAL",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          {
+            "id": 1102,
+            "code": "P001",
+            "name": "Part 001",
+            "modelType": "PART",
+            "instanceType": "PARAMETRIC",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": [
+              {
+                "id": 1151,
+                "creoId": null,
+                "code": null,
+                "name": null,
+                "formatType": null,
+                "format": null,
+                "drawing": null,
+                "models": []
+              }
+            ]
+          },
+          {
+            "id": 1251,
+            "code": "P003",
+            "name": "Part 003",
+            "modelType": "PART",
+            "instanceType": "NORMAL",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          {
+            "id": 1252,
+            "code": "P004",
+            "name": "Part 004",
+            "modelType": "PART",
+            "instanceType": "NORMAL",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          }
+        ]
+      },
+      {
+        "id": "c02jp5gdq",
+        "timestamp": "2025-06-11T13:14:48.190Z",
+        "method": "GET",
+        "url": "http://localhost:8080/api/models",
+        "success": true,
+        "responseData": [
+          {
+            "id": 1101,
+            "code": "d001",
+            "name": "Disegno 001",
+            "modelType": "DRAWING",
+            "instanceType": "NORMAL",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          {
+            "id": 1102,
+            "code": "P001",
+            "name": "Part 001",
+            "modelType": "PART",
+            "instanceType": "PARAMETRIC",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": [
+              {
+                "id": 1151,
+                "creoId": null,
+                "code": null,
+                "name": null,
+                "formatType": null,
+                "format": null,
+                "drawing": null,
+                "models": []
+              }
+            ]
+          },
+          {
+            "id": 1251,
+            "code": "P003",
+            "name": "Part 003",
+            "modelType": "PART",
+            "instanceType": "NORMAL",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          {
+            "id": 1252,
+            "code": "P004",
+            "name": "Part 004",
+            "modelType": "PART",
+            "instanceType": "NORMAL",
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          }
+        ]
+      }
+    ]
+  },
+  "fullLogs": [
+    {
+      "id": "uqiybb5oo",
+      "timestamp": "2025-06-11T13:15:51.541Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets",
+      "responseData": [
+        {
+          "id": 1151,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": [
+            {
+              "id": 1102,
+              "code": null,
+              "name": null,
+              "modelType": null,
+              "instanceType": null,
+              "file": null,
+              "version": null,
+              "item": null,
+              "generic": null,
+              "parent": null,
+              "sheets": []
+            }
+          ]
+        },
+        {
+          "id": 1201,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 9
+    },
+    {
+      "id": "63po32wnc",
+      "timestamp": "2025-06-11T13:15:51.537Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models/1102/sheets",
+      "responseData": {
+        "type": "https://www.jhipster.tech/problem/problem-with-message",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No static resource api/models/1102/sheets.",
+        "instance": "/api/models/1102/sheets",
+        "message": "error.http.404",
+        "path": "/api/models/1102/sheets"
+      },
+      "responseStatus": 404,
+      "success": false,
+      "error": "error.http.404",
+      "duration": 14
+    },
+    {
+      "id": "o9so4kpjx",
+      "timestamp": "2025-06-11T13:15:51.532Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets",
+      "responseData": [
+        {
+          "id": 1151,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": [
+            {
+              "id": 1102,
+              "code": null,
+              "name": null,
+              "modelType": null,
+              "instanceType": null,
+              "file": null,
+              "version": null,
+              "item": null,
+              "generic": null,
+              "parent": null,
+              "sheets": []
+            }
+          ]
+        },
+        {
+          "id": 1201,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 10
+    },
+    {
+      "id": "3etwrvoek",
+      "timestamp": "2025-06-11T13:15:51.531Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models/1102/sheets",
+      "responseData": {
+        "type": "https://www.jhipster.tech/problem/problem-with-message",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No static resource api/models/1102/sheets.",
+        "instance": "/api/models/1102/sheets",
+        "message": "error.http.404",
+        "path": "/api/models/1102/sheets"
+      },
+      "responseStatus": 404,
+      "success": false,
+      "error": "error.http.404",
+      "duration": 11
+    },
+    {
+      "id": "wwvetz94x",
+      "timestamp": "2025-06-11T13:15:31.897Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models/1252/sheets",
+      "responseData": {
+        "type": "https://www.jhipster.tech/problem/problem-with-message",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No static resource api/models/1252/sheets.",
+        "instance": "/api/models/1252/sheets",
+        "message": "error.http.404",
+        "path": "/api/models/1252/sheets"
+      },
+      "responseStatus": 404,
+      "success": false,
+      "error": "error.http.404",
+      "duration": 5
+    },
+    {
+      "id": "u8pbi0x9z",
+      "timestamp": "2025-06-11T13:15:31.890Z",
+      "method": "PUT",
+      "url": "http://localhost:8080/api/sheets/1201",
+      "requestBody": {
+        "models": {
+          "items": [
+            {
+              "id": 1252,
+              "code": "P004",
+              "name": "Part 004",
+              "modelType": "PART",
+              "instanceType": "NORMAL",
+              "file": null,
+              "item": null,
+              "parent": null
+            }
+          ]
+        },
+        "id": 1201
+      },
+      "responseData": {
+        "type": "about:blank",
+        "title": "Bad Request",
+        "status": 400,
+        "detail": "Failed to read request",
+        "instance": "/api/sheets/1201"
+      },
+      "responseStatus": 400,
+      "success": false,
+      "error": "HTTP Error: 400",
+      "duration": 14
+    },
+    {
+      "id": "el7b3oeju",
+      "timestamp": "2025-06-11T13:15:31.874Z",
+      "method": "PUT",
+      "url": "http://localhost:8080/api/sheets/1201",
+      "requestBody": {
+        "modelIds": [
+          1252
+        ],
+        "id": 1201
+      },
+      "responseData": {
+        "id": 1201,
+        "creoId": null,
+        "code": null,
+        "name": null,
+        "formatType": null,
+        "format": null,
+        "drawing": null,
+        "models": []
+      },
+      "responseStatus": 200,
+      "success": true,
+      "duration": 10
+    },
+    {
+      "id": "8vmoc8x2i",
+      "timestamp": "2025-06-11T13:15:31.863Z",
+      "method": "PUT",
+      "url": "http://localhost:8080/api/sheets/1201",
+      "requestBody": {
+        "modelsSet": [
+          {
+            "id": 1252,
+            "code": "P004",
+            "name": "Part 004",
+            "modelType": "PART",
+            "instanceType": "NORMAL",
+            "file": null,
+            "item": null,
+            "parent": null
+          }
+        ],
+        "id": 1201
+      },
+      "responseData": {
+        "id": 1201,
+        "creoId": null,
+        "code": null,
+        "name": null,
+        "formatType": null,
+        "format": null,
+        "drawing": null,
+        "models": []
+      },
+      "responseStatus": 200,
+      "success": true,
+      "duration": 10
+    },
+    {
+      "id": "nc13xin0s",
+      "timestamp": "2025-06-11T13:15:31.852Z",
+      "method": "PUT",
+      "url": "http://localhost:8080/api/sheets/1201",
+      "requestBody": {
+        "models": [
+          {
+            "id": 1252,
+            "code": "P004",
+            "name": "Part 004",
+            "modelType": "PART",
+            "instanceType": "NORMAL",
+            "file": null,
+            "item": null,
+            "parent": null
+          }
+        ],
+        "id": 1201
+      },
+      "responseData": {
+        "id": 1201,
+        "creoId": null,
+        "code": null,
+        "name": null,
+        "formatType": null,
+        "format": null,
+        "drawing": null,
+        "models": []
+      },
+      "responseStatus": 200,
+      "success": true,
+      "duration": 12
+    },
+    {
+      "id": "8ty3ejdof",
+      "timestamp": "2025-06-11T13:15:25.849Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets",
+      "responseData": [
+        {
+          "id": 1151,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": [
+            {
+              "id": 1102,
+              "code": null,
+              "name": null,
+              "modelType": null,
+              "instanceType": null,
+              "file": null,
+              "version": null,
+              "item": null,
+              "generic": null,
+              "parent": null,
+              "sheets": []
+            }
+          ]
+        },
+        {
+          "id": 1201,
+          "creoId": "2",
+          "code": "S002",
+          "name": "Sheet 002",
+          "formatType": "A3O",
+          "format": null,
+          "drawing": {
+            "id": 1101,
+            "code": null,
+            "name": "Disegno 001",
+            "modelType": null,
+            "instanceType": null,
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          "models": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 10
+    },
+    {
+      "id": "ou1ufadnt",
+      "timestamp": "2025-06-11T13:15:25.844Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models/1252/sheets",
+      "responseData": {
+        "type": "https://www.jhipster.tech/problem/problem-with-message",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No static resource api/models/1252/sheets.",
+        "instance": "/api/models/1252/sheets",
+        "message": "error.http.404",
+        "path": "/api/models/1252/sheets"
+      },
+      "responseStatus": 404,
+      "success": false,
+      "error": "error.http.404",
+      "duration": 15
+    },
+    {
+      "id": "sqd2uqs6v",
+      "timestamp": "2025-06-11T13:15:25.840Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets",
+      "responseData": [
+        {
+          "id": 1151,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": [
+            {
+              "id": 1102,
+              "code": null,
+              "name": null,
+              "modelType": null,
+              "instanceType": null,
+              "file": null,
+              "version": null,
+              "item": null,
+              "generic": null,
+              "parent": null,
+              "sheets": []
+            }
+          ]
+        },
+        {
+          "id": 1201,
+          "creoId": "2",
+          "code": "S002",
+          "name": "Sheet 002",
+          "formatType": "A3O",
+          "format": null,
+          "drawing": {
+            "id": 1101,
+            "code": null,
+            "name": "Disegno 001",
+            "modelType": null,
+            "instanceType": null,
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          "models": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 10
+    },
+    {
+      "id": "oj17io13c",
+      "timestamp": "2025-06-11T13:15:25.837Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models/1252/sheets",
+      "responseData": {
+        "type": "https://www.jhipster.tech/problem/problem-with-message",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No static resource api/models/1252/sheets.",
+        "instance": "/api/models/1252/sheets",
+        "message": "error.http.404",
+        "path": "/api/models/1252/sheets"
+      },
+      "responseStatus": 404,
+      "success": false,
+      "error": "error.http.404",
+      "duration": 12
+    },
+    {
+      "id": "3gwdhufkp",
+      "timestamp": "2025-06-11T13:15:18.631Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models/count",
+      "responseData": 4,
+      "responseStatus": 200,
+      "success": true,
+      "duration": 16
+    },
+    {
+      "id": "eldu5g2td",
+      "timestamp": "2025-06-11T13:15:18.612Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models",
+      "responseData": [
+        {
+          "id": 1101,
+          "code": "d001",
+          "name": "Disegno 001",
+          "modelType": "DRAWING",
+          "instanceType": "NORMAL",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        },
+        {
+          "id": 1102,
+          "code": "P001",
+          "name": "Part 001",
+          "modelType": "PART",
+          "instanceType": "PARAMETRIC",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": [
+            {
+              "id": 1151,
+              "creoId": null,
+              "code": null,
+              "name": null,
+              "formatType": null,
+              "format": null,
+              "drawing": null,
+              "models": []
+            }
+          ]
+        },
+        {
+          "id": 1251,
+          "code": "P003",
+          "name": "Part 003",
+          "modelType": "PART",
+          "instanceType": "NORMAL",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        },
+        {
+          "id": 1252,
+          "code": "P004",
+          "name": "Part 004",
+          "modelType": "PART",
+          "instanceType": "NORMAL",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 18
+    },
+    {
+      "id": "v3sby8pc1",
+      "timestamp": "2025-06-11T13:15:01.812Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets/count",
+      "responseData": 2,
+      "responseStatus": 200,
+      "success": true,
+      "duration": 7
+    },
+    {
+      "id": "bt25m7t9v",
+      "timestamp": "2025-06-11T13:15:01.803Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets",
+      "responseData": [
+        {
+          "id": 1151,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": [
+            {
+              "id": 1102,
+              "code": null,
+              "name": null,
+              "modelType": null,
+              "instanceType": null,
+              "file": null,
+              "version": null,
+              "item": null,
+              "generic": null,
+              "parent": null,
+              "sheets": []
+            }
+          ]
+        },
+        {
+          "id": 1201,
+          "creoId": "2",
+          "code": "S002",
+          "name": "Sheet 002",
+          "formatType": "A3O",
+          "format": null,
+          "drawing": {
+            "id": 1101,
+            "code": null,
+            "name": "Disegno 001",
+            "modelType": null,
+            "instanceType": null,
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          "models": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 10
+    },
+    {
+      "id": "6bcd4r72u",
+      "timestamp": "2025-06-11T13:15:01.792Z",
+      "method": "PUT",
+      "url": "http://localhost:8080/api/sheets/1201",
+      "requestBody": {
+        "code": "S002",
+        "name": "Sheet 002",
+        "formatType": "A3O",
+        "creoId": "2",
+        "models": [
+          {
+            "id": 1251,
+            "code": "P003",
+            "name": "Part 003",
+            "modelType": "PART",
+            "instanceType": "NORMAL",
+            "file": null,
+            "item": null,
+            "parent": null
+          }
+        ],
+        "drawing": {
+          "id": 1101,
+          "code": "d001",
+          "name": "Disegno 001",
+          "modelType": "DRAWING",
+          "instanceType": "NORMAL",
+          "file": null,
+          "item": null,
+          "parent": null
+        },
+        "id": 1201
+      },
+      "responseData": {
+        "id": 1201,
+        "creoId": "2",
+        "code": "S002",
+        "name": "Sheet 002",
+        "formatType": "A3O",
+        "format": null,
+        "drawing": {
+          "id": 1101,
+          "code": null,
+          "name": "Disegno 001",
+          "modelType": null,
+          "instanceType": null,
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        },
+        "models": []
+      },
+      "responseStatus": 200,
+      "success": true,
+      "duration": 11
+    },
+    {
+      "id": "0y42y8vm4",
+      "timestamp": "2025-06-11T13:14:48.240Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets/count",
+      "responseData": 2,
+      "responseStatus": 200,
+      "success": true,
+      "duration": 9
+    },
+    {
+      "id": "8kkmtzxi5",
+      "timestamp": "2025-06-11T13:14:48.229Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/sheets",
+      "responseData": [
+        {
+          "id": 1151,
+          "creoId": null,
+          "code": null,
+          "name": null,
+          "formatType": null,
+          "format": null,
+          "drawing": null,
+          "models": [
+            {
+              "id": 1102,
+              "code": null,
+              "name": null,
+              "modelType": null,
+              "instanceType": null,
+              "file": null,
+              "version": null,
+              "item": null,
+              "generic": null,
+              "parent": null,
+              "sheets": []
+            }
+          ]
+        },
+        {
+          "id": 1201,
+          "creoId": "2",
+          "code": "S002",
+          "name": "Sheet 002",
+          "formatType": "A3O",
+          "format": null,
+          "drawing": {
+            "id": 1101,
+            "code": null,
+            "name": "Disegno 001",
+            "modelType": null,
+            "instanceType": null,
+            "file": null,
+            "version": null,
+            "item": null,
+            "generic": null,
+            "parent": null,
+            "sheets": []
+          },
+          "models": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 35
+    },
+    {
+      "id": "c02jp5gdq",
+      "timestamp": "2025-06-11T13:14:48.190Z",
+      "method": "GET",
+      "url": "http://localhost:8080/api/models",
+      "responseData": [
+        {
+          "id": 1101,
+          "code": "d001",
+          "name": "Disegno 001",
+          "modelType": "DRAWING",
+          "instanceType": "NORMAL",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        },
+        {
+          "id": 1102,
+          "code": "P001",
+          "name": "Part 001",
+          "modelType": "PART",
+          "instanceType": "PARAMETRIC",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": [
+            {
+              "id": 1151,
+              "creoId": null,
+              "code": null,
+              "name": null,
+              "formatType": null,
+              "format": null,
+              "drawing": null,
+              "models": []
+            }
+          ]
+        },
+        {
+          "id": 1251,
+          "code": "P003",
+          "name": "Part 003",
+          "modelType": "PART",
+          "instanceType": "NORMAL",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        },
+        {
+          "id": 1252,
+          "code": "P004",
+          "name": "Part 004",
+          "modelType": "PART",
+          "instanceType": "NORMAL",
+          "file": null,
+          "version": null,
+          "item": null,
+          "generic": null,
+          "parent": null,
+          "sheets": []
+        }
+      ],
+      "responseStatus": 200,
+      "success": true,
+      "duration": 40
+    }
+  ]
+}

@@ -6,6 +6,8 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "dev:clean": "rm -rf .output .nuxt && nuxt dev",
+    "dev:debug": "rm -rf .output .nuxt && NUXT_DEBUG=true nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

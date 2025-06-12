@@ -68,6 +68,7 @@
     "admin": "Administration",
     "panel": "Dashboard",
     "navigation.models": "Models",
+    "navigation.sheets": "Sheets",
     "manage_users": "Manage Users",
     "navigation": {
       "models": "Models"

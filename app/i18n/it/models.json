@@ -2,10 +2,13 @@
   "title": "Gestione Modelli",
   "loading": "Caricamento modelli in corso...",
   "stats": {
+    "title": "Statistiche",
     "total": "Totale Modelli",
     "parts": "Parti",
     "assemblies": "Assiemi",
-    "drawings": "Disegni"
+    "drawings": "Disegni",
+    "expandStats": "Espandi statistiche",
+    "collapseStats": "Comprimi statistiche"
   },
   "search": {
     "code": "Ricerca per Codice",
@@ -14,6 +17,11 @@
   "filter": {
     "type": "Tipo Modello",
     "instance": "Tipo Istanza"
+  },
+  "filters": {
+    "title": "Filtri e Ricerca",
+    "expandFilters": "Espandi filtri",
+    "collapseFilters": "Comprimi filtri"
   },
   "types": {
     "part": "Parte",
@@ -37,7 +45,11 @@
     "expand": "Espandi per mostrare i fogli associati",
     "collapse": "Comprimi per nascondere i fogli",
     "associatedSheets": "Fogli Associati",
-    "noSheets": "Nessun foglio associato a questo modello"
+    "noSheets": "Nessun foglio associato a questo modello",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "expandTable": "Espandi tabella modelli",
+    "collapseTable": "Comprimi tabella modelli"
   },
   "empty": {
     "title": "Nessun modello trovato",
@@ -94,6 +106,23 @@
     "relation": {
       "hasDrawing": "Ha Disegno",
       "references": "Referenzia"
-    }
+    },
+    "associatedSheets": "Fogli Associati",
+    "addSheet": "Aggiungi Foglio",
+    "noSheetsAssociated": "Nessun foglio associato",
+    "clickAddToAssociate": "Clicca 'Aggiungi Foglio' per associare fogli a questo modello",
+    "removeAssociation": "Rimuovi associazione",
+    "confirmRemoveAssociation": "Rimuovere l'associazione tra il foglio '{sheetName}' e il modello '{modelName}'?",
+    "addSheetsToModel": "Aggiungi Fogli al Modello",
+    "addingToModel": "Aggiungendo fogli al modello",
+    "modelType": "Tipo Modello",
+    "searchSheets": "Cerca fogli...",
+    "noSheetsFound": "Nessun foglio trovato",
+    "associatedModels": "modelli associati",
+    "alreadyAssociated": "Già associato",
+    "selectedCount": "{count} selezionati",
+    "addSelected": "Aggiungi Selezionati",
+    "onlyPartAssemblyCanHaveSheets": "Solo i modelli PART e ASSEMBLY possono avere fogli associati",
+    "currentModelType": "Tipo modello corrente"
   }
 }

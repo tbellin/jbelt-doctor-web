@@ -68,6 +68,29 @@
       @copy="copyModelJson"
       @download="downloadModelJson"
     />
+
+    <!-- Debug Panel collassabile - solo se debug è attivo -->
+    <div v-if="isDebugMode" class="mt-4">
+      <div class="card">
+        <div class="card-header">
+          <button 
+            class="btn btn-link w-100 text-start p-0 d-flex justify-content-between align-items-center"
+            type="button" 
+            @click="showDebugPanel = !showDebugPanel"
+            :aria-expanded="showDebugPanel"
+          >
+            <span>
+              <i class="bi bi-bug me-2"></i>
+              Debug API Panel - Models
+            </span>
+            <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+          </button>
+        </div>
+        <div v-show="showDebugPanel" class="card-body p-0">
+          <ApiDebugPanel />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -79,11 +102,14 @@ import ModelsSearchFilters from '~/components/Models/ModelsSearchFilters.vue'
 import ModelsTable from '~/components/Models/ModelsTable.vue'
 import ModelFormModal from '~/components/Models/ModelFormModal.vue'
 import ModelViewModal from '~/components/Models/ModelViewModal.vue'
+import ApiDebugPanel from '~/components/Debug/ApiDebugPanel.vue'
 
 // Import dei composables e tipi
-import { useApi, type Model, type ApiResponse } from '~/composables/useApi'
+import { useApi, type ApiResponse } from '~/composables/useApi'
+import type { Model } from '~/types/model'
 import { useI18n } from '~/composables/useI18n'
 import { useAuth } from '~/composables/useAuth'
+import { useDebug } from '~/composables/useDebug'
 
 const { t, loadNamespace } = useI18n()
 
@@ -116,6 +142,10 @@ const itemsPerPage = 20
 
 // Modal e form
 const showCreateModal = ref(false)
+
+// Debug panel
+const { isDebugMode } = useDebug()
+const showDebugPanel = ref(false)
 const showViewModal = ref(false)
 const viewingModel = ref<Model | null>(null)
 const editingModel = ref<Model | null>(null)
@@ -176,11 +206,10 @@ const loadSheetsForModel = async (model: Model): Promise<void> => {
   console.log('[Models] Loading sheets for model:', model.code, 'type:', model.modelType)
   
   try {
-    let response: any
-    
     if (model.modelType === 'DRAWING') {
+      // Per i DRAWING, cerca i fogli che usano questo disegno
       console.log('[Models] Calling API: GET /api/sheets?drawingId.equals=' + model.id)
-      response = await sheets.getByDrawing(model.id)
+      const response = await sheets.getByDrawing(model.id)
       
       if (response.success) {
         modelSheets.value[modelId] = response.data || []
@@ -190,23 +219,39 @@ const loadSheetsForModel = async (model: Model): Promise<void> => {
         modelSheets.value[modelId] = []
       }
     } else if (model.modelType === 'PART' || model.modelType === 'ASSEMBLY') {
-      console.log('[Models] Calling API: GET /api/models/' + model.id + '/sheets')
-      response = await sheets.getByModel(model.id)
+      // Per PART/ASSEMBLY, usa i dati già disponibili nel modello
+      console.log('[Models] Using sheets data already available in model object')
       
-      if (response.success) {
-        modelSheets.value[modelId] = response.data || []
-        console.log('[Models] Found', response.data?.length || 0, 'sheets referencing part/assembly:', model.code)
+      if (model.sheets && Array.isArray(model.sheets)) {
+        modelSheets.value[modelId] = model.sheets
+        console.log('[Models] Found', model.sheets.length, 'sheets already loaded for part/assembly:', model.code)
+        
+        // Debug: mostra i dettagli dei fogli trovati
+        model.sheets.forEach((sheet, index) => {
+          console.log(`[Models] Sheet ${index + 1}:`, {
+            id: sheet.id,
+            code: sheet.code || 'NO_CODE',
+            name: sheet.name || 'NO_NAME',
+            type: typeof sheet
+          })
+        })
       } else {
-        console.error('[Models] Failed to load sheets by model:', response.error)
-        console.log('[Models] Fallback: using generic sheet search')
+        console.log('[Models] No sheets array found in model object, trying API fallback')
+        // Fallback: cerca tra tutti i fogli quelli che hanno questo modello nei loro models[]
         const allSheetsResponse = await sheets.getAll()
         if (allSheetsResponse.success) {
-          const associatedSheets = allSheetsResponse.data?.filter(sheet => 
-            sheet.code.includes(model.code) || 
-            sheet.name.toLowerCase().includes(model.code.toLowerCase())
-          ) || []
+          const associatedSheets = allSheetsResponse.data?.filter(sheet => {
+            if (sheet.models && Array.isArray(sheet.models)) {
+              return sheet.models.some((sheetModel: any) => {
+                const sheetModelId = typeof sheetModel === 'object' ? sheetModel.id : sheetModel
+                return sheetModelId === model.id
+              })
+            }
+            return false
+          }) || []
+          
           modelSheets.value[modelId] = associatedSheets
-          console.log('[Models] Fallback found', associatedSheets.length, 'sheets for:', model.code)
+          console.log('[Models] Fallback found', associatedSheets.length, 'sheets referencing model:', model.code)
         } else {
           modelSheets.value[modelId] = []
         }
@@ -245,6 +290,16 @@ const loadModels = async (): Promise<void> => {
     if (modelsResponse.success) {
       allModels.value = modelsResponse.data || []
       console.log('[Models] Modelli caricati:', allModels.value.length)
+      
+      // Pre-carica i fogli per tutti i modelli che ne hanno
+      console.log('[Models] Pre-loading sheets data for models...')
+      allModels.value.forEach(model => {
+        if (model.sheets && Array.isArray(model.sheets) && model.sheets.length > 0) {
+          modelSheets.value[model.id!] = model.sheets
+          console.log(`[Models] Pre-loaded ${model.sheets.length} sheets for model ${model.code} (${model.modelType})`)
+        }
+      })
+      
       applyFilters()
     } else {
       console.error('[Models] Errore getAll():', modelsResponse.error)

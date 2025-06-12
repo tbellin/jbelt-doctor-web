@@ -3,7 +3,23 @@
   @version 1.0.0
 -->
 <template>
-  <div class="row mb-4">
+  <div class="stats-section mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="stats-title mb-0">
+        <i class="bi bi-graph-up me-2"></i>
+        {{ t('models:stats.title') }}
+      </h6>
+      <button 
+        class="btn btn-sm btn-outline-secondary"
+        @click="toggleStatsCollapse"
+        :title="isStatsCollapsed ? t('models:stats.expandStats') : t('models:stats.collapseStats')"
+      >
+        <i class="bi" :class="isStatsCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        {{ isStatsCollapsed ? t('models:table.show') : t('models:table.hide') }}
+      </button>
+    </div>
+    
+    <div class="row collapse-content" v-show="!isStatsCollapsed">
     <div class="col-md-3">
       <div class="card">
         <div class="card-body">
@@ -75,11 +91,12 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Model } from '~/composables/useApi'
+import type { Model } from '~/types/model'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n()
@@ -96,11 +113,62 @@ const props = withDefaults(defineProps<Props>(), {
 const getTypeCount = (type: string): number => {
   return props.models.filter((model: Model) => model.modelType === type).length
 }
+
+// Stato del collapse delle statistiche
+const isStatsCollapsed = ref(false)
+
+// Metodo per toggle del collapse delle statistiche
+const toggleStatsCollapse = () => {
+  isStatsCollapsed.value = !isStatsCollapsed.value
+}
 </script>
 
 <style scoped>
 .card {
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Stili per la sezione statistiche */
+.stats-section {
+  padding: 1rem;
+  border-radius: 0.375rem;
+  background-color: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.stats-title {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Animazione per il collapse delle statistiche */
+.collapse-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Stile per il pulsante di collapse */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn i {
+  transition: transform 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .stats-section .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem;
+  }
+  
+  .stats-section .btn {
+    align-self: center;
+  }
 }
 </style>

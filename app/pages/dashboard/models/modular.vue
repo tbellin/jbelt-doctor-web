@@ -81,7 +81,8 @@ import ModelFormModal from '~/components/Models/ModelFormModal.vue'
 import ModelViewModal from '~/components/Models/ModelViewModal.vue'
 
 // Import dei composables e tipi
-import { useApi, type Model, type ApiResponse } from '~/composables/useApi'
+import { useApi, type ApiResponse } from '~/composables/useApi'
+import type { Model } from '~/types/model'
 import { useI18n } from '~/composables/useI18n'
 import { useAuth } from '~/composables/useAuth'
 

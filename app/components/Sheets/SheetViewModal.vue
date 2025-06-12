@@ -1,5 +1,5 @@
 <!--
-  Componente modal per la visualizzazione dei dettagli JSON di un modello
+  Componente modal per la visualizzazione dei dettagli JSON di uno sheet
   @version 1.0.0
 -->
 <template>
@@ -14,7 +14,7 @@
         <div class="modal-header">
           <h5 class="modal-title">
             <i class="bi bi-eye me-2"></i>
-            {{ t('models:modal.view') }} - {{ model?.code }}
+            {{ t('sheets:modal.view') }} - {{ sheet?.code }}
           </h5>
           <button type="button" class="btn-close" @click="$emit('close')"></button>
         </div>
@@ -23,25 +23,25 @@
           <div class="row mb-3">
             <div class="col-12">
               <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0">{{ t('models:view.jsonData') }}</h6>
+                <h6 class="mb-0">{{ t('sheets:view.jsonData') }}</h6>
                 <div class="btn-group" role="group">
                   <button 
                     type="button" 
                     class="btn btn-outline-secondary btn-sm"
                     @click="$emit('copy')"
-                    :title="t('models:view.copyToClipboard')"
+                    :title="t('sheets:view.copyToClipboard')"
                   >
                     <i class="bi bi-clipboard me-1"></i>
-                    {{ t('models:view.copy') }}
+                    {{ t('sheets:view.copy') }}
                   </button>
                   <button 
                     type="button" 
                     class="btn btn-outline-primary btn-sm"
                     @click="$emit('download')"
-                    :title="t('models:view.downloadJson')"
+                    :title="t('sheets:view.downloadJson')"
                   >
                     <i class="bi bi-download me-1"></i>
-                    {{ t('models:view.download') }}
+                    {{ t('sheets:view.download') }}
                   </button>
                 </div>
               </div>
@@ -51,42 +51,53 @@
                 class="form-control font-monospace"
                 rows="20"
                 readonly
-                :value="model ? JSON.stringify(model, null, 2) : ''"
+                :value="sheet ? JSON.stringify(sheet, null, 2) : ''"
               ></textarea>
             </div>
           </div>
           
           <div class="row">
             <div class="col-md-6">
-              <h6>{{ t('models:view.modelInfo') }}</h6>
+              <h6>{{ t('sheets:view.sheetInfo') }}</h6>
               <table class="table table-sm">
                 <tbody>
                   <tr>
                     <td><strong>ID:</strong></td>
-                    <td><span class="badge bg-light text-dark">{{ model?.id }}</span></td>
+                    <td><span class="badge bg-light text-dark">{{ sheet?.id }}</span></td>
                   </tr>
                   <tr>
-                    <td><strong>{{ t('models:table.code') }}:</strong></td>
-                    <td><code>{{ model?.code }}</code></td>
+                    <td><strong>{{ t('sheets:table.code') }}:</strong></td>
+                    <td><code>{{ sheet?.code }}</code></td>
                   </tr>
                   <tr>
-                    <td><strong>{{ t('models:table.name') }}:</strong></td>
-                    <td>{{ model?.name }}</td>
+                    <td><strong>{{ t('sheets:table.name') }}:</strong></td>
+                    <td>{{ sheet?.name }}</td>
                   </tr>
                   <tr>
-                    <td><strong>{{ t('models:table.type') }}:</strong></td>
+                    <td><strong>{{ t('sheets:table.format') }}:</strong></td>
                     <td>
-                      <span class="badge" :class="getTypeClass(model?.modelType || '')">
-                        <i :class="getTypeIcon(model?.modelType || '')" class="me-1"></i>
-                        {{ model?.modelType }}
+                      <span class="badge bg-info">
+                        {{ sheet?.formatType }}
                       </span>
                     </td>
                   </tr>
                   <tr>
-                    <td><strong>{{ t('models:table.instance') }}:</strong></td>
+                    <td><strong>{{ t('sheets:table.creoId') }}:</strong></td>
                     <td>
-                      <span class="badge bg-secondary">
-                        {{ model?.instanceType }}
+                      <code v-if="sheet?.creoId" class="text-muted">{{ sheet.creoId }}</code>
+                      <span v-else class="text-muted">-</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>{{ t('sheets:table.drawing') }}:</strong></td>
+                    <td>
+                      <span v-if="getDrawingInfo(sheet?.drawing)" class="badge bg-success">
+                        <i class="bi bi-link-45deg me-1"></i>
+                        {{ getDrawingInfo(sheet?.drawing) }}
+                      </span>
+                      <span v-else class="text-muted">
+                        <i class="bi bi-dash-circle me-1"></i>
+                        {{ t('sheets:table.noDrawing') }}
                       </span>
                     </td>
                   </tr>
@@ -95,15 +106,23 @@
             </div>
             
             <div class="col-md-6">
-              <h6>{{ t('models:view.fileInfo') }}</h6>
+              <h6>{{ t('sheets:view.fileInfo') }}</h6>
               <div class="alert alert-info">
                 <p class="mb-2">
-                  <strong>{{ t('models:view.fileName') }}:</strong><br>
-                  <code>model-{{ model?.code }}-{{ model?.id }}.json</code>
+                  <strong>{{ t('sheets:view.fileName') }}:</strong><br>
+                  <code>sheet-{{ sheet?.code }}-{{ sheet?.id }}.json</code>
                 </p>
                 <p class="mb-0">
-                  <strong>{{ t('models:view.fileSize') }}:</strong>
-                  {{ model ? JSON.stringify(model).length : 0 }} bytes
+                  <strong>{{ t('sheets:view.fileSize') }}:</strong>
+                  {{ sheet ? JSON.stringify(sheet).length : 0 }} bytes
+                </p>
+              </div>
+              
+              <div v-if="sheet?.drawing" class="alert alert-success">
+                <h6 class="alert-heading">{{ t('sheets:view.drawingInfo') }}</h6>
+                <p class="mb-0">
+                  {{ t('sheets:view.associatedWith') }} 
+                  <strong>{{ getDrawingInfo(sheet.drawing) }}</strong>
                 </p>
               </div>
             </div>
@@ -116,11 +135,11 @@
           </button>
           <button type="button" class="btn btn-outline-secondary" @click="$emit('copy')">
             <i class="bi bi-clipboard me-2"></i>
-            {{ t('models:view.copy') }}
+            {{ t('sheets:view.copy') }}
           </button>
           <button type="button" class="btn btn-primary" @click="$emit('download')">
             <i class="bi bi-download me-2"></i>
-            {{ t('models:view.download') }}
+            {{ t('sheets:view.download') }}
           </button>
         </div>
       </div>
@@ -132,6 +151,7 @@
 </template>
 
 <script setup lang="ts">
+import type { SheetWithRelations } from '~/composables/useApi'
 import type { Model } from '~/types/model'
 import { useI18n } from '~/composables/useI18n'
 
@@ -139,7 +159,7 @@ const { t } = useI18n()
 
 interface Props {
   show: boolean
-  model?: Model | null
+  sheet?: SheetWithRelations | null
 }
 
 defineProps<Props>()
@@ -150,22 +170,27 @@ defineEmits<{
   'download': []
 }>()
 
-const getTypeClass = (type: string): string => {
-  const classes: Record<string, string> = {
-    'PART': 'bg-success',
-    'ASSEMBLY': 'bg-info',
-    'DRAWING': 'bg-warning'
+const getDrawingInfo = (drawing: Model | number | undefined): string => {
+  if (!drawing) return ''
+  
+  if (typeof drawing === 'number') {
+    return `ID: ${drawing}`
   }
-  return classes[type] || 'bg-secondary'
-}
-
-const getTypeIcon = (type: string): string => {
-  const icons: Record<string, string> = {
-    'PART': 'bi-gear',
-    'ASSEMBLY': 'bi-diagram-3',
-    'DRAWING': 'bi-file-earmark-text'
+  
+  if (typeof drawing === 'object') {
+    if (drawing.code && drawing.name) {
+      return `${drawing.code} - ${drawing.name}`
+    }
+    if (drawing.code) {
+      return drawing.code
+    }
+    if (drawing.id) {
+      return `ID: ${drawing.id}`
+    }
+    return `Drawing: ${drawing.id || 'Unknown'}`
   }
-  return icons[type] || 'bi-box-seam'
+  
+  return ''
 }
 </script>
 

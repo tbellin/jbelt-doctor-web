@@ -5,6 +5,9 @@
  * @version 1.0.0
  */
 
+import type { Model } from '~/types/model'
+import type { Sheet } from '~/types/sheet'
+
 export interface ApiResponse<T = any> {
   success: boolean
   data?: T
@@ -26,21 +29,16 @@ export interface User {
   langKey?: string
 }
 
-export interface Model {
-  id?: number
-  code: string
-  name: string
-  modelType: string
-  instanceType: string
-}
-
-export interface Sheet {
-  id?: number
-  code: string
-  name: string
+// Extended Sheet interface for API with additional fields
+export interface SheetWithRelations extends Sheet {
   creoId?: string
-  formatType: string
-  drawing?: Model | number  // Riferimento al Model di tipo DRAWING
+  drawingId?: number  // ID del Model di tipo DRAWING
+  modelIds?: number[]  // IDs dei modelli PART/ASSEMBLY
+  balloon?: string  // Campo balloon
+  
+  // For display purposes only (from backend response)
+  drawing?: Model  // Populated by backend for display
+  models?: Model[]  // Populated by backend for display
 }
 
 export interface SheetStatistics {
@@ -53,6 +51,7 @@ export interface SheetStatistics {
 export const useApi = () => {
   const config = useRuntimeConfig()
   const baseURL = config.public.apiBase
+  const { logApiCall } = useDebug()
 
   // Gestione token di autenticazione - Legge da localStorage come fa auth store
   const getAuthToken = (): string | null => {
@@ -62,18 +61,32 @@ export const useApi = () => {
     return null
   }
 
-  // Helper per le chiamate HTTP con gestione automatica del token
+  // Helper per le chiamate HTTP con gestione automatica del token e debug logging
   const apiCall = async <T>(
     endpoint: string, 
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> => {
     const fullUrl = `${baseURL}${endpoint}`
-    console.log(`[API] ${options.method || 'GET'} ${fullUrl}`)
+    const method = options.method || 'GET'
+    const startTime = Date.now()
+    
+    let requestBody: any = undefined
+    
+    // Parse request body per debug
+    if (options.body) {
+      try {
+        requestBody = JSON.parse(options.body as string)
+      } catch (e) {
+        requestBody = options.body
+      }
+    }
+    
+    console.log(`[API] ${method} ${fullUrl}`)
     
     try {
-      const headers: HeadersInit = {
+      const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...options.headers as Record<string, string>
       }
 
       // Aggiungi token di autenticazione se presente
@@ -85,14 +98,13 @@ export const useApi = () => {
         console.log('[API] Nessun token di autenticazione')
       }
 
-      console.log('[API] Headers:', headers)
-
       const response = await fetch(fullUrl, {
         ...options,
         headers
       })
 
-      console.log(`[API] Response status: ${response.status} ${response.statusText}`)
+      const duration = Date.now() - startTime
+      console.log(`[API] Response status: ${response.status} ${response.statusText} (${duration}ms)`)
 
       const data = await response.json()
       console.log('[API] Response data:', data)
@@ -103,6 +115,19 @@ export const useApi = () => {
           error: data.message || `HTTP Error: ${response.status}`,
           status: response.status
         }
+        
+        // Log per debug panel
+        logApiCall({
+          method,
+          url: fullUrl,
+          requestBody,
+          responseData: data,
+          responseStatus: response.status,
+          success: false,
+          error: errorResult.error,
+          duration
+        })
+        
         console.error('[API] Errore risposta:', errorResult)
         return errorResult
       }
@@ -112,13 +137,40 @@ export const useApi = () => {
         data,
         status: response.status
       }
+      
+      // Log per debug panel
+      logApiCall({
+        method,
+        url: fullUrl,
+        requestBody,
+        responseData: data,
+        responseStatus: response.status,
+        success: true,
+        duration
+      })
+      
       console.log('[API] Successo:', successResult)
       return successResult
     } catch (error) {
+      const duration = Date.now() - startTime
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       const errorResult = {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: errorMessage
       }
+      
+      // Log per debug panel
+      logApiCall({
+        method,
+        url: fullUrl,
+        requestBody,
+        responseData: undefined,
+        responseStatus: undefined,
+        success: false,
+        error: errorMessage,
+        duration
+      })
+      
       console.error('[API] Errore fetch:', errorResult)
       return errorResult
     }
@@ -197,13 +249,17 @@ export const useApi = () => {
 
     async getCount(): Promise<ApiResponse<number>> {
       const result = await apiCall<string>('/api/models/count')
-      if (result.success) {
+      if (result.success && result.data) {
         return {
           ...result,
-          data: parseInt(result.data || '0')
+          data: parseInt(result.data)
         }
       }
-      return result as ApiResponse<number>
+      return {
+        success: false,
+        data: 0,
+        error: result.error || 'Failed to get count'
+      }
     },
 
     async searchByCode(code: string): Promise<ApiResponse<Model[]>> {
@@ -233,64 +289,68 @@ export const useApi = () => {
 
   // ===== GESTIONE FOGLI =====
   const sheets = {
-    async getAll(): Promise<ApiResponse<Sheet[]>> {
-      return apiCall<Sheet[]>('/api/sheets')
+    async getAll(): Promise<ApiResponse<SheetWithRelations[]>> {
+      return apiCall<SheetWithRelations[]>('/api/sheets')
     },
 
-    async getById(id: number): Promise<ApiResponse<Sheet>> {
-      return apiCall<Sheet>(`/api/sheets/${id}`)
+    async getById(id: number): Promise<ApiResponse<SheetWithRelations>> {
+      return apiCall<SheetWithRelations>(`/api/sheets/${id}`)
     },
 
     async getCount(): Promise<ApiResponse<number>> {
       const result = await apiCall<string>('/api/sheets/count')
-      if (result.success) {
+      if (result.success && result.data) {
         return {
           ...result,
-          data: parseInt(result.data || '0')
+          data: parseInt(result.data)
         }
       }
-      return result as ApiResponse<number>
+      return {
+        success: false,
+        data: 0,
+        error: result.error || 'Failed to get count'
+      }
     },
 
     async getStatistics(): Promise<ApiResponse<SheetStatistics>> {
       return apiCall<SheetStatistics>('/api/sheets/statistics')
     },
 
-    async searchByCode(code: string): Promise<ApiResponse<Sheet[]>> {
-      return apiCall<Sheet[]>(`/api/sheets?code.contains=${encodeURIComponent(code)}`)
+    async searchByCode(code: string): Promise<ApiResponse<SheetWithRelations[]>> {
+      return apiCall<SheetWithRelations[]>(`/api/sheets?code.contains=${encodeURIComponent(code)}`)
     },
 
-    async searchByName(name: string): Promise<ApiResponse<Sheet[]>> {
-      return apiCall<Sheet[]>(`/api/sheets?name.contains=${encodeURIComponent(name)}`)
+    async searchByName(name: string): Promise<ApiResponse<SheetWithRelations[]>> {
+      return apiCall<SheetWithRelations[]>(`/api/sheets?name.contains=${encodeURIComponent(name)}`)
     },
 
-    async searchByFormat(formatType: string): Promise<ApiResponse<Sheet[]>> {
-      return apiCall<Sheet[]>(`/api/sheets?formatType.equals=${encodeURIComponent(formatType)}`)
+    async searchByFormat(formatType: string): Promise<ApiResponse<SheetWithRelations[]>> {
+      return apiCall<SheetWithRelations[]>(`/api/sheets?formatType.equals=${encodeURIComponent(formatType)}`)
     },
 
-    async create(sheet: Omit<Sheet, 'id'>): Promise<ApiResponse<Sheet>> {
-      return apiCall<Sheet>('/api/sheets', {
+    async create(sheet: Omit<SheetWithRelations, 'id'>): Promise<ApiResponse<SheetWithRelations>> {
+      return apiCall<SheetWithRelations>('/api/sheets', {
         method: 'POST',
         body: JSON.stringify(sheet)
       })
     },
 
-    async createBatch(sheets: Omit<Sheet, 'id'>[]): Promise<ApiResponse<Sheet[]>> {
-      return apiCall<Sheet[]>('/api/sheets/batch', {
+    async createBatch(sheets: Omit<SheetWithRelations, 'id'>[]): Promise<ApiResponse<SheetWithRelations[]>> {
+      return apiCall<SheetWithRelations[]>('/api/sheets/batch', {
         method: 'POST',
         body: JSON.stringify(sheets)
       })
     },
 
-    async update(id: number, sheet: Partial<Sheet>): Promise<ApiResponse<Sheet>> {
-      return apiCall<Sheet>(`/api/sheets/${id}`, {
+    async update(id: number, sheet: Partial<SheetWithRelations>): Promise<ApiResponse<SheetWithRelations>> {
+      return apiCall<SheetWithRelations>(`/api/sheets/${id}`, {
         method: 'PUT',
         body: JSON.stringify(sheet)
       })
     },
 
-    async patch(id: number, updates: Partial<Sheet>): Promise<ApiResponse<Sheet>> {
-      return apiCall<Sheet>(`/api/sheets/${id}`, {
+    async patch(id: number, updates: Partial<SheetWithRelations>): Promise<ApiResponse<SheetWithRelations>> {
+      return apiCall<SheetWithRelations>(`/api/sheets/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(updates)
       })
@@ -303,12 +363,12 @@ export const useApi = () => {
     },
 
     // Metodi specifici per le relazioni Model-Sheet
-    async getByDrawing(drawingId: number): Promise<ApiResponse<Sheet[]>> {
-      return apiCall<Sheet[]>(`/api/sheets?drawingId.equals=${drawingId}`)
+    async getByDrawing(drawingId: number): Promise<ApiResponse<SheetWithRelations[]>> {
+      return apiCall<SheetWithRelations[]>(`/api/sheets?drawingId.equals=${drawingId}`)
     },
 
-    async getByModel(modelId: number): Promise<ApiResponse<Sheet[]>> {
-      return apiCall<Sheet[]>(`/api/models/${modelId}/sheets`)
+    async getByModel(modelId: number): Promise<ApiResponse<SheetWithRelations[]>> {
+      return apiCall<SheetWithRelations[]>(`/api/models/${modelId}/sheets`)
     }
   }
 
@@ -370,4 +430,4 @@ export const useApi = () => {
 }
 
 // Export dei tipi per utilizzo nelle pagine
-export type { ApiResponse, User, Model, Sheet, SheetStatistics }
+export type { ApiResponse, User, SheetStatistics, SheetWithRelations }

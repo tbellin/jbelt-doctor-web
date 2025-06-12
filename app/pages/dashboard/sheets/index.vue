@@ -126,7 +126,7 @@
     <div class="card">
       <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Sheets List ({{ filteredSheets.length }})</h5>
+          <h5 class="mb-0">{{ t('sheets:list.title') }} ({{ filteredSheets.length }})</h5>
           <button 
             class="btn btn-sm btn-outline-secondary"
             @click="toggleTableCollapse"
@@ -140,14 +140,14 @@
         <!-- Loading State -->
         <div v-if="loading" class="text-center py-4">
           <div class="spinner-border text-primary"></div>
-          <p class="mt-2">Loading sheets...</p>
+          <p class="mt-2">{{ t('sheets:loading') }}</p>
         </div>
 
         <!-- Error State -->
         <div v-else-if="error" class="alert alert-danger">
-          <strong>Error:</strong> {{ error }}
+          <strong>{{ t('common:error') }}:</strong> {{ error }}
           <button class="btn btn-sm btn-outline-danger ms-2" @click="handleRefresh">
-            Retry
+            {{ t('common:retry') }}
           </button>
         </div>
 

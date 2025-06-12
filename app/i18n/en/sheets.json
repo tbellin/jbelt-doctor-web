@@ -20,6 +20,8 @@
   "filter": {
     "format": "Format",
     "drawing": "Drawing",
+    "drawingName": "Filter by Drawing",
+    "modelName": "Filter by Model",
     "withDrawing": "With Drawing",
     "withoutDrawing": "Without Drawing"
   },

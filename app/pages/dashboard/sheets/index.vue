@@ -49,7 +49,7 @@
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
                   <h6 class="card-subtitle mb-2 text-muted">{{ t('sheets:stats.total') }}</h6>
-                  <h3 class="card-title mb-0">{{ sheets.length }}</h3>
+                  <h3 class="card-title mb-0">{{ filteredSheets.length }}</h3>
                 </div>
                 <div class="text-primary">
                   <i class="bi bi-file-earmark-text fs-1"></i>
@@ -109,11 +109,24 @@
       </div>
     </div>
 
+    <!-- Filtri e ricerca -->
+    <SheetsSearchFilters 
+      v-model:search-code="searchCode"
+      v-model:selected-drawing="selectedDrawing"
+      v-model:selected-model="selectedModel"
+      :available-drawings="availableDrawings"
+      :available-models="availableModels"
+      :loading="loading"
+      @search="performSearch"
+      @filters-changed="applyFilters"
+      @clear-filters="clearFilters"
+    />
+
     <!-- Simple Table -->
     <div class="card">
       <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Sheets List ({{ sheets.length }})</h5>
+          <h5 class="mb-0">Sheets List ({{ filteredSheets.length }})</h5>
           <button 
             class="btn btn-sm btn-outline-secondary"
             @click="toggleTableCollapse"
@@ -139,7 +152,7 @@
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="!sheets.length" class="text-center py-5">
+        <div v-else-if="!filteredSheets.length" class="text-center py-5">
           <i class="bi bi-file-earmark-text display-1 text-muted"></i>
           <h4 class="mt-3">{{ t('sheets:empty.title') }}</h4>
           <p class="text-muted">{{ t('sheets:empty.message') }}</p>
@@ -164,7 +177,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="sheet in sheets" :key="sheet.id">
+              <tr v-for="sheet in filteredSheets" :key="sheet.id">
                 <td>{{ sheet.id }}</td>
                 <td>{{ sheet.code || '-' }}</td>
                 <td>{{ sheet.name || '-' }}</td>
@@ -541,7 +554,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useApi, type SheetWithRelations } from '~/composables/useApi'
 import type { IModel } from '~/model/model.model'
 import { useAuth } from '~/composables/useAuth'
@@ -555,6 +568,7 @@ import {
   validateObjectForUpdate,
   debugLogObject 
 } from '~/utils/objectEnrichment'
+import SheetsSearchFilters from '~/components/Sheets/SheetsSearchFilters.vue'
 
 // Page setup
 definePageMeta({
@@ -569,8 +583,14 @@ const { isDebugMode } = useDebug()
 
 // Simple reactive state
 const sheets = ref<SheetWithRelations[]>([])
+const filteredSheets = ref<SheetWithRelations[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+// Filtri e ricerca
+const searchCode = ref('')
+const selectedDrawing = ref('')
+const selectedModel = ref('')
 
 // Models for dropdown
 const availableDrawings = ref<IModel[]>([])
@@ -605,20 +625,20 @@ const formData = ref({
 
 // Simple computed stats
 const sheetsWithDrawing = computed(() => 
-  sheets.value.filter(sheet => sheet.drawing).length
+  filteredSheets.value.filter(sheet => sheet.drawing).length
 )
 
 const sheetsWithoutDrawing = computed(() => 
-  sheets.value.filter(sheet => !sheet.drawing).length
+  filteredSheets.value.filter(sheet => !sheet.drawing).length
 )
 
 const formatCount = computed(() => {
-  const formats = new Set(sheets.value.map(sheet => sheet.formatType).filter(f => f))
+  const formats = new Set(filteredSheets.value.map(sheet => sheet.formatType).filter(f => f))
   return formats.size
 })
 
 const totalModelsAssociated = computed(() => {
-  return sheets.value.reduce((total, sheet) => {
+  return filteredSheets.value.reduce((total, sheet) => {
     return total + (sheet.models?.length || 0)
   }, 0)
 })
@@ -661,6 +681,7 @@ const loadSheets = async (): Promise<void> => {
     if (response.success) {
       sheets.value = response.data || []
       console.log('[SimpleSheets] ✅ Loaded', sheets.value.length, 'sheets')
+      applyFilters() // Apply filters after loading
     } else {
       error.value = response.error || 'Failed to load sheets'
       console.error('[SimpleSheets] ❌ Error:', error.value)
@@ -673,9 +694,83 @@ const loadSheets = async (): Promise<void> => {
   }
 }
 
+// Metodi per i filtri
+const applyFilters = (): void => {
+  let filtered = [...sheets.value]
+  
+  // Filtro per disegno
+  if (selectedDrawing.value) {
+    const drawingId = parseInt(selectedDrawing.value)
+    filtered = filtered.filter(sheet => sheet.drawing?.id === drawingId)
+  }
+  
+  // Filtro per modello (PART/ASSEMBLY)
+  if (selectedModel.value) {
+    const modelId = parseInt(selectedModel.value)
+    filtered = filtered.filter(sheet => 
+      sheet.models?.some(model => model.id === modelId)
+    )
+  }
+  
+  filteredSheets.value = filtered
+  console.log('[SimpleSheets] Filters applied:', {
+    selectedDrawing: selectedDrawing.value,
+    selectedModel: selectedModel.value,
+    totalSheets: sheets.value.length,
+    filteredSheets: filtered.length
+  })
+}
+
+const performSearch = async (): Promise<void> => {
+  if (!searchCode.value.trim()) {
+    applyFilters()
+    return
+  }
+  
+  loading.value = true
+  try {
+    // Per ora cerchiamo sui dati caricati, potremmo implementare una ricerca API
+    let filtered = sheets.value.filter(sheet => 
+      sheet.code?.toLowerCase().includes(searchCode.value.toLowerCase()) ||
+      sheet.name?.toLowerCase().includes(searchCode.value.toLowerCase())
+    )
+    
+    // Applica anche gli altri filtri
+    if (selectedDrawing.value) {
+      const drawingId = parseInt(selectedDrawing.value)
+      filtered = filtered.filter(sheet => sheet.drawing?.id === drawingId)
+    }
+    
+    if (selectedModel.value) {
+      const modelId = parseInt(selectedModel.value)
+      filtered = filtered.filter(sheet => 
+        sheet.models?.some(model => model.id === modelId)
+      )
+    }
+    
+    filteredSheets.value = filtered
+    console.log('[SimpleSheets] Search completed for:', searchCode.value, 'Results:', filtered.length)
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Errore nella ricerca'
+  } finally {
+    loading.value = false
+  }
+}
+
+const clearFilters = (): void => {
+  searchCode.value = ''
+  selectedDrawing.value = ''
+  selectedModel.value = ''
+  applyFilters()
+  console.log('[SimpleSheets] Filters cleared')
+}
+
 // Event handlers
 const handleRefresh = async () => {
   console.log('[SimpleSheets] Manual refresh requested')
+  searchCode.value = ''
+  selectedDrawing.value = ''
+  selectedModel.value = ''
   await loadDrawings()
   await loadSheets()
 }
@@ -1454,6 +1549,11 @@ const runCompleteTest = async (): Promise<void> => {
     console.error('[SimpleSheets] Complete test error:', err)
   }
 }
+
+// Watchers per i filtri
+watch([selectedDrawing, selectedModel], () => {
+  applyFilters()
+})
 
 // Initialize on mount
 onMounted(async () => {

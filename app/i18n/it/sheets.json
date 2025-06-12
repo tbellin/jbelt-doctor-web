@@ -20,6 +20,8 @@
   "filter": {
     "format": "Formato",
     "drawing": "Disegno",
+    "drawingName": "Filtra per Disegno",
+    "modelName": "Filtra per Modello",
     "withDrawing": "Con Disegno",
     "withoutDrawing": "Senza Disegno"
   },

@@ -53,8 +53,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://jbelt:8080',
-      apiHost: process.env.NUXT_PUBLIC_API_HOST || 'jbelt.org',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080',
+      apiHost: process.env.NUXT_PUBLIC_API_HOST || 'localhost',
       apiPort: process.env.NUXT_PUBLIC_API_PORT || '8080',
       frontendHost: process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost',
       frontendPort: process.env.NUXT_PUBLIC_FRONTEND_PORT || '3000',

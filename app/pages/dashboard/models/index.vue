@@ -30,7 +30,7 @@
       @clear-filters="clearFilters"
     />
 
-    <!-- Tabella modelli -->
+    <!-- Tabella modelli con gestione associazioni avanzata -->
     <ModelsTable 
       :models="paginatedModels"
       :loading="loading"
@@ -47,6 +47,7 @@
       @retry="loadModels"
       @create-first="showCreateModal = true"
       @change-page="changePage"
+      @associations-updated="handleAssociationsUpdated"
     />
 
     <!-- Modal per creazione/modifica modello -->
@@ -193,10 +194,15 @@ const toggleRowExpansion = async (model: Model): Promise<void> => {
     expandedRows.value.add(modelId)
     console.log('[Models] Row expanded for model:', model.code)
     
-    if (!modelSheets.value[modelId]) {
-      await loadSheetsForModel(model)
-    }
+    // Carica i fogli sempre per avere dati aggiornati
+    await loadSheetsForModel(model)
   }
+}
+
+// Gestisce gli aggiornamenti delle associazioni
+const handleAssociationsUpdated = async (): Promise<void> => {
+  console.log('[Models] Associations updated, refreshing model data...')
+  await loadModels()
 }
 
 const loadSheetsForModel = async (model: Model): Promise<void> => {
@@ -219,42 +225,36 @@ const loadSheetsForModel = async (model: Model): Promise<void> => {
         modelSheets.value[modelId] = []
       }
     } else if (model.modelType === 'PART' || model.modelType === 'ASSEMBLY') {
-      // Per PART/ASSEMBLY, usa i dati già disponibili nel modello
-      console.log('[Models] Using sheets data already available in model object')
+      // Per PART/ASSEMBLY, cerca sempre tra tutti i fogli per avere dati aggiornati
+      console.log('[Models] Searching for sheets referencing this PART/ASSEMBLY model...')
       
-      if (model.sheets && Array.isArray(model.sheets)) {
-        modelSheets.value[modelId] = model.sheets
-        console.log('[Models] Found', model.sheets.length, 'sheets already loaded for part/assembly:', model.code)
+      const allSheetsResponse = await sheets.getAll()
+      if (allSheetsResponse.success) {
+        const associatedSheets = allSheetsResponse.data?.filter(sheet => {
+          if (sheet.models && Array.isArray(sheet.models)) {
+            return sheet.models.some((sheetModel: any) => {
+              const sheetModelId = typeof sheetModel === 'object' ? sheetModel.id : sheetModel
+              return sheetModelId === model.id
+            })
+          }
+          return false
+        }) || []
+        
+        modelSheets.value[modelId] = associatedSheets
+        console.log('[Models] Found', associatedSheets.length, 'sheets referencing model:', model.code)
         
         // Debug: mostra i dettagli dei fogli trovati
-        model.sheets.forEach((sheet, index) => {
+        associatedSheets.forEach((sheet, index) => {
           console.log(`[Models] Sheet ${index + 1}:`, {
             id: sheet.id,
             code: sheet.code || 'NO_CODE',
             name: sheet.name || 'NO_NAME',
-            type: typeof sheet
+            formatType: sheet.formatType
           })
         })
       } else {
-        console.log('[Models] No sheets array found in model object, trying API fallback')
-        // Fallback: cerca tra tutti i fogli quelli che hanno questo modello nei loro models[]
-        const allSheetsResponse = await sheets.getAll()
-        if (allSheetsResponse.success) {
-          const associatedSheets = allSheetsResponse.data?.filter(sheet => {
-            if (sheet.models && Array.isArray(sheet.models)) {
-              return sheet.models.some((sheetModel: any) => {
-                const sheetModelId = typeof sheetModel === 'object' ? sheetModel.id : sheetModel
-                return sheetModelId === model.id
-              })
-            }
-            return false
-          }) || []
-          
-          modelSheets.value[modelId] = associatedSheets
-          console.log('[Models] Fallback found', associatedSheets.length, 'sheets referencing model:', model.code)
-        } else {
-          modelSheets.value[modelId] = []
-        }
+        console.error('[Models] Failed to load all sheets for association lookup:', allSheetsResponse.error)
+        modelSheets.value[modelId] = []
       }
     } else {
       console.log('[Models] Model type', model.modelType, 'does not have associated sheets')

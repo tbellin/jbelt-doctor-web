@@ -68,6 +68,13 @@
     "admin": "Administration",
     "panel": "Dashboard",
     "manage_users": "Manage Users",
+    "filtered": "Filtered",
+    "selected": "Selected",
+    "available": "Available",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "close": "Close",
+    "tryDifferentFilters": "Try different search terms or filters",
     "navigation": {
       "models": "Models",
       "sheets": "Sheets"

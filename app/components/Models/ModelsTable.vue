@@ -130,13 +130,42 @@
               <!-- Riga espandibile per i sheet associati -->
               <tr v-if="isExpanded(model.id || 0)" class="expanded-row">
                 <td></td>
-                <td colspan="6" class="p-3">
-                  <!-- Gestione fogli per modelli PART/ASSEMBLY -->
-                  <ModelSheetsManager 
+                <td colspan="6" class="p-2">
+                  <!-- Gestione fogli avanzata per modelli PART/ASSEMBLY -->
+                  <ModelSheetsAssociationManager 
                     v-if="canHaveSheets(model.modelType)"
                     :model="model"
                     @update="handleSheetsUpdate"
+                    @sheet-updated="handleSheetUpdated"
                   />
+                  
+                  <!-- Vista per modelli DRAWING che mostrano i fogli che li utilizzano -->
+                  <div v-else-if="model.modelType === 'DRAWING'" class="drawing-sheets-info">
+                    <h6 class="text-success mb-3">
+                      <i class="bi bi-image me-2"></i>
+                      {{ t('models:sheets.sheetsUsingThisDrawing') }}
+                    </h6>
+                    <div v-if="getModelSheets(model.id || 0).length > 0" class="sheets-grid">
+                      <div 
+                        v-for="sheet in getModelSheets(model.id || 0)" 
+                        :key="sheet.id"
+                        class="sheet-card border rounded p-2 mb-2"
+                      >
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div>
+                            <span class="badge bg-info me-2">{{ sheet.formatType || 'N/A' }}</span>
+                            <strong>{{ sheet.code || 'NO_CODE' }}</strong>
+                            <span class="text-muted ms-2">{{ sheet.name || 'Unnamed' }}</span>
+                          </div>
+                          <small class="text-muted">ID: {{ sheet.id }}</small>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else class="text-center text-muted py-3">
+                      <i class="bi bi-file-earmark-text fs-1 opacity-25"></i>
+                      <p class="mb-0">{{ t('models:sheets.noSheetsUsingDrawing') }}</p>
+                    </div>
+                  </div>
                   
                   <!-- Vista semplice per altri tipi di modello -->
                   <div v-else class="text-center text-muted py-3">
@@ -198,7 +227,7 @@
 <script setup lang="ts">
 import type { Model } from '~/types/model'
 import { useI18n } from '~/composables/useI18n'
-import ModelSheetsManager from './ModelSheetsManager.vue'
+import ModelSheetsAssociationManager from './ModelSheetsAssociationManager.vue'
 
 const { t } = useI18n()
 
@@ -215,7 +244,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
   'toggleExpansion': [model: Model]
   'view': [model: Model]
   'edit': [model: Model]
@@ -223,6 +252,7 @@ defineEmits<{
   'retry': []
   'createFirst': []
   'changePage': [page: number]
+  'associationsUpdated': []
 }>()
 
 // Stato del collapse della tabella
@@ -267,8 +297,14 @@ const canHaveSheets = (modelType: string): boolean => {
 // Gestisce aggiornamenti dai fogli
 const handleSheetsUpdate = () => {
   // Notifica il componente parent che i fogli sono stati aggiornati
-  // Il parent potrebbe voler ricaricare i dati
   console.log('[ModelsTable] Sheets updated, notifying parent')
+  emit('associationsUpdated')
+}
+
+// Gestisce aggiornamenti specifici di fogli
+const handleSheetUpdated = (sheet: any) => {
+  console.log('[ModelsTable] Sheet updated:', sheet)
+  emit('associationsUpdated')
 }
 </script>
 

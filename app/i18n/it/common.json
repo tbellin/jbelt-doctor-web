@@ -68,6 +68,13 @@
     "admin": "Amministrazione",
     "panel": "Pannello",
     "manage_users": "Gestione Utenti",
+    "filtered": "Filtrati",
+    "selected": "Selezionati",
+    "available": "Disponibili",
+    "selectAll": "Seleziona Tutti",
+    "deselectAll": "Deseleziona Tutti",
+    "close": "Chiudi",
+    "tryDifferentFilters": "Prova termini di ricerca o filtri diversi",
     "navigation": {
       "models": "Modelli",
       "sheets": "Fogli"

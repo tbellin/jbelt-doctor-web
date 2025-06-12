@@ -6,7 +6,7 @@ export interface ISheet {
   creoId?: string | null;
   code?: string | null;
   name?: string | null;
-  formatType?: keyof typeof DIN | null;
+  formatType?: keyof typeof DIN | string | null;
   format?: IFormat | null;
   drawing?: IModel | null;
   models?: IModel[] | null;
@@ -18,7 +18,7 @@ export class Sheet implements ISheet {
     public creoId?: string | null,
     public code?: string | null,
     public name?: string | null,
-    public formatType?: keyof typeof DIN | null,
+    public formatType?: keyof typeof DIN | string | null,
     public format?: IFormat | null,
     public drawing?: IModel | null,
     public models?: IModel[] | null,

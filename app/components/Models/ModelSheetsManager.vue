@@ -206,10 +206,10 @@ const handleAddSheets = async (selectedSheetIds: number[]) => {
         modelType: props.model.modelType,
         instanceType: props.model.instanceType,
         file: props.model.file,
-        designer: props.model.designer,
+        version: props.model.version,
         item: props.model.item,
-        parent: props.model.parent,
-        instance: props.model.instance
+        generic: props.model.generic,
+        parent: props.model.parent
         // NON includere sheets per evitare referenze circolari
       }
 
@@ -229,18 +229,17 @@ const handleAddSheets = async (selectedSheetIds: number[]) => {
         continue
       }
       
-      // Prova 1: Foglio completo con models array (PRESERVANDO tutti i campi)
-      console.log('[ModelSheets] 1️⃣ Trying with complete sheet + models array...')
+      // Aggiorna il foglio preservando TUTTI i campi esistenti
+      console.log('[ModelSheets] ✅ Updating sheet with complete data preserving all fields...')
       let updateResponse = await sheetsApi.update(sheetId, {
         id: sheetId,
+        creoId: targetSheet.creoId,
         code: targetSheet.code,
         name: targetSheet.name,
         formatType: targetSheet.formatType,  // ⭐ PRESERVA il formato
         format: targetSheet.format,
-        creoId: targetSheet.creoId,
-        balloon: targetSheet.balloon,
         drawing: targetSheet.drawing,        // ⭐ PRESERVA l'associazione disegno esistente
-        models: updatedModels
+        models: updatedModels                // ✅ AGGIUNGE il nuovo modello
       })
       
       // La Prova 1 dovrebbe già funzionare inviando il foglio completo!
@@ -288,19 +287,18 @@ const confirmRemoveAssociation = async (sheet: SheetWithRelations) => {
     console.log(`[ModelSheets] Current models:`, currentModelIds)
     console.log(`[ModelSheets] Updated models:`, updatedModelIds)
 
-    // Prova la rimozione preservando TUTTI i campi del foglio
-    console.log('[ModelSheets] Trying removal preserving ALL sheet fields...')
+    // Rimuove l'associazione preservando TUTTI i campi del foglio
+    console.log('[ModelSheets] ✅ Removing association preserving ALL sheet fields...')
     
     const completeSheetData = {
       id: sheet.id,
+      creoId: sheet.creoId,
       code: sheet.code,
       name: sheet.name,
       formatType: sheet.formatType,  // ⭐ PRESERVA il formato
       format: sheet.format,
-      creoId: sheet.creoId,
-      balloon: sheet.balloon,
       drawing: sheet.drawing,        // ⭐ PRESERVA l'associazione disegno
-      models: updatedModels          // Solo models aggiornato (rimosso il modello)
+      models: updatedModels          // ✅ RIMUOVE il modello dall'array
     }
     
     let response = await sheetsApi.update(sheet.id!, completeSheetData)

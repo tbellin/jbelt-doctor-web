@@ -125,6 +125,9 @@
     "selectedCount": "{count} selected",
     "addSelected": "Add Selected",
     "onlyPartAssemblyCanHaveSheets": "Only PART and ASSEMBLY models can have associated sheets",
-    "currentModelType": "Current model type"
+    "currentModelType": "Current model type",
+    "sheetsUsingThisDrawing": "Sheets Using This Drawing",
+    "noSheetsUsingDrawing": "No sheets are currently using this drawing",
+    "noSheetsAvailable": "No sheets available for association"
   }
 }

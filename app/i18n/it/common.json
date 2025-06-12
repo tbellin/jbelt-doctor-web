@@ -75,8 +75,12 @@
     "deselectAll": "Deseleziona Tutti",
     "close": "Chiudi",
     "tryDifferentFilters": "Prova termini di ricerca o filtri diversi",
+    "error": {
+      "required": "Questo campo è obbligatorio"
+    },
     "navigation": {
       "models": "Modelli",
-      "sheets": "Fogli"
+      "sheets": "Fogli",
+      "balloons": "Balloon"
     }
   }

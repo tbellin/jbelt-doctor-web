@@ -1,0 +1,905 @@
+<!--
+  Pagina Dashboard per la gestione dei Balloon e Note con AttributeEntity
+  Struttura: Balloon (1:1) Note (1:4) AttributeEntity
+  @version 1.0.0
+-->
+<template>
+  <div class="balloons-dashboard">
+    <!-- Header della pagina -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="h3 mb-0">
+            <i class="bi bi-geo-alt me-2"></i>
+            {{ t('balloons:title') }}
+          </h1>
+          <div class="btn-group">
+            <button class="btn btn-outline-secondary" @click="handleRefresh" :disabled="loading">
+              <i class="bi bi-arrow-clockwise me-2"></i>
+              {{ t('balloons:actions.refresh') }}
+            </button>
+            <button class="btn btn-primary" @click="showCreateModal = true" :disabled="loading">
+              <i class="bi bi-plus-lg me-2"></i>
+              {{ t('balloons:actions.create') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-section mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="stats-title mb-0">
+          <i class="bi bi-graph-up me-2"></i>
+          {{ t('balloons:stats.title') }}
+        </h6>
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          @click="toggleStatsCollapse"
+          :title="isStatsCollapsed ? 'Espandi statistiche' : 'Comprimi statistiche'"
+        >
+          <i class="bi" :class="isStatsCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      
+      <div class="row collapse-content" v-show="!isStatsCollapsed">
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.totalBalloons') }}</h6>
+                  <h3 class="card-title mb-0">{{ balloons.length }}</h3>
+                </div>
+                <div class="text-primary">
+                  <i class="bi bi-geo-alt fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.totalNotes') }}</h6>
+                  <h3 class="card-title mb-0">{{ notes.length }}</h3>
+                </div>
+                <div class="text-success">
+                  <i class="bi bi-sticky fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.associatedPairs') }}</h6>
+                  <h3 class="card-title mb-0">{{ associatedPairsCount }}</h3>
+                </div>
+                <div class="text-warning">
+                  <i class="bi bi-link-45deg fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.totalAttributes') }}</h6>
+                  <h3 class="card-title mb-0">{{ totalAttributesCount }}</h3>
+                </div>
+                <div class="text-info">
+                  <i class="bi bi-tags fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">{{ t('balloons:table.title') }}</h5>
+          <button 
+            class="btn btn-sm btn-outline-secondary"
+            @click="toggleTableCollapse"
+            :title="isTableCollapsed ? 'Espandi tabella' : 'Comprimi tabella'"
+          >
+            <i class="bi" :class="isTableCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="card-body collapse-content" v-show="!isTableCollapsed">
+        <!-- Loading state -->
+        <div v-if="loading" class="text-center py-4">
+          <div class="spinner-border text-primary"></div>
+          <p class="mt-2">{{ t('balloons:loading') }}</p>
+        </div>
+
+        <!-- Error state -->
+        <div v-else-if="error" class="alert alert-danger">
+          <strong>{{ t('common:error') }}:</strong> {{ error }}
+          <button class="btn btn-sm btn-outline-danger ms-2" @click="handleRefresh">
+            {{ t('common:retry') }}
+          </button>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="!balloonNoteRows.length" class="text-center py-5">
+          <i class="bi bi-geo-alt display-1 text-muted"></i>
+          <h4 class="mt-3">{{ t('balloons:empty.title') }}</h4>
+          <p class="text-muted">{{ t('balloons:empty.message') }}</p>
+          <button class="btn btn-primary" @click="showCreateModal = true">
+            <i class="bi bi-plus-lg me-2"></i>
+            {{ t('balloons:actions.createFirst') }}
+          </button>
+        </div>
+
+        <!-- Table with data -->
+        <div v-else class="table-responsive">
+          <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+              <tr>
+                <th style="width: 12%">{{ t('balloons:table.balloon') }}</th>
+                <th style="width: 12%">{{ t('balloons:table.note') }}</th>
+                <th style="width: 16%">{{ t('balloons:table.attribute1') }}</th>
+                <th style="width: 16%">{{ t('balloons:table.attribute2') }}</th>
+                <th style="width: 16%">{{ t('balloons:table.attribute3') }}</th>
+                <th style="width: 16%">{{ t('balloons:table.attribute4') }}</th>
+                <th style="width: 12%">{{ t('common:actions') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in balloonNoteRows" :key="getRowKey(row)" class="balloon-row">
+                <!-- Balloon Column -->
+                <td class="balloon-cell">
+                  <div v-if="row.balloon" class="balloon-info">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-geo-alt text-primary me-2"></i>
+                      <div>
+                        <strong>{{ row.balloon.baloonValue || row.balloon.name || '-' }}</strong>
+                        <div class="small text-muted">{{ row.balloon.creoId || 'No Creo ID' }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-muted fst-italic">
+                    {{ t('balloons:table.noBalloon') }}
+                  </div>
+                </td>
+
+                <!-- Note Column -->
+                <td class="note-cell">
+                  <div v-if="row.note" class="note-info">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-sticky text-success me-2"></i>
+                      <div>
+                        <strong>{{ row.note.creoId || row.note.name || '-' }}</strong>
+                        <div class="small text-muted">{{ row.note.noteValue || 'No Value' }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-muted fst-italic">
+                    {{ t('balloons:table.noNote') }}
+                  </div>
+                </td>
+
+                <!-- Attribute Columns (1-4) -->
+                <td v-for="i in 4" :key="`attr-${i}`" class="attribute-cell">
+                  <div v-if="row.attributes && row.attributes[i-1]" class="attribute-info">
+                    <div v-if="editingAttribute === getAttributeKey(row, i-1)" class="edit-mode">
+                      <input 
+                        v-model="editingValue"
+                        @keyup.enter="saveAttribute(row, i-1)"
+                        @keyup.escape="cancelEdit"
+                        class="form-control form-control-sm"
+                        :placeholder="t('balloons:table.enterValue')"
+                        ref="editInput"
+                      >
+                      <div class="mt-1">
+                        <button @click="saveAttribute(row, i-1)" class="btn btn-success btn-sm me-1">
+                          <i class="bi bi-check"></i>
+                        </button>
+                        <button @click="cancelEdit" class="btn btn-secondary btn-sm">
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div v-else class="view-mode">
+                      <div class="attribute-value" @click="startEdit(row, i-1)">
+                        {{ row.attributes[i-1].attributeValue || t('balloons:table.clickToEdit') }}
+                      </div>
+                      <div class="small text-muted">
+                        {{ t('balloons:table.order') }} {{ i }}
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-muted fst-italic">
+                    {{ t('balloons:table.noAttribute') }}
+                  </div>
+                </td>
+
+                <!-- Actions Column -->
+                <td class="actions-cell">
+                  <div class="btn-group-vertical btn-group-sm">
+                    <button 
+                      v-if="!row.balloon || !row.note"
+                      @click="associateRow(row)" 
+                      class="btn btn-outline-warning btn-sm"
+                      :title="t('balloons:table.associate')"
+                    >
+                      <i class="bi bi-link"></i>
+                    </button>
+                    <button 
+                      @click="viewRow(row)" 
+                      class="btn btn-outline-primary btn-sm"
+                      :title="t('balloons:table.view')"
+                    >
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button 
+                      @click="deleteRow(row)" 
+                      class="btn btn-outline-danger btn-sm"
+                      :title="t('balloons:table.delete')"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create/Edit Balloon Modal -->
+    <BalloonFormModal
+      :show="showCreateModal"
+      :editing-balloon="editingBalloon"
+      v-model:form-data="balloonFormData"
+      :errors="formErrors"
+      :saving="saving"
+      @close="closeCreateModal"
+      @save="handleCreateSave"
+    />
+
+    <!-- Association Modal -->
+    <div v-if="showAssociationModal" class="modal show d-block" style="background-color: rgba(0,0,0,0.5)">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>{{ t('balloons:modal.associate') }}</h5>
+            <button class="btn-close" @click="closeAssociationModal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">{{ t('balloons:modal.selectBalloon') }}</label>
+                <select v-model="selectedBalloonId" class="form-select">
+                  <option value="">{{ t('balloons:modal.chooseBalloon') }}</option>
+                  <option v-for="balloon in availableBalloons" :key="balloon.id" :value="balloon.id">
+                    {{ balloon.baloonValue || balloon.name }} ({{ balloon.creoId }})
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ t('balloons:modal.selectNote') }}</label>
+                <select v-model="selectedNoteId" class="form-select">
+                  <option value="">{{ t('balloons:modal.chooseNote') }}</option>
+                  <option v-for="note in availableNotes" :key="note.id" :value="note.id">
+                    {{ note.creoId || note.name }} ({{ note.noteValue }})
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="closeAssociationModal">{{ t('common:cancel') }}</button>
+            <button class="btn btn-primary" @click="performAssociation" :disabled="!selectedBalloonId || !selectedNoteId">
+              {{ t('balloons:modal.associate') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug Panel collassabile - solo se debug è attivo -->
+    <div v-if="isDebugMode" class="mt-4">
+      <div class="card">
+        <div class="card-header">
+          <button 
+            class="btn btn-link w-100 text-start p-0 d-flex justify-content-between align-items-center"
+            type="button" 
+            @click="showDebugPanel = !showDebugPanel"
+            :aria-expanded="showDebugPanel"
+          >
+            <span>
+              <i class="bi bi-bug me-2"></i>
+              Debug API Panel - Balloons
+            </span>
+            <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+          </button>
+        </div>
+        <div v-show="showDebugPanel" class="card-body">
+          <div class="row small mb-3">
+            <div class="col-md-6">
+              <strong>Auth Status:</strong> 
+              <span :class="isAuthenticated ? 'text-success' : 'text-danger'">
+                {{ isAuthenticated ? 'Authenticated' : 'Not authenticated' }}
+              </span><br>
+              <strong>User:</strong> {{ user?.login || 'None' }}<br>
+              <strong>Balloons Count:</strong> {{ balloons.length }}<br>
+              <strong>Notes Count:</strong> {{ notes.length }}<br>
+              <strong>Rows Count:</strong> {{ balloonNoteRows.length }}<br>
+              <strong>Loading:</strong> {{ loading }}
+            </div>
+            <div class="col-md-6">
+              <div v-if="error" class="text-danger">
+                <strong>Error:</strong> {{ error }}
+              </div>
+              <div v-if="debugInfo" class="text-info">
+                <strong>Last Test:</strong> {{ debugInfo }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted, nextTick } from 'vue'
+import { useApi } from '~/composables/useApi'
+import type { IBaloon } from '~/model/baloon.model'
+import type { INote } from '~/model/note.model'
+import type { IAttributeEntity } from '~/model/attribute-entity.model'
+import { useAuth } from '~/composables/useAuth'
+import { useI18n } from '~/composables/useI18n'
+import { useDebug } from '~/composables/useDebug'
+import BalloonFormModal from '~/components/Balloons/BalloonFormModal.vue'
+
+// Page setup
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth']
+})
+
+const { t } = useI18n()
+const { balloons: balloonsApi, notes: notesApi, attributeEntities: attributesApi } = useApi()
+const { isAuthenticated, user } = useAuth()
+const { isDebugMode } = useDebug()
+
+// Reactive state
+const balloons = ref<IBaloon[]>([])
+const notes = ref<INote[]>([])
+const attributeEntities = ref<IAttributeEntity[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+// Collapse states
+const isStatsCollapsed = ref(false)
+const isTableCollapsed = ref(false)
+
+// Edit state
+const editingAttribute = ref<string | null>(null)
+const editingValue = ref('')
+
+// Modal state
+const showCreateModal = ref(false)
+const showAssociationModal = ref(false)
+const selectedBalloonId = ref<number | null>(null)
+const selectedNoteId = ref<number | null>(null)
+const associatingRow = ref<any>(null)
+const editingBalloon = ref<IBaloon | null>(null)
+const saving = ref(false)
+
+// Form state
+const balloonFormData = ref({
+  balloon: {
+    creoId: '',
+    code: '',
+    name: '',
+    baloonValue: '',
+    baloonType: ''
+  },
+  note: {
+    creoId: '',
+    code: '',
+    name: '',
+    noteValue: '',
+    noteType: ''
+  }
+})
+
+const formErrors = ref<Record<string, string>>({})
+
+// Debug state
+const showDebugPanel = ref(false)
+const debugInfo = ref<string>('')
+
+// Computed properties
+const associatedPairsCount = computed(() => {
+  return balloonNoteRows.value.filter(row => row.balloon && row.note).length
+})
+
+const totalAttributesCount = computed(() => {
+  return balloonNoteRows.value.reduce((total, row) => {
+    return total + (row.attributes?.filter(attr => attr.attributeValue).length || 0)
+  }, 0)
+})
+
+const availableBalloons = computed(() => {
+  return balloons.value.filter(balloon => 
+    !balloonNoteRows.value.some(row => row.balloon?.id === balloon.id)
+  )
+})
+
+const availableNotes = computed(() => {
+  return notes.value.filter(note => 
+    !balloonNoteRows.value.some(row => row.note?.id === note.id)
+  )
+})
+
+// Main data structure: combined rows
+const balloonNoteRows = computed(() => {
+  const rows: any[] = []
+  
+  // Create rows from existing balloon-note associations
+  balloons.value.forEach(balloon => {
+    const associatedNote = notes.value.find(note => note.baloon?.id === balloon.id)
+    const noteAttributes = associatedNote ? 
+      attributeEntities.value.filter(attr => attr.note?.id === associatedNote.id).sort((a, b) => (a.order || 0) - (b.order || 0)) :
+      []
+    
+    rows.push({
+      balloon,
+      note: associatedNote || null,
+      attributes: noteAttributes.length === 4 ? noteAttributes : createEmptyAttributes()
+    })
+  })
+  
+  // Add orphaned notes
+  notes.value.forEach(note => {
+    if (!note.baloon) {
+      const noteAttributes = attributeEntities.value.filter(attr => attr.note?.id === note.id).sort((a, b) => (a.order || 0) - (b.order || 0))
+      rows.push({
+        balloon: null,
+        note,
+        attributes: noteAttributes.length === 4 ? noteAttributes : createEmptyAttributes()
+      })
+    }
+  })
+  
+  return rows
+})
+
+// Helper functions
+const createEmptyAttributes = () => {
+  return Array.from({ length: 4 }, (_, index) => ({
+    id: null,
+    order: index + 1,
+    attributeValue: '',
+    note: null
+  }))
+}
+
+const getRowKey = (row: any) => {
+  return `${row.balloon?.id || 'b-null'}-${row.note?.id || 'n-null'}`
+}
+
+const getAttributeKey = (row: any, index: number) => {
+  return `${getRowKey(row)}-attr-${index}`
+}
+
+// Toggle functions
+const toggleStatsCollapse = () => {
+  isStatsCollapsed.value = !isStatsCollapsed.value
+}
+
+const toggleTableCollapse = () => {
+  isTableCollapsed.value = !isTableCollapsed.value
+}
+
+// Edit functions
+const startEdit = (row: any, attributeIndex: number) => {
+  const attribute = row.attributes[attributeIndex]
+  editingAttribute.value = getAttributeKey(row, attributeIndex)
+  editingValue.value = attribute.attributeValue || ''
+  
+  nextTick(() => {
+    const input = document.querySelector('input.form-control-sm:focus') as HTMLInputElement
+    if (input) input.select()
+  })
+}
+
+const cancelEdit = () => {
+  editingAttribute.value = null
+  editingValue.value = ''
+}
+
+const saveAttribute = async (row: any, attributeIndex: number) => {
+  // Implementation will depend on your API
+  console.log('Saving attribute:', {
+    row,
+    attributeIndex,
+    value: editingValue.value
+  })
+  
+  // Update local state
+  if (row.attributes[attributeIndex]) {
+    row.attributes[attributeIndex].attributeValue = editingValue.value
+  }
+  
+  cancelEdit()
+}
+
+// Association functions
+const associateRow = (row: any) => {
+  associatingRow.value = row
+  showAssociationModal.value = true
+}
+
+const closeAssociationModal = () => {
+  showAssociationModal.value = false
+  associatingRow.value = null
+  selectedBalloonId.value = null
+  selectedNoteId.value = null
+}
+
+const performAssociation = async () => {
+  // Implementation will depend on your API
+  console.log('Performing association:', {
+    balloonId: selectedBalloonId.value,
+    noteId: selectedNoteId.value
+  })
+  
+  closeAssociationModal()
+  await loadData()
+}
+
+// Modal functions
+const closeCreateModal = () => {
+  showCreateModal.value = false
+  editingBalloon.value = null
+  resetFormData()
+  formErrors.value = {}
+}
+
+const resetFormData = () => {
+  balloonFormData.value = {
+    balloon: {
+      creoId: '',
+      code: '',
+      name: '',
+      baloonValue: '',
+      baloonType: ''
+    },
+    note: {
+      creoId: '',
+      code: '',
+      name: '',
+      noteValue: '',
+      noteType: ''
+    }
+  }
+}
+
+const validateForm = (): boolean => {
+  const errors: Record<string, string> = {}
+  
+  // Validate balloon required fields
+  if (!balloonFormData.value.balloon.creoId?.trim()) {
+    errors.balloonCreoId = t('common:error.required')
+  }
+  if (!balloonFormData.value.balloon.baloonValue?.trim()) {
+    errors.balloonValue = t('common:error.required')
+  }
+  
+  // Validate note required fields
+  if (!balloonFormData.value.note.creoId?.trim()) {
+    errors.noteCreoId = t('common:error.required')
+  }
+  
+  formErrors.value = errors
+  return Object.keys(errors).length === 0
+}
+
+const handleCreateSave = async (): Promise<void> => {
+  console.log('[Balloons] Save balloon started')
+  
+  if (!validateForm()) {
+    console.log('[Balloons] Validation failed')
+    return
+  }
+  
+  saving.value = true
+  error.value = null
+  
+  try {
+    // Step 1: Create balloon first
+    const balloonData = {
+      creoId: balloonFormData.value.balloon.creoId || null,
+      code: balloonFormData.value.balloon.code || null,
+      name: balloonFormData.value.balloon.name || null,
+      baloonValue: balloonFormData.value.balloon.baloonValue || null,
+      baloonType: balloonFormData.value.balloon.baloonType || null
+    }
+    
+    console.log('[Balloons] Creating balloon:', balloonData)
+    const balloonResponse = await balloonsApi.create(balloonData)
+    
+    if (!balloonResponse.success || !balloonResponse.data) {
+      throw new Error(balloonResponse.error || 'Failed to create balloon')
+    }
+    
+    const createdBalloon = balloonResponse.data
+    console.log('[Balloons] Balloon created successfully:', createdBalloon)
+    
+    // Step 2: Create note associated with the balloon
+    const noteData = {
+      creoId: balloonFormData.value.note.creoId || null,
+      code: balloonFormData.value.note.code || null,
+      name: balloonFormData.value.note.name || null,
+      noteValue: balloonFormData.value.note.noteValue || null,
+      noteType: balloonFormData.value.note.noteType || null,
+      baloon: createdBalloon // Associate with the balloon
+    }
+    
+    console.log('[Balloons] Creating note:', noteData)
+    const noteResponse = await notesApi.create(noteData)
+    
+    if (!noteResponse.success || !noteResponse.data) {
+      throw new Error(noteResponse.error || 'Failed to create note')
+    }
+    
+    const createdNote = noteResponse.data
+    console.log('[Balloons] Note created successfully:', createdNote)
+    
+    // Step 3: Create 4 empty attributes for the note
+    console.log('[Balloons] Creating 4 attributes for note')
+    const attributePromises = []
+    
+    for (let i = 1; i <= 4; i++) {
+      const attributeData = {
+        order: i,
+        attributeValue: '',
+        note: createdNote
+      }
+      
+      console.log(`[Balloons] Creating attribute ${i}:`, attributeData)
+      attributePromises.push(attributesApi.create(attributeData))
+    }
+    
+    // Wait for all attributes to be created
+    const attributeResults = await Promise.allSettled(attributePromises)
+    
+    attributeResults.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value.success) {
+        console.log(`[Balloons] Attribute ${index + 1} created successfully:`, result.value.data)
+      } else if (result.status === 'fulfilled') {
+        console.warn(`[Balloons] Failed to create attribute ${index + 1}:`, result.value.error)
+      } else {
+        console.warn(`[Balloons] Failed to create attribute ${index + 1}:`, result.reason)
+      }
+    })
+    
+    console.log('[Balloons] Balloon, note, and attributes creation completed')
+    
+    // Step 4: Close modal and refresh data
+    closeCreateModal()
+    await loadData()
+    
+    console.log('[Balloons] Data refreshed successfully')
+    
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    error.value = `Failed to create balloon and note: ${errorMessage}`
+    console.error('[Balloons] Save exception:', err)
+  } finally {
+    saving.value = false
+  }
+}
+
+// CRUD functions
+const viewRow = (row: any) => {
+  console.log('View row:', row)
+}
+
+const deleteRow = async (row: any) => {
+  if (!confirm(t('balloons:confirmDelete'))) return
+  
+  console.log('Delete row:', row)
+  await loadData()
+}
+
+// Data loading
+const loadData = async () => {
+  if (loading.value) return
+  
+  loading.value = true
+  error.value = null
+  
+  try {
+    // Load all data in parallel
+    const [balloonsResponse, notesResponse, attributesResponse] = await Promise.all([
+      balloonsApi.getAll(),
+      notesApi.getAll(),
+      attributesApi.getAll()
+    ])
+    
+    if (balloonsResponse.success) {
+      balloons.value = balloonsResponse.data || []
+    }
+    
+    if (notesResponse.success) {
+      notes.value = notesResponse.data || []
+    }
+    
+    if (attributesResponse.success) {
+      attributeEntities.value = attributesResponse.data || []
+    }
+    
+    console.log('Data loaded:', {
+      balloons: balloons.value.length,
+      notes: notes.value.length,
+      attributes: attributeEntities.value.length
+    })
+    
+  } catch (err) {
+    error.value = 'Failed to load data'
+    console.error('Error loading data:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleRefresh = async () => {
+  await loadData()
+}
+
+// Initialize
+onMounted(async () => {
+  if (isAuthenticated.value) {
+    await loadData()
+  } else {
+    error.value = 'Authentication required'
+  }
+})
+</script>
+
+<style scoped>
+.balloons-dashboard {
+  padding: 1rem;
+}
+
+/* Stats section styling */
+.stats-section {
+  padding: 1rem;
+  border-radius: 0.375rem;
+  background-color: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.stats-title {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Table styling */
+.table-bordered {
+  border: 2px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+
+.balloon-row:hover {
+  background-color: #f8f9fa;
+}
+
+/* Cell specific styling */
+.balloon-cell,
+.note-cell {
+  background-color: #f8fffe;
+}
+
+.attribute-cell {
+  background-color: #fefff8;
+  cursor: pointer;
+}
+
+.attribute-cell:hover {
+  background-color: #f0f8f0;
+}
+
+.actions-cell {
+  background-color: #fafafa;
+}
+
+/* Edit mode styling */
+.edit-mode {
+  padding: 0.25rem;
+}
+
+.view-mode {
+  padding: 0.5rem;
+  min-height: 3rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+}
+
+.attribute-value {
+  font-weight: 500;
+  color: #495057;
+  min-height: 1.2rem;
+}
+
+.attribute-value:empty::before {
+  content: attr(data-placeholder);
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Animation */
+.collapse-content {
+  transition: all 0.3s ease-in-out;
+}
+
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Modal styling */
+.modal.show {
+  display: block !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .balloons-dashboard {
+    padding: 0.5rem;
+  }
+  
+  .stats-section .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem;
+  }
+  
+  .stats-section .btn {
+    align-self: center;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .btn-group-vertical .btn {
+    margin-bottom: 0.25rem;
+  }
+}
+</style>

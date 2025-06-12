@@ -1,0 +1,77 @@
+{
+  "title": "Gestione Balloon e Note",
+  "loading": "Caricamento balloon e note in corso...",
+  "stats": {
+    "title": "Statistiche",
+    "totalBalloons": "Totale Balloon",
+    "totalNotes": "Totale Note",
+    "associatedPairs": "Coppie Associate",
+    "totalAttributes": "Totali Attributi"
+  },
+  "table": {
+    "title": "Balloon, Note e Attributi",
+    "balloon": "Balloon (Valore)",
+    "note": "Nota (CreoId)", 
+    "attribute1": "Attributo 1 (Valore)",
+    "attribute2": "Attributo 2 (Valore)",
+    "attribute3": "Attributo 3 (Valore)",
+    "attribute4": "Attributo 4 (Valore)",
+    "noBalloon": "Nessun Balloon",
+    "noNote": "Nessuna Nota",
+    "noAttribute": "Nessun Attributo",
+    "clickToEdit": "Clicca per modificare",
+    "enterValue": "Inserisci valore...",
+    "order": "Ordine",
+    "associate": "Associa",
+    "view": "Visualizza",
+    "delete": "Elimina"
+  },
+  "actions": {
+    "create": "Nuovo Balloon",
+    "createFirst": "Crea il primo balloon",
+    "refresh": "Aggiorna"
+  },
+  "modal": {
+    "associate": "Associa Balloon e Nota",
+    "selectBalloon": "Seleziona Balloon",
+    "selectNote": "Seleziona Nota",
+    "chooseBalloon": "Scegli un balloon...",
+    "chooseNote": "Scegli una nota..."
+  },
+  "empty": {
+    "title": "Nessun balloon trovato",
+    "message": "Non ci sono balloon nel sistema. Inizia creandone uno nuovo."
+  },
+  "confirmDelete": "Sei sicuro di voler eliminare questa associazione balloon-nota? Questa azione non può essere annullata.",
+  "form": {
+    "balloonSection": "Informazioni Balloon",
+    "noteSection": "Informazioni Nota",
+    "attributesSection": "Anteprima Attributi",
+    "creoId": "Creo ID",
+    "name": "Nome",
+    "value": "Valore",
+    "type": "Tipo",
+    "code": "Codice",
+    "noteCreoId": "Creo ID Nota",
+    "noteName": "Nome Nota",
+    "noteValue": "Valore Nota",
+    "noteType": "Tipo Nota",
+    "noteCode": "Codice Nota",
+    "attributesInfo": "4 attributi vuoti verranno creati automaticamente per questa nota e potranno essere modificati dopo la creazione."
+  },
+  "types": {
+    "circle": "Cerchio",
+    "square": "Quadrato",
+    "triangle": "Triangolo",
+    "diamond": "Rombo"
+  },
+  "noteTypes": {
+    "standard": "Standard",
+    "leader": "Linea guida",
+    "arrow": "Freccia"
+  },
+  "modal": {
+    "create": "Crea Nuovo Balloon e Nota",
+    "edit": "Modifica Balloon e Nota"
+  }
+}

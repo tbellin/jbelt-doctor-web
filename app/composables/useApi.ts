@@ -440,6 +440,103 @@ export const useApi = () => {
     }
   }
 
+  // ===== GESTIONE BALLOON =====
+  const balloons = {
+    async getAll(): Promise<ApiResponse<any[]>> {
+      return apiCall<any[]>('/api/baloons')
+    },
+
+    async getById(id: number): Promise<ApiResponse<any>> {
+      return apiCall<any>(`/api/baloons/${id}`)
+    },
+
+    async create(balloon: any): Promise<ApiResponse<any>> {
+      return apiCall<any>('/api/baloons', {
+        method: 'POST',
+        body: JSON.stringify(balloon)
+      })
+    },
+
+    async update(id: number, balloon: any): Promise<ApiResponse<any>> {
+      return apiCall<any>(`/api/baloons/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(balloon)
+      })
+    },
+
+    async delete(id: number): Promise<ApiResponse<void>> {
+      return apiCall<void>(`/api/baloons/${id}`, {
+        method: 'DELETE'
+      })
+    }
+  }
+
+  // ===== GESTIONE NOTE =====
+  const notes = {
+    async getAll(): Promise<ApiResponse<any[]>> {
+      return apiCall<any[]>('/api/notes')
+    },
+
+    async getById(id: number): Promise<ApiResponse<any>> {
+      return apiCall<any>(`/api/notes/${id}`)
+    },
+
+    async create(note: any): Promise<ApiResponse<any>> {
+      return apiCall<any>('/api/notes', {
+        method: 'POST',
+        body: JSON.stringify(note)
+      })
+    },
+
+    async update(id: number, note: any): Promise<ApiResponse<any>> {
+      return apiCall<any>(`/api/notes/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(note)
+      })
+    },
+
+    async delete(id: number): Promise<ApiResponse<void>> {
+      return apiCall<void>(`/api/notes/${id}`, {
+        method: 'DELETE'
+      })
+    }
+  }
+
+  // ===== GESTIONE ATTRIBUTE ENTITIES =====
+  const attributeEntities = {
+    async getAll(): Promise<ApiResponse<any[]>> {
+      return apiCall<any[]>('/api/attribute-entities')
+    },
+
+    async getById(id: number): Promise<ApiResponse<any>> {
+      return apiCall<any>(`/api/attribute-entities/${id}`)
+    },
+
+    async getByNoteId(noteId: number): Promise<ApiResponse<any[]>> {
+      return apiCall<any[]>(`/api/attribute-entities?note.id.equals=${noteId}`)
+    },
+
+    async create(attribute: any): Promise<ApiResponse<any>> {
+      return apiCall<any>('/api/attribute-entities', {
+        method: 'POST',
+        body: JSON.stringify(attribute)
+      })
+    },
+
+    async update(id: number, attribute: any): Promise<ApiResponse<any>> {
+      return apiCall<any>(`/api/attribute-entities/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(attribute)
+      })
+    },
+
+    async delete(id: number): Promise<ApiResponse<void>> {
+      return apiCall<void>(`/api/attribute-entities/${id}`, {
+        method: 'DELETE'
+      })
+    }
+  }
+
   return {
     auth,
     users,
@@ -447,7 +544,10 @@ export const useApi = () => {
     sheets,
     formats,
     authors,
-    teams
+    teams,
+    balloons,
+    notes,
+    attributeEntities
   }
 }
 

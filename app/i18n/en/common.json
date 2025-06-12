@@ -75,8 +75,12 @@
     "deselectAll": "Deselect All",
     "close": "Close",
     "tryDifferentFilters": "Try different search terms or filters",
+    "error": {
+      "required": "This field is required"
+    },
     "navigation": {
       "models": "Models",
-      "sheets": "Sheets"
+      "sheets": "Sheets",
+      "balloons": "Balloons"
     }
   }

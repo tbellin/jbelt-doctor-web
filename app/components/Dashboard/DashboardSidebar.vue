@@ -84,6 +84,11 @@
                     <i class="bi bi-file-earmark-text me-2"></i> {{ t('navigation.sheets') }}
                   </NuxtLink>
                 </li>
+                <li class="nav-item" v-if="isAuthenticated">
+                  <NuxtLink to="/dashboard/balloons" class="nav-link">
+                    <i class="bi bi-geo-alt me-2"></i> {{ t('navigation.balloons') }}
+                  </NuxtLink>
+                </li>
               </ul>
             </div>
           </div>

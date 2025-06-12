@@ -1,0 +1,77 @@
+{
+  "title": "Balloons & Notes Management",
+  "loading": "Loading balloons and notes...",
+  "stats": {
+    "title": "Statistics",
+    "totalBalloons": "Total Balloons",
+    "totalNotes": "Total Notes",
+    "associatedPairs": "Associated Pairs",
+    "totalAttributes": "Total Attributes"
+  },
+  "table": {
+    "title": "Balloons, Notes & Attributes",
+    "balloon": "Balloon (Value)",
+    "note": "Note (CreoId)", 
+    "attribute1": "Attribute 1 (Value)",
+    "attribute2": "Attribute 2 (Value)",
+    "attribute3": "Attribute 3 (Value)",
+    "attribute4": "Attribute 4 (Value)",
+    "noBalloon": "No Balloon",
+    "noNote": "No Note",
+    "noAttribute": "No Attribute",
+    "clickToEdit": "Click to edit",
+    "enterValue": "Enter value...",
+    "order": "Order",
+    "associate": "Associate",
+    "view": "View",
+    "delete": "Delete"
+  },
+  "actions": {
+    "create": "New Balloon",
+    "createFirst": "Create first balloon",
+    "refresh": "Refresh"
+  },
+  "modal": {
+    "associate": "Associate Balloon & Note",
+    "selectBalloon": "Select Balloon",
+    "selectNote": "Select Note",
+    "chooseBalloon": "Choose a balloon...",
+    "chooseNote": "Choose a note..."
+  },
+  "empty": {
+    "title": "No balloons found",
+    "message": "There are no balloons in the system. Start by creating a new one."
+  },
+  "confirmDelete": "Are you sure you want to delete this balloon-note association? This action cannot be undone.",
+  "form": {
+    "balloonSection": "Balloon Information",
+    "noteSection": "Note Information",
+    "attributesSection": "Attributes Preview",
+    "creoId": "Creo ID",
+    "name": "Name",
+    "value": "Value",
+    "type": "Type",
+    "code": "Code",
+    "noteCreoId": "Note Creo ID",
+    "noteName": "Note Name",
+    "noteValue": "Note Value",
+    "noteType": "Note Type",
+    "noteCode": "Note Code",
+    "attributesInfo": "4 empty attributes will be automatically created for this note and can be edited after creation."
+  },
+  "types": {
+    "circle": "Circle",
+    "square": "Square",
+    "triangle": "Triangle",
+    "diamond": "Diamond"
+  },
+  "noteTypes": {
+    "standard": "Standard",
+    "leader": "Leader Line",
+    "arrow": "Arrow"
+  },
+  "modal": {
+    "create": "Create New Balloon & Note",
+    "edit": "Edit Balloon & Note"
+  }
+}

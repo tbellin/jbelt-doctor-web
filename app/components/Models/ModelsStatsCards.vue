@@ -15,7 +15,6 @@
         :title="isStatsCollapsed ? t('models:stats.expandStats') : t('models:stats.collapseStats')"
       >
         <i class="bi" :class="isStatsCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
-        {{ isStatsCollapsed ? t('models:table.show') : t('models:table.hide') }}
       </button>
     </div>
     

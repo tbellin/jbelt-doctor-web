@@ -39,7 +39,6 @@
           :title="isStatsCollapsed ? 'Espandi statistiche' : 'Comprimi statistiche'"
         >
           <i class="bi" :class="isStatsCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
-          {{ isStatsCollapsed ? 'Mostra' : 'Nascondi' }}
         </button>
       </div>
       

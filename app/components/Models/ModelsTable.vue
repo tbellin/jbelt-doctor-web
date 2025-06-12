@@ -18,7 +18,6 @@
           :title="isTableCollapsed ? t('models:table.expandTable') : t('models:table.collapseTable')"
         >
           <i class="bi" :class="isTableCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
-          {{ isTableCollapsed ? t('models:table.show') : t('models:table.hide') }}
         </button>
       </div>
     </div>

@@ -18,7 +18,6 @@
           :title="isTableCollapsed ? t('sheets:table.expandTable') : t('sheets:table.collapseTable')"
         >
           <i class="bi" :class="isTableCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
-          {{ isTableCollapsed ? t('sheets:table.show') : t('sheets:table.hide') }}
         </button>
       </div>
     </div>

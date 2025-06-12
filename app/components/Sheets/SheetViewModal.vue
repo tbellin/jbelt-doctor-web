@@ -23,7 +23,17 @@
           <div class="row mb-3">
             <div class="col-12">
               <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0">{{ t('sheets:view.jsonData') }}</h6>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0">{{ t('sheets:view.jsonData') }}</h6>
+                  <button 
+                    type="button" 
+                    class="btn btn-sm btn-outline-secondary ms-2"
+                    @click="toggleJsonCollapse"
+                    :title="isJsonCollapsed ? 'Espandi dati JSON' : 'Comprimi dati JSON'"
+                  >
+                    <i class="bi" :class="isJsonCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+                  </button>
+                </div>
                 <div class="btn-group" role="group">
                   <button 
                     type="button" 
@@ -47,8 +57,9 @@
               </div>
               
               <textarea 
+                v-show="!isJsonCollapsed"
                 id="jsonContent"
-                class="form-control font-monospace"
+                class="form-control font-monospace collapse-content"
                 rows="20"
                 readonly
                 :value="sheet ? JSON.stringify(sheet, null, 2) : ''"
@@ -58,8 +69,18 @@
           
           <div class="row">
             <div class="col-md-6">
-              <h6>{{ t('sheets:view.sheetInfo') }}</h6>
-              <table class="table table-sm">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">{{ t('sheets:view.sheetInfo') }}</h6>
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-outline-secondary"
+                  @click="toggleSheetInfoCollapse"
+                  :title="isSheetInfoCollapsed ? 'Espandi info sheet' : 'Comprimi info sheet'"
+                >
+                  <i class="bi" :class="isSheetInfoCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+                </button>
+              </div>
+              <table v-show="!isSheetInfoCollapsed" class="table table-sm collapse-content">
                 <tbody>
                   <tr>
                     <td><strong>ID:</strong></td>
@@ -118,8 +139,18 @@
             </div>
             
             <div class="col-md-6">
-              <h6>{{ t('sheets:view.fileInfo') }}</h6>
-              <div class="alert alert-info">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">{{ t('sheets:view.fileInfo') }}</h6>
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-outline-secondary"
+                  @click="toggleFileInfoCollapse"
+                  :title="isFileInfoCollapsed ? 'Espandi info file' : 'Comprimi info file'"
+                >
+                  <i class="bi" :class="isFileInfoCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+                </button>
+              </div>
+              <div v-show="!isFileInfoCollapsed" class="alert alert-info collapse-content">
                 <p class="mb-2">
                   <strong>{{ t('sheets:view.fileName') }}:</strong><br>
                   <code>sheet-{{ sheet?.code }}-{{ sheet?.id }}.json</code>
@@ -199,6 +230,24 @@ defineEmits<{
   'download': []
 }>()
 
+// Collapse states
+const isJsonCollapsed = ref(false)
+const isSheetInfoCollapsed = ref(false)
+const isFileInfoCollapsed = ref(false)
+
+// Toggle functions
+const toggleJsonCollapse = () => {
+  isJsonCollapsed.value = !isJsonCollapsed.value
+}
+
+const toggleSheetInfoCollapse = () => {
+  isSheetInfoCollapsed.value = !isSheetInfoCollapsed.value
+}
+
+const toggleFileInfoCollapse = () => {
+  isFileInfoCollapsed.value = !isFileInfoCollapsed.value
+}
+
 const getDrawingInfo = (drawing: Model | number | undefined): string => {
   if (!drawing) return ''
   
@@ -249,5 +298,23 @@ const getModelBadgeClass = (modelType: string | undefined): string => {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1040;
+}
+
+/* Animazione per il collapse */
+.collapse-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Stile per i pulsanti di collapse */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn i {
+  transition: transform 0.2s ease;
 }
 </style>

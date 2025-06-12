@@ -2,11 +2,21 @@
   <div class="model-sheets-manager">
     <!-- Header con contatore -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h6 class="mb-0">
-        <i class="bi bi-file-earmark-text me-2"></i>
-        {{ t('models:sheets.associatedSheets') }}
-        <span class="badge bg-primary ms-2">{{ sheets.length }}</span>
-      </h6>
+      <div class="d-flex align-items-center">
+        <h6 class="mb-0">
+          <i class="bi bi-file-earmark-text me-2"></i>
+          {{ t('models:sheets.associatedSheets') }}
+          <span class="badge bg-primary ms-2">{{ sheets.length }}</span>
+        </h6>
+        <button 
+          type="button" 
+          class="btn btn-sm btn-outline-secondary ms-2"
+          @click="toggleSheetsCollapse"
+          :title="isSheetsCollapsed ? 'Espandi fogli associati' : 'Comprimi fogli associati'"
+        >
+          <i class="bi" :class="isSheetsCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
       <button 
         type="button" 
         class="btn btn-sm btn-outline-primary"
@@ -19,7 +29,7 @@
     </div>
 
     <!-- Lista fogli associati -->
-    <div v-if="sheets.length > 0" class="sheets-list">
+    <div v-if="sheets.length > 0" class="sheets-list collapse-content" v-show="!isSheetsCollapsed">
       <div 
         v-for="sheet in sheets" 
         :key="sheet.id"
@@ -49,7 +59,7 @@
     </div>
 
     <!-- Messaggio vuoto -->
-    <div v-else class="text-center text-muted py-3">
+    <div v-else class="text-center text-muted py-3 collapse-content" v-show="!isSheetsCollapsed">
       <i class="bi bi-file-earmark-text fs-1 opacity-25"></i>
       <p class="mb-0">{{ t('models:sheets.noSheetsAssociated') }}</p>
       <small>{{ t('models:sheets.clickAddToAssociate') }}</small>
@@ -88,6 +98,7 @@ const availableSheets = ref<SheetWithRelations[]>([])
 const loading = ref(false)
 const modalLoading = ref(false)
 const showAddModal = ref(false)
+const isSheetsCollapsed = ref(false)
 
 const emit = defineEmits<{
   'update': []
@@ -324,6 +335,11 @@ const getDrawingInfo = (drawing: any): string => {
   return `Drawing ID: ${drawing}`
 }
 
+// Toggle collapse for sheets list
+const toggleSheetsCollapse = () => {
+  isSheetsCollapsed.value = !isSheetsCollapsed.value
+}
+
 // Lifecycle
 onMounted(async () => {
   // Prima carica tutti i fogli disponibili
@@ -364,5 +380,23 @@ watch(() => props.model.id, async () => {
 .sheets-list {
   max-height: 300px;
   overflow-y: auto;
+}
+
+/* Animazione per il collapse */
+.collapse-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Stile per il pulsante di collapse */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn i {
+  transition: transform 0.2s ease;
 }
 </style>

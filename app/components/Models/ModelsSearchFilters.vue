@@ -16,7 +16,6 @@
           :title="isFiltersCollapsed ? t('models:filters.expandFilters') : t('models:filters.collapseFilters')"
         >
           <i class="bi" :class="isFiltersCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
-          {{ isFiltersCollapsed ? t('models:table.show') : t('models:table.hide') }}
         </button>
       </div>
     </div>

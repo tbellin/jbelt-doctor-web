@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Nuxt.js 3 frontend application for JBelt Doctor Web, a multilingual admin dashboard with authentication and JWT-based API integration. The project uses a custom directory structure with the `app/` folder as the source directory.
+This is a Nuxt.js 3 frontend application for JBelt Doctor Web, a CAD/PLM management system with multilingual admin dashboard, JWT authentication, and PTC Creo integration. The application manages Models (Parts/Assemblies/Drawings), Sheets, and their complex associations within a Spring Boot backend ecosystem. The project uses a custom directory structure with the `app/` folder as the source directory.
 
 ## Architecture
 
@@ -20,13 +20,15 @@ This is a Nuxt.js 3 frontend application for JBelt Doctor Web, a multilingual ad
 - `app/plugins/` - Nuxt plugins
 
 ### Key Technologies
-- **Framework**: Nuxt 3 with Vue.js 3 and TypeScript
-- **Package Manager**: pnpm (version specified in packageManager field)
+- **Framework**: Nuxt 3 with Vue.js 3 and TypeScript (SSR disabled)
+- **Package Manager**: pnpm 10.6.3+ (specified in packageManager field)
 - **State Management**: Pinia stores
 - **HTTP Client**: Axios (configured in plugins/axios.ts)
-- **UI Framework**: Bootstrap 5 with Bootstrap Icons
+- **UI Framework**: Bootstrap 5 with Bootstrap Icons and Flag Icons
 - **Internationalization**: Custom i18n implementation supporting EN/IT
 - **Authentication**: JWT-based with Spring Boot backend
+- **File Processing**: xlsx for data export/import
+- **CAD Integration**: Models/Sheets/Drawings management with PTC Creo backend
 
 ### Authentication Architecture
 - JWT tokens stored in localStorage
@@ -45,6 +47,12 @@ pnpm install
 # Run development server
 pnpm dev
 
+# Clean development (remove .output .nuxt)
+pnpm run dev:clean
+
+# Debug mode with detailed logging
+pnpm run dev:debug
+
 # Build for production
 pnpm build
 
@@ -53,6 +61,23 @@ pnpm generate
 
 # Preview production build
 pnpm preview
+```
+
+### Using Makefile
+```bash
+# Development environment
+make dev          # Start with hot-reload
+make dev-build    # Rebuild and start
+make dev-down     # Stop development
+
+# Production environment
+make prod         # Start production
+make prod-build   # Rebuild and start production
+make prod-down    # Stop production
+
+# Utilities
+make logs         # View logs
+make prune        # Clean unused containers
 ```
 
 ### Docker Development
@@ -100,7 +125,8 @@ Set `NUXT_DEBUG=true` to enable:
 - `useApi()` - HTTP client with JWT token injection
 - `useI18n()` - Internationalization utilities
 - `useUsers()` - User management operations (admin)
-- `useDrawings()` - Drawing/CAD data operations
+- `useDrawings()` - CAD Models/Drawings/Sheets data operations
+- `useDebug()` - Debug utilities and mock authentication
 
 ## Internationalization
 
@@ -111,6 +137,13 @@ The application supports multiple languages with custom i18n implementation:
 - Language switcher component available
 
 ## Key Features
+
+### CAD/PLM Management System
+- **Models Management**: Parts, Assemblies, Drawings with hierarchical relationships
+- **Sheets Management**: Technical drawings with DIN format standards (A0-A4)
+- **Association System**: Complex many-to-many relationships between Models and Sheets
+- **Data Completeness**: Validation and enrichment of partial objects from backend
+- **Creo Integration**: PTC Creo Parametric ID mapping and file references
 
 ### Authentication System
 - Login/logout functionality
@@ -137,6 +170,9 @@ The application supports multiple languages with custom i18n implementation:
 - `components/Dashboard/` - Dashboard UI components
 - `components/Admin/` - Admin panel components
 - `components/Layout/` - Layout components (header, footer, etc.)
+- `components/Models/` - CAD Models management (tables, modals, associations)
+- `components/Sheets/` - Sheets management (forms, views, search)
+- `components/Debug/` - Development and debugging utilities
 
 ### Route Protection
 Protected routes use middleware:
@@ -180,9 +216,44 @@ The project uses a multi-stage Docker setup:
 3. Handle loading/error states
 4. Add proper TypeScript types
 
+### Working with CAD Data Models
+Key entity classes with validation:
+```javascript
+// Import entity classes
+import { Model, Sheet } from '@/types/'
+
+// Validate data completeness
+const model = new Model(apiData)
+if (model.isComplete()) {
+  // Work with complete object
+}
+
+// Enrich partial objects
+const enrichedModel = enrichModel(partialModel, completeData)
+```
+
 ### Testing Authentication
 Debug mode provides utilities:
 ```javascript
 const { simulateAuth, resetAuth } = useAuth()
 // Only available when NUXT_DEBUG=true
 ```
+
+## CAD Data Architecture
+
+### Core Entities
+- **Model**: Parts (`PART`), Assemblies (`ASSEMBLY`), Drawings (`DRAWING`), Formats (`FORMAT`)
+- **Sheet**: Technical drawing sheets with DIN format standards
+- **Associations**: Complex many-to-many relationships between Models and Sheets
+
+### Key Relationships  
+- Models ↔ Sheets: Many-to-many associations
+- Drawing Models → Sheets: One-to-many references
+- Parent-Child Models: Assembly hierarchies
+- Generic-Instance Models: Template relationships
+
+### Data Completeness System
+- Backend may return partial objects (ID-only associations)
+- Frontend validates and enriches incomplete data
+- Classes provide validation methods (`isComplete`, `isPartialFromAssociation`)
+- Clean object methods prevent circular references in API calls

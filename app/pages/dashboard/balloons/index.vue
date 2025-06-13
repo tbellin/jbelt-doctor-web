@@ -18,10 +18,10 @@
               <i class="bi bi-arrow-clockwise me-2"></i>
               {{ t('balloons:actions.refresh') }}
             </button>
-            <button class="btn btn-primary" @click="showCreateModal = true" :disabled="loading">
+            <NuxtLink to="/dashboard/balloon/new" class="btn btn-primary">
               <i class="bi bi-plus-lg me-2"></i>
               {{ t('balloons:actions.create') }}
-            </button>
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -216,10 +216,10 @@
           <i class="bi bi-geo-alt-slash display-1 text-muted"></i>
           <h4 class="mt-3">Nessun Balloon senza foglio associato</h4>
           <p class="text-muted">Tutti i balloon hanno un foglio associato. Seleziona un foglio per visualizzare i balloon correlati o crea nuovi balloon.</p>
-          <button class="btn btn-primary" @click="showCreateModal = true">
+          <NuxtLink to="/dashboard/balloon/new" class="btn btn-primary">
             <i class="bi bi-plus-lg me-2"></i>
             Crea nuovo Balloon
-          </button>
+          </NuxtLink>
         </div>
 
         <!-- Empty state - Sheet selected but no balloons -->
@@ -227,10 +227,10 @@
           <i class="bi bi-geo-alt display-1 text-muted"></i>
           <h4 class="mt-3">{{ t('balloons:empty.noBalloonsForSheet') }}</h4>
           <p class="text-muted">{{ t('balloons:empty.createBalloonForSheet') }}</p>
-          <button class="btn btn-primary" @click="showCreateModal = true">
+          <NuxtLink to="/dashboard/balloon/new" class="btn btn-primary">
             <i class="bi bi-plus-lg me-2"></i>
             {{ t('balloons:actions.createForSheet') }}
-          </button>
+          </NuxtLink>
         </div>
 
         <!-- Simple Balloon-Note Table -->
@@ -334,10 +334,20 @@
                     >
                       <i class="bi bi-eye"></i>
                     </button>
+                    <NuxtLink 
+                      v-if="row.balloon?.id"
+                      :to="`/dashboard/balloon/${row.balloon.id}`"
+                      class="btn btn-outline-secondary btn-sm"
+                      :title="t('balloons:table.edit')"
+                    >
+                      <i class="bi bi-pencil"></i>
+                    </NuxtLink>
                     <button 
+                      v-else
                       @click="editRow(row)" 
                       class="btn btn-outline-secondary btn-sm"
                       :title="t('balloons:table.edit')"
+                      disabled
                     >
                       <i class="bi bi-pencil"></i>
                     </button>

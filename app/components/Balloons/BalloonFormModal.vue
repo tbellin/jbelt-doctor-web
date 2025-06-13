@@ -20,6 +20,42 @@
         
         <form @submit.prevent="$emit('save')">
           <div class="modal-body">
+            <!-- Disegni e Fogli Selection Row -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label for="drawingSelect" class="form-label">{{ t('balloons:form.drawing') }}</label>
+                <select
+                  id="drawingSelect"
+                  :value="selectedDrawingId"
+                  @change="updateDrawingSelection"
+                  class="form-select"
+                >
+                  <option value="">{{ t('balloons:form.selectDrawing') }}</option>
+                  <option v-for="drawing in availableDrawings" :key="drawing.id" :value="drawing.id">
+                    {{ drawing.code || drawing.name }} - {{ drawing.name }}
+                  </option>
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="sheetSelect" class="form-label">{{ t('balloons:form.sheet') }}</label>
+                <select
+                  id="sheetSelect"
+                  :value="selectedSheetId"
+                  @change="updateSheetSelection"
+                  class="form-select"
+                  :disabled="!selectedDrawingId"
+                >
+                  <option value="">{{ t('balloons:form.selectSheet') }}</option>
+                  <option v-for="sheet in filteredSheets" :key="sheet.id" :value="sheet.id">
+                    {{ sheet.code || sheet.name }} - {{ sheet.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
             <!-- Balloon Section -->
             <div class="section-header mb-3">
               <h6 class="mb-0">
@@ -249,6 +285,9 @@
 <script setup lang="ts">
 import type { IBaloon } from '~/model/baloon.model'
 import type { INote } from '~/model/note.model'
+import type { IModel } from '~/model/model.model'
+import type { ISheet } from '~/model/sheet.model'
+import { computed } from 'vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n()
@@ -280,6 +319,10 @@ interface Props {
   formData: FormData
   errors: Record<string, string>
   saving?: boolean
+  availableDrawings: any[]
+  availableSheets: any[]
+  selectedDrawingId: string
+  selectedSheetId: string
 }
 
 const props = defineProps<Props>()
@@ -288,6 +331,8 @@ const emit = defineEmits<{
   'close': []
   'save': []
   'update:formData': [value: FormData]
+  'update:selectedDrawingId': [value: string]
+  'update:selectedSheetId': [value: string]
 }>()
 
 // Balloon update functions
@@ -371,6 +416,44 @@ const updateNoteCode = (event: Event) => {
     note: { ...props.formData.note, code: target.value }
   })
 }
+
+// Drawing and Sheet selection state - use props values
+const selectedDrawingId = computed({
+  get: () => props.selectedDrawingId,
+  set: (value) => emit('update:selectedDrawingId', value)
+})
+
+const selectedSheetId = computed({
+  get: () => props.selectedSheetId,
+  set: (value) => emit('update:selectedSheetId', value)
+})
+
+// Update functions for Drawing and Sheet dropdowns
+const updateDrawingSelection = (event: Event) => {
+  const target = event.target as HTMLSelectElement
+  selectedDrawingId.value = target.value
+  // Reset sheet when drawing changes
+  selectedSheetId.value = ''
+  // Emit changes to parent
+  emit('update:selectedDrawingId', target.value)
+  emit('update:selectedSheetId', '')
+}
+
+const updateSheetSelection = (event: Event) => {
+  const target = event.target as HTMLSelectElement
+  selectedSheetId.value = target.value
+  // Emit changes to parent
+  emit('update:selectedSheetId', target.value)
+}
+
+// Computed property to filter sheets based on selected drawing
+const filteredSheets = computed(() => {
+  if (!selectedDrawingId.value) return []
+  
+  return props.availableSheets.filter(sheet => 
+    sheet.drawing?.id?.toString() === selectedDrawingId.value
+  )
+})
 </script>
 
 <style scoped>

@@ -110,6 +110,75 @@
       </div>
     </div>
 
+    <!-- Filters Panel -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">
+            <i class="bi bi-funnel me-2"></i>
+            {{ t('balloons:filters.title') }}
+          </h6>
+          <button 
+            class="btn btn-sm btn-outline-secondary"
+            @click="toggleFiltersCollapse"
+            :title="isFiltersCollapsed ? 'Espandi filtri' : 'Comprimi filtri'"
+          >
+            <i class="bi" :class="isFiltersCollapsed ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="card-body collapse-content" v-show="!isFiltersCollapsed">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="filterDrawing" class="form-label">{{ t('balloons:filters.drawing') }}</label>
+            <select
+              id="filterDrawing"
+              v-model="filterDrawingId"
+              @change="onFilterDrawingChange($event)"
+              class="form-select"
+            >
+              <option value="">{{ t('balloons:filters.selectDrawing') }}</option>
+              <option v-for="drawing in availableDrawings" :key="drawing.id" :value="drawing.id">
+                {{ drawing.code || drawing.name }} - {{ drawing.name }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="filterSheet" class="form-label">{{ t('balloons:filters.sheet') }} ({{ t('balloons:filters.sheetCreoId') }})</label>
+            <select
+              id="filterSheet"
+              v-model="filterSheetId"
+              @change="onFilterSheetChange"
+              class="form-select"
+              :disabled="!filterDrawingId"
+            >
+              <option value="">{{ t('balloons:filters.selectSheet') }}</option>
+              <option v-for="sheet in filteredSheetsForFilter" :key="sheet.id" :value="sheet.id">
+                {{ sheet.creoId || sheet.code || sheet.name }} - {{ sheet.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="row mt-3">
+          <div class="col-12">
+            <button 
+              class="btn btn-outline-secondary btn-sm me-2"
+              @click="clearFilters"
+            >
+              <i class="bi bi-x-circle me-1"></i>
+              {{ t('balloons:filters.clear') }}
+            </button>
+            <small class="text-muted">
+              {{ t('balloons:filters.showing') }}: {{ filteredBalloonNoteRows.length }} / {{ balloonNoteRows.length }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Table -->
     <div class="card">
       <div class="card-header">
@@ -127,9 +196,9 @@
       
       <div class="card-body collapse-content" v-show="!isTableCollapsed">
         <!-- Loading state -->
-        <div v-if="loading" class="text-center py-4">
+        <div v-if="loading || loadingFiltered" class="text-center py-4">
           <div class="spinner-border text-primary"></div>
-          <p class="mt-2">{{ t('balloons:loading') }}</p>
+          <p class="mt-2">{{ loadingFiltered ? t('balloons:loadingFiltered') : t('balloons:loading') }}</p>
         </div>
 
         <!-- Error state -->
@@ -140,21 +209,28 @@
           </button>
         </div>
 
-        <!-- Empty state -->
-        <div v-else-if="!balloonNoteRows.length" class="text-center py-5">
+        <!-- Empty state - No sheet filter -->
+        <div v-else-if="!filterSheetId" class="text-center py-5">
+          <i class="bi bi-funnel display-1 text-muted"></i>
+          <h4 class="mt-3">{{ t('balloons:filters.noSheetSelected') }}</h4>
+          <p class="text-muted">{{ t('balloons:filters.selectSheetToView') }}</p>
+        </div>
+
+        <!-- Empty state - Sheet selected but no balloons -->
+        <div v-else-if="!filteredBalloonNoteRows.length" class="text-center py-5">
           <i class="bi bi-geo-alt display-1 text-muted"></i>
-          <h4 class="mt-3">{{ t('balloons:empty.title') }}</h4>
-          <p class="text-muted">{{ t('balloons:empty.message') }}</p>
+          <h4 class="mt-3">{{ t('balloons:empty.noBalloonsForSheet') }}</h4>
+          <p class="text-muted">{{ t('balloons:empty.createBalloonForSheet') }}</p>
           <button class="btn btn-primary" @click="showCreateModal = true">
             <i class="bi bi-plus-lg me-2"></i>
-            {{ t('balloons:actions.createFirst') }}
+            {{ t('balloons:actions.createForSheet') }}
           </button>
         </div>
 
-        <!-- Table with data -->
+        <!-- Simple Balloon-Note Table -->
         <div v-else class="table-responsive">
-          <table class="table table-hover table-bordered">
-            <thead class="table-dark">
+          <table class="table table-hover table-bordered table-sm">
+            <thead class="table-secondary">
               <tr>
                 <th style="width: 12%">{{ t('balloons:table.balloon') }}</th>
                 <th style="width: 12%">{{ t('balloons:table.note') }}</th>
@@ -166,7 +242,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="row in balloonNoteRows" :key="getRowKey(row)" class="balloon-row">
+              <tr v-for="row in filteredBalloonNoteRows" :key="getRowKey(row)" class="balloon-row">
                 <!-- Balloon Column -->
                 <td class="balloon-cell">
                   <div v-if="row.balloon" class="balloon-info">
@@ -246,11 +322,18 @@
                       <i class="bi bi-link"></i>
                     </button>
                     <button 
-                      @click="viewRow(row)" 
+                      @click="viewBalloonJson(row)" 
                       class="btn btn-outline-primary btn-sm"
-                      :title="t('balloons:table.view')"
+                      :title="t('balloons:table.viewJson')"
                     >
                       <i class="bi bi-eye"></i>
+                    </button>
+                    <button 
+                      @click="editRow(row)" 
+                      class="btn btn-outline-secondary btn-sm"
+                      :title="t('balloons:table.edit')"
+                    >
+                      <i class="bi bi-pencil"></i>
                     </button>
                     <button 
                       @click="deleteRow(row)" 
@@ -268,16 +351,51 @@
       </div>
     </div>
 
-    <!-- Create/Edit Balloon Modal -->
+    <!-- Simple Create/Edit Balloon Modal -->
     <BalloonFormModal
       :show="showCreateModal"
       :editing-balloon="editingBalloon"
       v-model:form-data="balloonFormData"
+      v-model:selected-drawing-id="selectedDrawingId"
+      v-model:selected-sheet-id="selectedSheetId"
       :errors="formErrors"
       :saving="saving"
+      :available-drawings="availableDrawings"
+      :available-sheets="allSheets"
       @close="closeCreateModal"
       @save="handleCreateSave"
     />
+
+    <!-- JSON View Modal -->
+    <div v-if="showJsonModal" class="modal show d-block" style="background-color: rgba(0,0,0,0.5)">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>{{ t('balloons:modal.viewJson') }} - {{ jsonViewBalloon?.baloonValue || jsonViewBalloon?.name || 'Balloon' }}</h5>
+            <button class="btn-close" @click="closeJsonModal"></button>
+          </div>
+          <div class="modal-body">
+            <div v-if="loadingJson" class="text-center py-4">
+              <div class="spinner-border text-primary"></div>
+              <p class="mt-2">{{ t('balloons:loading') }}</p>
+            </div>
+            <div v-else-if="jsonError" class="alert alert-danger">
+              <strong>{{ t('common:error') }}:</strong> {{ jsonError }}
+            </div>
+            <div v-else>
+              <pre class="json-display"><code>{{ formattedBalloonJson }}</code></pre>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="closeJsonModal">{{ t('common:close') }}</button>
+            <button class="btn btn-primary" @click="copyJsonToClipboard" :disabled="!jsonViewBalloon">
+              <i class="bi bi-clipboard me-2"></i>
+              {{ t('balloons:actions.copyJson') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Association Modal -->
     <div v-if="showAssociationModal" class="modal show d-block" style="background-color: rgba(0,0,0,0.5)">
@@ -344,10 +462,14 @@
                 {{ isAuthenticated ? 'Authenticated' : 'Not authenticated' }}
               </span><br>
               <strong>User:</strong> {{ user?.login || 'None' }}<br>
-              <strong>Balloons Count:</strong> {{ balloons.length }}<br>
-              <strong>Notes Count:</strong> {{ notes.length }}<br>
-              <strong>Rows Count:</strong> {{ balloonNoteRows.length }}<br>
-              <strong>Loading:</strong> {{ loading }}
+              <strong>All Balloons:</strong> {{ balloons.length }}<br>
+              <strong>All Notes:</strong> {{ notes.length }}<br>
+              <strong>All Rows:</strong> {{ balloonNoteRows.length }}<br>
+              <strong>Filtered Balloons:</strong> {{ filteredBalloons.length }}<br>
+              <strong>Filtered Rows:</strong> {{ filteredBalloonNoteRows.length }}<br>
+              <strong>Filter Sheet ID:</strong> {{ filterSheetId || 'None' }}<br>
+              <strong>Loading:</strong> {{ loading }}<br>
+              <strong>Loading Filtered:</strong> {{ loadingFiltered }}
             </div>
             <div class="col-md-6">
               <div v-if="error" class="text-danger">
@@ -370,6 +492,8 @@ import { useApi } from '~/composables/useApi'
 import type { IBaloon } from '~/model/baloon.model'
 import type { INote } from '~/model/note.model'
 import type { IAttributeEntity } from '~/model/attribute-entity.model'
+import type { IModel } from '~/model/model.model'
+import type { ISheet } from '~/model/sheet.model'
 import { useAuth } from '~/composables/useAuth'
 import { useI18n } from '~/composables/useI18n'
 import { useDebug } from '~/composables/useDebug'
@@ -382,7 +506,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const { balloons: balloonsApi, notes: notesApi, attributeEntities: attributesApi } = useApi()
+const { balloons: balloonsApi, notes: notesApi, attributeEntities: attributesApi, models: modelsApi, sheets: sheetsApi } = useApi()
 const { isAuthenticated, user } = useAuth()
 const { isDebugMode } = useDebug()
 
@@ -390,12 +514,19 @@ const { isDebugMode } = useDebug()
 const balloons = ref<IBaloon[]>([])
 const notes = ref<INote[]>([])
 const attributeEntities = ref<IAttributeEntity[]>([])
+const allModels = ref<IModel[]>([])
+const allSheets = ref<ISheet[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
 // Collapse states
 const isStatsCollapsed = ref(false)
 const isTableCollapsed = ref(false)
+const isFiltersCollapsed = ref(false)
+
+// Filter states
+const filterDrawingId = ref('')
+const filterSheetId = ref('')
 
 // Edit state
 const editingAttribute = ref<string | null>(null)
@@ -404,13 +535,23 @@ const editingValue = ref('')
 // Modal state
 const showCreateModal = ref(false)
 const showAssociationModal = ref(false)
+const showJsonModal = ref(false)
 const selectedBalloonId = ref<number | null>(null)
 const selectedNoteId = ref<number | null>(null)
 const associatingRow = ref<any>(null)
 const editingBalloon = ref<IBaloon | null>(null)
 const saving = ref(false)
 
-// Form state
+// JSON view state
+const jsonViewBalloon = ref<IBaloon | null>(null)
+const loadingJson = ref(false)
+const jsonError = ref<string | null>(null)
+
+// Drawing and Sheet selection state for modal
+const selectedDrawingId = ref('')
+const selectedSheetId = ref('')
+
+// Simple form state (no associations)
 const balloonFormData = ref({
   balloon: {
     creoId: '',
@@ -430,64 +571,257 @@ const balloonFormData = ref({
 
 const formErrors = ref<Record<string, string>>({})
 
+// Simple balloon-note rows for display (no complex grouping)
+const balloonNoteRows = computed(() => {
+  try {
+    const rows = []
+    
+    // Create rows for existing balloons with their notes
+    for (const balloon of balloons.value) {
+      const balloonNotes = notes.value.filter(note => note.baloon?.id === balloon.id)
+      
+      if (balloonNotes.length > 0) {
+        for (const note of balloonNotes) {
+          const noteAttributes = attributeEntities.value
+            .filter(attr => attr.note?.id === note.id)
+            .sort((a, b) => (a.order || 0) - (b.order || 0))
+          
+          // Ensure we have 4 attributes
+          while (noteAttributes.length < 4) {
+            noteAttributes.push({
+              id: null,
+              order: noteAttributes.length + 1,
+              attributeValue: '',
+              note: note
+            })
+          }
+          
+          rows.push({
+            balloon,
+            note,
+            attributes: noteAttributes.slice(0, 4)
+          })
+        }
+      } else {
+        // Balloon without note
+        rows.push({
+          balloon,
+          note: null,
+          attributes: createEmptyAttributes()
+        })
+      }
+    }
+    
+    // Add orphaned notes (notes without balloons)
+    const usedNoteIds = new Set(rows.map(row => row.note?.id).filter(Boolean))
+    for (const note of notes.value) {
+      if (!usedNoteIds.has(note.id) && !note.baloon) {
+        const noteAttributes = attributeEntities.value
+          .filter(attr => attr.note?.id === note.id)
+          .sort((a, b) => (a.order || 0) - (b.order || 0))
+        
+        while (noteAttributes.length < 4) {
+          noteAttributes.push({
+            id: null,
+            order: noteAttributes.length + 1,
+            attributeValue: '',
+            note: note
+          })
+        }
+        
+        rows.push({
+          balloon: null,
+          note,
+          attributes: noteAttributes.slice(0, 4)
+        })
+      }
+    }
+    
+    return rows
+  } catch (err) {
+    console.error('[Balloons] Error in balloonNoteRows:', err)
+    return []
+  }
+})
+
+// Computed properties for form data
+const availableDrawings = computed(() => {
+  return allModels.value.filter(model => model.modelType === 'DRAWING')
+})
+
+// Computed properties for filters
+const filteredSheetsForFilter = computed(() => {
+  console.log('[Balloons] Computing filteredSheetsForFilter, drawing ID:', filterDrawingId.value)
+  console.log('[Balloons] Available sheets:', allSheets.value.length)
+  
+  if (!filterDrawingId.value) {
+    console.log('[Balloons] No drawing selected, returning empty array')
+    return []
+  }
+  
+  const filtered = allSheets.value.filter(sheet => {
+    const matches = sheet.drawing?.id?.toString() === filterDrawingId.value
+    if (matches) {
+      console.log('[Balloons] Sheet matches:', sheet.creoId || sheet.name, 'drawing ID:', sheet.drawing?.id)
+    }
+    return matches
+  })
+  
+  console.log('[Balloons] Filtered sheets for drawing:', filtered.length)
+  return filtered
+})
+
+// Filtered data from API calls
+const filteredBalloons = ref<IBaloon[]>([])
+const filteredNotes = ref<INote[]>([])
+const filteredAttributes = ref<IAttributeEntity[]>([])
+const loadingFiltered = ref(false)
+
+// Build balloon-note rows for filtered data
+const filteredBalloonNoteRows = computed(() => {
+  try {
+    // REGOLA: Se non è selezionato un foglio, lista vuota
+    if (!filterSheetId.value) {
+      console.log('[Balloons] No sheet filter selected, showing empty list')
+      return []
+    }
+    
+    const rows = []
+    
+    // Create rows for filtered balloons with their notes
+    for (const balloon of filteredBalloons.value) {
+      const balloonNotes = filteredNotes.value.filter(note => note.baloon?.id === balloon.id)
+      
+      if (balloonNotes.length > 0) {
+        for (const note of balloonNotes) {
+          const noteAttributes = filteredAttributes.value
+            .filter(attr => attr.note?.id === note.id)
+            .sort((a, b) => (a.order || 0) - (b.order || 0))
+          
+          // Ensure we have 4 attributes
+          while (noteAttributes.length < 4) {
+            noteAttributes.push({
+              id: null,
+              order: noteAttributes.length + 1,
+              attributeValue: '',
+              note: note
+            })
+          }
+          
+          rows.push({
+            balloon,
+            note,
+            attributes: noteAttributes.slice(0, 4)
+          })
+        }
+      } else {
+        // Balloon without note
+        rows.push({
+          balloon,
+          note: null,
+          attributes: createEmptyAttributes()
+        })
+      }
+    }
+    
+    // Add orphaned notes (notes without balloons) from filtered data
+    const usedNoteIds = new Set(rows.map(row => row.note?.id).filter(Boolean))
+    for (const note of filteredNotes.value) {
+      if (!usedNoteIds.has(note.id) && !note.baloon) {
+        const noteAttributes = filteredAttributes.value
+          .filter(attr => attr.note?.id === note.id)
+          .sort((a, b) => (a.order || 0) - (b.order || 0))
+        
+        while (noteAttributes.length < 4) {
+          noteAttributes.push({
+            id: null,
+            order: noteAttributes.length + 1,
+            attributeValue: '',
+            note: note
+          })
+        }
+        
+        rows.push({
+          balloon: null,
+          note,
+          attributes: noteAttributes.slice(0, 4)
+        })
+      }
+    }
+    
+    console.log(`[Balloons] Built ${rows.length} filtered rows for sheet ID: ${filterSheetId.value}`)
+    return rows
+    
+  } catch (err) {
+    console.error('[Balloons] Error in filteredBalloonNoteRows:', err)
+    return []
+  }
+})
+
+// Simple computed properties for available data
+const availableBalloons = computed(() => {
+  try {
+    const usedBalloonIds = new Set()
+    balloonNoteRows.value.forEach(row => {
+      if (row?.balloon?.id) {
+        usedBalloonIds.add(row.balloon.id)
+      }
+    })
+    return balloons.value.filter(balloon => balloon?.id && !usedBalloonIds.has(balloon.id))
+  } catch (err) {
+    console.error('[Balloons] Error in availableBalloons:', err)
+    return balloons.value
+  }
+})
+
+const availableNotes = computed(() => {
+  try {
+    const usedNoteIds = new Set()
+    balloonNoteRows.value.forEach(row => {
+      if (row?.note?.id) {
+        usedNoteIds.add(row.note.id)
+      }
+    })
+    return notes.value.filter(note => note?.id && !usedNoteIds.has(note.id))
+  } catch (err) {
+    console.error('[Balloons] Error in availableNotes:', err)
+    return notes.value
+  }
+})
+
 // Debug state
 const showDebugPanel = ref(false)
 const debugInfo = ref<string>('')
 
-// Computed properties
+// JSON formatting
+const formattedBalloonJson = computed(() => {
+  if (!jsonViewBalloon.value) return ''
+  try {
+    return JSON.stringify(jsonViewBalloon.value, null, 2)
+  } catch (err) {
+    return 'Error formatting JSON: ' + err
+  }
+})
+
+// Simple computed properties for stats (use filtered data)
 const associatedPairsCount = computed(() => {
-  return balloonNoteRows.value.filter(row => row.balloon && row.note).length
+  try {
+    return filteredBalloonNoteRows.value.filter(row => row?.balloon && row?.note).length
+  } catch (err) {
+    console.error('[Balloons] Error in associatedPairsCount:', err)
+    return 0
+  }
 })
 
 const totalAttributesCount = computed(() => {
-  return balloonNoteRows.value.reduce((total, row) => {
-    return total + (row.attributes?.filter(attr => attr.attributeValue).length || 0)
-  }, 0)
-})
-
-const availableBalloons = computed(() => {
-  return balloons.value.filter(balloon => 
-    !balloonNoteRows.value.some(row => row.balloon?.id === balloon.id)
-  )
-})
-
-const availableNotes = computed(() => {
-  return notes.value.filter(note => 
-    !balloonNoteRows.value.some(row => row.note?.id === note.id)
-  )
-})
-
-// Main data structure: combined rows
-const balloonNoteRows = computed(() => {
-  const rows: any[] = []
-  
-  // Create rows from existing balloon-note associations
-  balloons.value.forEach(balloon => {
-    const associatedNote = notes.value.find(note => note.baloon?.id === balloon.id)
-    const noteAttributes = associatedNote ? 
-      attributeEntities.value.filter(attr => attr.note?.id === associatedNote.id).sort((a, b) => (a.order || 0) - (b.order || 0)) :
-      []
-    
-    rows.push({
-      balloon,
-      note: associatedNote || null,
-      attributes: noteAttributes.length === 4 ? noteAttributes : createEmptyAttributes()
-    })
-  })
-  
-  // Add orphaned notes
-  notes.value.forEach(note => {
-    if (!note.baloon) {
-      const noteAttributes = attributeEntities.value.filter(attr => attr.note?.id === note.id).sort((a, b) => (a.order || 0) - (b.order || 0))
-      rows.push({
-        balloon: null,
-        note,
-        attributes: noteAttributes.length === 4 ? noteAttributes : createEmptyAttributes()
-      })
-    }
-  })
-  
-  return rows
+  try {
+    return filteredBalloonNoteRows.value.reduce((total, row) => {
+      return total + (row?.attributes?.filter(attr => attr?.attributeValue).length || 0)
+    }, 0)
+  } catch (err) {
+    console.error('[Balloons] Error in totalAttributesCount:', err)
+    return 0
+  }
 })
 
 // Helper functions
@@ -515,6 +849,110 @@ const toggleStatsCollapse = () => {
 
 const toggleTableCollapse = () => {
   isTableCollapsed.value = !isTableCollapsed.value
+}
+
+const toggleFiltersCollapse = () => {
+  isFiltersCollapsed.value = !isFiltersCollapsed.value
+}
+
+// Filter functions
+const onFilterDrawingChange = (event?: Event) => {
+  // Get value from event if provided, otherwise use reactive value
+  const newValue = event ? (event.target as HTMLSelectElement).value : filterDrawingId.value
+  
+  console.log('[Balloons] onFilterDrawingChange called')
+  console.log('[Balloons] Event value:', newValue)
+  console.log('[Balloons] Reactive value:', filterDrawingId.value)
+  
+  // Ensure reactive value is updated
+  filterDrawingId.value = newValue
+  
+  // Reset sheet filter when drawing changes
+  filterSheetId.value = ''
+  console.log('[Balloons] Drawing filter changed to:', newValue, 'reset sheet filter')
+  
+  // Force reactivity update - trigger computed property
+  console.log('[Balloons] Available sheets for new drawing:', filteredSheetsForFilter.value.length)
+}
+
+const onFilterSheetChange = async () => {
+  console.log('[Balloons] Sheet filter changed to:', filterSheetId.value)
+  
+  if (!filterSheetId.value) {
+    // Clear filtered data when no sheet selected
+    filteredBalloons.value = []
+    filteredNotes.value = []
+    filteredAttributes.value = []
+    return
+  }
+  
+  await loadFilteredData()
+}
+
+const clearFilters = () => {
+  filterDrawingId.value = ''
+  filterSheetId.value = ''
+  // Clear filtered data
+  filteredBalloons.value = []
+  filteredNotes.value = []
+  filteredAttributes.value = []
+  console.log('[Balloons] All filters cleared')
+}
+
+// Load filtered data by sheet
+const loadFilteredData = async () => {
+  if (!filterSheetId.value) return
+  
+  loadingFiltered.value = true
+  console.log('[Balloons] Loading filtered data for sheet ID:', filterSheetId.value)
+  
+  try {
+    // Get the selected sheet object
+    const selectedSheet = allSheets.value.find(sheet => 
+      sheet.id?.toString() === filterSheetId.value
+    )
+    
+    if (!selectedSheet) {
+      console.warn('[Balloons] Selected sheet not found in allSheets for ID:', filterSheetId.value)
+      console.log('[Balloons] Available sheet IDs:', allSheets.value.map(s => s.id))
+      // Continue anyway - we can still filter by sheet ID
+    } else {
+      console.log('[Balloons] Loading data for sheet:', selectedSheet.creoId || selectedSheet.name)
+    }
+    
+    // Use already loaded data and filter client-side by sheet association
+    console.log('[Balloons] Filtering already loaded data by sheet ID:', filterSheetId.value)
+    
+    // Filter balloons by sheet ID
+    filteredBalloons.value = balloons.value.filter(balloon => 
+      balloon.sheet?.id?.toString() === filterSheetId.value
+    )
+    console.log(`[Balloons] Filtered ${filteredBalloons.value.length} balloons for sheet from ${balloons.value.length} total`)
+    
+    // Filter notes that belong to balloons associated with the selected sheet
+    const balloonIds = new Set(filteredBalloons.value.map(b => b.id))
+    filteredNotes.value = notes.value.filter(note => 
+      note.baloon?.id && balloonIds.has(note.baloon.id)
+    )
+    console.log(`[Balloons] Filtered ${filteredNotes.value.length} notes for sheet from ${notes.value.length} total`)
+    
+    // Filter attributes that belong to notes of balloons associated with the selected sheet
+    const noteIds = new Set(filteredNotes.value.map(n => n.id))
+    filteredAttributes.value = attributeEntities.value.filter(attr => 
+      attr.note?.id && noteIds.has(attr.note.id)
+    )
+    console.log(`[Balloons] Filtered ${filteredAttributes.value.length} attributes for sheet from ${attributeEntities.value.length} total`)
+    
+  } catch (err) {
+    console.error('[Balloons] Error filtering data:', err)
+    error.value = 'Failed to filter data: ' + (err instanceof Error ? err.message : 'Unknown error')
+    // Reset filtered data on error
+    filteredBalloons.value = []
+    filteredNotes.value = []
+    filteredAttributes.value = []
+  } finally {
+    loadingFiltered.value = false
+  }
 }
 
 // Edit functions
@@ -580,6 +1018,44 @@ const closeCreateModal = () => {
   editingBalloon.value = null
   resetFormData()
   formErrors.value = {}
+  // Reset sheet selections
+  selectedDrawingId.value = ''
+  selectedSheetId.value = ''
+}
+
+// JSON Modal functions
+const closeJsonModal = () => {
+  showJsonModal.value = false
+  jsonViewBalloon.value = null
+  jsonError.value = null
+  loadingJson.value = false
+}
+
+const copyJsonToClipboard = async () => {
+  if (!jsonViewBalloon.value) return
+  
+  try {
+    const jsonText = JSON.stringify(jsonViewBalloon.value, null, 2)
+    await navigator.clipboard.writeText(jsonText)
+    
+    // You could add a toast notification here
+    console.log('[Balloons] JSON copied to clipboard')
+    
+  } catch (err) {
+    console.error('[Balloons] Failed to copy JSON to clipboard:', err)
+    // Fallback for older browsers
+    try {
+      const textArea = document.createElement('textarea')
+      textArea.value = JSON.stringify(jsonViewBalloon.value, null, 2)
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      console.log('[Balloons] JSON copied to clipboard (fallback)')
+    } catch (fallbackErr) {
+      console.error('[Balloons] Fallback copy also failed:', fallbackErr)
+    }
+  }
 }
 
 const resetFormData = () => {
@@ -604,17 +1080,24 @@ const resetFormData = () => {
 const validateForm = (): boolean => {
   const errors: Record<string, string> = {}
   
+  // OBBLIGATORIO: Deve essere selezionato un foglio
+  if (!selectedSheetId.value?.trim()) {
+    const sheetRequiredMsg = 'È obbligatorio selezionare un foglio'
+    errors.sheetRequired = sheetRequiredMsg
+    error.value = sheetRequiredMsg
+  }
+  
   // Validate balloon required fields
   if (!balloonFormData.value.balloon.creoId?.trim()) {
-    errors.balloonCreoId = t('common:error.required')
+    errors.balloonCreoId = 'Questo campo è obbligatorio'
   }
   if (!balloonFormData.value.balloon.baloonValue?.trim()) {
-    errors.balloonValue = t('common:error.required')
+    errors.balloonValue = 'Questo campo è obbligatorio'
   }
   
   // Validate note required fields
   if (!balloonFormData.value.note.creoId?.trim()) {
-    errors.noteCreoId = t('common:error.required')
+    errors.noteCreoId = 'Questo campo è obbligatorio'
   }
   
   formErrors.value = errors
@@ -622,7 +1105,8 @@ const validateForm = (): boolean => {
 }
 
 const handleCreateSave = async (): Promise<void> => {
-  console.log('[Balloons] Save balloon started')
+  console.log('[Balloons] Save balloon started - editing mode:', !!editingBalloon.value)
+  console.log('[Balloons] Selected sheet ID:', selectedSheetId.value)
   
   if (!validateForm()) {
     console.log('[Balloons] Validation failed')
@@ -633,76 +1117,142 @@ const handleCreateSave = async (): Promise<void> => {
   error.value = null
   
   try {
-    // Step 1: Create balloon first
-    const balloonData = {
-      creoId: balloonFormData.value.balloon.creoId || null,
-      code: balloonFormData.value.balloon.code || null,
-      name: balloonFormData.value.balloon.name || null,
-      baloonValue: balloonFormData.value.balloon.baloonValue || null,
-      baloonType: balloonFormData.value.balloon.baloonType || null
+    // Get selected sheet object if one is selected
+    let selectedSheet = null
+    if (selectedSheetId.value) {
+      selectedSheet = allSheets.value.find(sheet => sheet.id?.toString() === selectedSheetId.value)
+      console.log('[Balloons] Found selected sheet:', selectedSheet)
     }
     
-    console.log('[Balloons] Creating balloon:', balloonData)
-    const balloonResponse = await balloonsApi.create(balloonData)
-    
-    if (!balloonResponse.success || !balloonResponse.data) {
-      throw new Error(balloonResponse.error || 'Failed to create balloon')
-    }
-    
-    const createdBalloon = balloonResponse.data
-    console.log('[Balloons] Balloon created successfully:', createdBalloon)
-    
-    // Step 2: Create note associated with the balloon
-    const noteData = {
-      creoId: balloonFormData.value.note.creoId || null,
-      code: balloonFormData.value.note.code || null,
-      name: balloonFormData.value.note.name || null,
-      noteValue: balloonFormData.value.note.noteValue || null,
-      noteType: balloonFormData.value.note.noteType || null,
-      baloon: createdBalloon // Associate with the balloon
-    }
-    
-    console.log('[Balloons] Creating note:', noteData)
-    const noteResponse = await notesApi.create(noteData)
-    
-    if (!noteResponse.success || !noteResponse.data) {
-      throw new Error(noteResponse.error || 'Failed to create note')
-    }
-    
-    const createdNote = noteResponse.data
-    console.log('[Balloons] Note created successfully:', createdNote)
-    
-    // Step 3: Create 4 empty attributes for the note
-    console.log('[Balloons] Creating 4 attributes for note')
-    const attributePromises = []
-    
-    for (let i = 1; i <= 4; i++) {
-      const attributeData = {
-        order: i,
-        attributeValue: '',
-        note: createdNote
+    if (editingBalloon.value) {
+      // UPDATE MODE - Update existing balloon
+      console.log('[Balloons] Updating existing balloon:', editingBalloon.value.id)
+      
+      const balloonData = {
+        id: editingBalloon.value.id,
+        creoId: balloonFormData.value.balloon.creoId || null,
+        code: balloonFormData.value.balloon.code || null,
+        name: balloonFormData.value.balloon.name || null,
+        baloonValue: balloonFormData.value.balloon.baloonValue || null,
+        baloonType: balloonFormData.value.balloon.baloonType || null,
+        // Use selected sheet or preserve existing
+        sheet: selectedSheet || editingBalloon.value.sheet || null,
+        position: editingBalloon.value.position || null,
+        symbol: editingBalloon.value.symbol || null
       }
       
-      console.log(`[Balloons] Creating attribute ${i}:`, attributeData)
-      attributePromises.push(attributesApi.create(attributeData))
+      console.log('[Balloons] Updating balloon with data:', balloonData)
+      const balloonResponse = await balloonsApi.update(balloonData.id, balloonData)
+      
+      if (!balloonResponse.success) {
+        throw new Error(balloonResponse.error || 'Failed to update balloon')
+      }
+      
+      console.log('[Balloons] Balloon updated successfully')
+      
+      // Update note if it exists and has data
+      if (balloonFormData.value.note.creoId || balloonFormData.value.note.noteValue) {
+        // Find the associated note
+        const associatedNote = notes.value.find(note => note.baloon?.id === editingBalloon.value?.id)
+        
+        if (associatedNote) {
+          const noteData = {
+            id: associatedNote.id,
+            creoId: balloonFormData.value.note.creoId || null,
+            code: balloonFormData.value.note.code || null,
+            name: balloonFormData.value.note.name || null,
+            noteValue: balloonFormData.value.note.noteValue || null,
+            noteType: balloonFormData.value.note.noteType || null,
+            baloon: editingBalloon.value
+          }
+          
+          console.log('[Balloons] Updating note with data:', noteData)
+          const noteResponse = await notesApi.update(noteData.id, noteData)
+          
+          if (!noteResponse.success) {
+            console.warn('[Balloons] Failed to update note:', noteResponse.error)
+          } else {
+            console.log('[Balloons] Note updated successfully')
+          }
+        }
+      }
+      
+    } else {
+      // CREATE MODE - Create new balloon and note
+      console.log('[Balloons] Creating new balloon')
+      
+      const balloonData = {
+        creoId: balloonFormData.value.balloon.creoId || null,
+        code: balloonFormData.value.balloon.code || null,
+        name: balloonFormData.value.balloon.name || null,
+        baloonValue: balloonFormData.value.balloon.baloonValue || null,
+        baloonType: balloonFormData.value.balloon.baloonType || null,
+        // Associate with selected sheet
+        sheet: selectedSheet || null
+      }
+      
+      console.log('[Balloons] Creating balloon:', balloonData)
+      const balloonResponse = await balloonsApi.create(balloonData)
+      
+      if (!balloonResponse.success || !balloonResponse.data) {
+        throw new Error(balloonResponse.error || 'Failed to create balloon')
+      }
+      
+      const createdBalloon = balloonResponse.data
+      console.log('[Balloons] Balloon created successfully:', createdBalloon)
+      
+      // Step 2: Create note associated with the balloon
+      const noteData = {
+        creoId: balloonFormData.value.note.creoId || null,
+        code: balloonFormData.value.note.code || null,
+        name: balloonFormData.value.note.name || null,
+        noteValue: balloonFormData.value.note.noteValue || null,
+        noteType: balloonFormData.value.note.noteType || null,
+        baloon: createdBalloon // Associate with the balloon
+      }
+      
+      console.log('[Balloons] Creating note:', noteData)
+      const noteResponse = await notesApi.create(noteData)
+      
+      if (!noteResponse.success || !noteResponse.data) {
+        throw new Error(noteResponse.error || 'Failed to create note')
+      }
+      
+      const createdNote = noteResponse.data
+      console.log('[Balloons] Note created successfully:', createdNote)
+      
+      // Step 3: Create 4 empty attributes for the note
+      console.log('[Balloons] Creating 4 attributes for note')
+      const attributePromises = []
+      
+      for (let i = 1; i <= 4; i++) {
+        const attributeData = {
+          order: i,
+          attributeValue: '',
+          note: createdNote
+        }
+        
+        console.log(`[Balloons] Creating attribute ${i}:`, attributeData)
+        attributePromises.push(attributesApi.create(attributeData))
+      }
+      
+      // Wait for all attributes to be created
+      const attributeResults = await Promise.allSettled(attributePromises)
+      
+      attributeResults.forEach((result, index) => {
+        if (result.status === 'fulfilled' && result.value.success) {
+          console.log(`[Balloons] Attribute ${index + 1} created successfully:`, result.value.data)
+        } else if (result.status === 'fulfilled') {
+          console.warn(`[Balloons] Failed to create attribute ${index + 1}:`, result.value.error)
+        } else {
+          console.warn(`[Balloons] Failed to create attribute ${index + 1}:`, result.reason)
+        }
+      })
+      
+      console.log('[Balloons] Balloon, note, and attributes creation completed')
     }
     
-    // Wait for all attributes to be created
-    const attributeResults = await Promise.allSettled(attributePromises)
-    
-    attributeResults.forEach((result, index) => {
-      if (result.status === 'fulfilled' && result.value.success) {
-        console.log(`[Balloons] Attribute ${index + 1} created successfully:`, result.value.data)
-      } else if (result.status === 'fulfilled') {
-        console.warn(`[Balloons] Failed to create attribute ${index + 1}:`, result.value.error)
-      } else {
-        console.warn(`[Balloons] Failed to create attribute ${index + 1}:`, result.reason)
-      }
-    })
-    
-    console.log('[Balloons] Balloon, note, and attributes creation completed')
-    
-    // Step 4: Close modal and refresh data
+    // Close modal and refresh data
     closeCreateModal()
     await loadData()
     
@@ -710,16 +1260,120 @@ const handleCreateSave = async (): Promise<void> => {
     
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error'
-    error.value = `Failed to create balloon and note: ${errorMessage}`
-    console.error('[Balloons] Save exception:', err)
+    const operation = editingBalloon.value ? 'update' : 'create'
+    error.value = `Failed to ${operation} balloon and note: ${errorMessage}`
+    console.error(`[Balloons] ${operation} exception:`, err)
   } finally {
     saving.value = false
   }
 }
 
 // CRUD functions
-const viewRow = (row: any) => {
-  console.log('View row:', row)
+const viewBalloonJson = async (row: any) => {
+  console.log('[Balloons] View JSON for row:', row)
+  
+  if (!row.balloon?.id) {
+    console.warn('[Balloons] No balloon ID found for JSON view')
+    error.value = 'No balloon found to view'
+    return
+  }
+  
+  loadingJson.value = true
+  jsonError.value = null
+  showJsonModal.value = true
+  
+  try {
+    // Load the balloon by ID to get fresh data with all relationships
+    console.log('[Balloons] Loading balloon by ID for JSON view:', row.balloon.id)
+    const balloonResponse = await balloonsApi.getById(row.balloon.id)
+    
+    if (!balloonResponse.success || !balloonResponse.data) {
+      throw new Error(balloonResponse.error || 'Failed to load balloon')
+    }
+    
+    jsonViewBalloon.value = balloonResponse.data
+    console.log('[Balloons] Balloon loaded for JSON view:', jsonViewBalloon.value)
+    
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    jsonError.value = `Failed to load balloon for JSON view: ${errorMessage}`
+    console.error('[Balloons] Error loading balloon for JSON view:', err)
+  } finally {
+    loadingJson.value = false
+  }
+}
+
+const editRow = async (row: any) => {
+  console.log('[Balloons] Edit row:', row)
+  
+  if (!row.balloon?.id) {
+    console.warn('[Balloons] No balloon ID found for editing')
+    error.value = 'No balloon found to edit'
+    return
+  }
+  
+  try {
+    // Load the balloon by ID to get fresh data
+    console.log('[Balloons] Loading balloon by ID:', row.balloon.id)
+    const balloonResponse = await balloonsApi.getById(row.balloon.id)
+    
+    if (!balloonResponse.success || !balloonResponse.data) {
+      throw new Error(balloonResponse.error || 'Failed to load balloon')
+    }
+    
+    const balloon = balloonResponse.data
+    console.log('[Balloons] Balloon loaded for editing:', balloon)
+    
+    // Set editing mode
+    editingBalloon.value = balloon
+    
+    // Populate form with balloon and note data
+    balloonFormData.value = {
+      balloon: {
+        creoId: balloon.creoId || '',
+        code: balloon.code || '',
+        name: balloon.name || '',
+        baloonValue: balloon.baloonValue || '',
+        baloonType: balloon.baloonType || ''
+      },
+      note: {
+        creoId: row.note?.creoId || '',
+        code: row.note?.code || '',
+        name: row.note?.name || '',
+        noteValue: row.note?.noteValue || '',
+        noteType: row.note?.noteType || ''
+      }
+    }
+    
+    // Populate sheet selections if balloon has a sheet association
+    if (balloon.sheet) {
+      console.log('[Balloons] Balloon has sheet association:', balloon.sheet)
+      selectedSheetId.value = balloon.sheet.id?.toString() || ''
+      
+      // Find and set the drawing ID from the sheet's drawing
+      if (balloon.sheet.drawing?.id) {
+        selectedDrawingId.value = balloon.sheet.drawing.id.toString()
+        console.log('[Balloons] Set drawing ID from sheet:', selectedDrawingId.value)
+      }
+    } else {
+      // Reset selections if no sheet association
+      selectedDrawingId.value = ''
+      selectedSheetId.value = ''
+    }
+    
+    // Clear any previous errors
+    formErrors.value = {}
+    
+    // Open modal
+    showCreateModal.value = true
+    
+    console.log('[Balloons] Modal opened for editing with data:', balloonFormData.value)
+    
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    error.value = `Failed to load balloon for editing: ${errorMessage}`
+    console.error('[Balloons] Error loading balloon for edit:', err)
+  }
 }
 
 const deleteRow = async (row: any) => {
@@ -729,7 +1383,7 @@ const deleteRow = async (row: any) => {
   await loadData()
 }
 
-// Data loading
+// Data loading (balloon, note, attributes, models, sheets for modal)
 const loadData = async () => {
   if (loading.value) return
   
@@ -737,11 +1391,13 @@ const loadData = async () => {
   error.value = null
   
   try {
-    // Load all data in parallel
-    const [balloonsResponse, notesResponse, attributesResponse] = await Promise.all([
+    // Load core data in parallel
+    const [balloonsResponse, notesResponse, attributesResponse, modelsResponse, sheetsResponse] = await Promise.all([
       balloonsApi.getAll(),
       notesApi.getAll(),
-      attributesApi.getAll()
+      attributesApi.getAll(),
+      modelsApi.getAll(),
+      sheetsApi.getAll()
     ])
     
     if (balloonsResponse.success) {
@@ -756,10 +1412,56 @@ const loadData = async () => {
       attributeEntities.value = attributesResponse.data || []
     }
     
+    if (modelsResponse.success) {
+      allModels.value = modelsResponse.data || []
+    }
+    
+    if (sheetsResponse.success) {
+      allSheets.value = sheetsResponse.data || []
+    }
+    
     console.log('Data loaded:', {
       balloons: balloons.value.length,
       notes: notes.value.length,
-      attributes: attributeEntities.value.length
+      attributes: attributeEntities.value.length,
+      models: allModels.value.length,
+      sheets: allSheets.value.length
+    })
+    
+    // DEBUG: Check drawings and sheets data
+    console.log('[Balloons] Available drawings:', availableDrawings.value.length)
+    availableDrawings.value.forEach((drawing, index) => {
+      console.log(`[Balloons] Drawing ${index + 1}:`, {
+        id: drawing.id,
+        code: drawing.code,
+        name: drawing.name,
+        modelType: drawing.modelType
+      })
+    })
+    
+    console.log('[Balloons] Available sheets:', allSheets.value.length)
+    allSheets.value.forEach((sheet, index) => {
+      console.log(`[Balloons] Sheet ${index + 1}:`, {
+        id: sheet.id,
+        creoId: sheet.creoId,
+        name: sheet.name,
+        hasDrawing: !!sheet.drawing,
+        drawingId: sheet.drawing?.id,
+        drawingName: sheet.drawing?.name
+      })
+    })
+    
+    // DEBUG: Verifica associazioni sheet
+    console.log('[Balloons] Checking sheet associations:')
+    balloons.value.forEach((balloon, index) => {
+      console.log(`[Balloons] Balloon ${index + 1}:`, {
+        id: balloon.id,
+        baloonValue: balloon.baloonValue,
+        hasSheet: !!balloon.sheet,
+        sheetId: balloon.sheet?.id,
+        sheetCreoId: balloon.sheet?.creoId,
+        sheetName: balloon.sheet?.name
+      })
     })
     
   } catch (err) {
@@ -860,6 +1562,30 @@ onMounted(async () => {
   font-style: italic;
 }
 
+/* Group styling */
+.group-section {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.group-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.group-header h6 {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.group-header .small {
+  color: #6c757d;
+}
+
 /* Animation */
 .collapse-content {
   transition: all 0.3s ease-in-out;
@@ -876,6 +1602,26 @@ onMounted(async () => {
 /* Modal styling */
 .modal.show {
   display: block !important;
+}
+
+/* JSON Display */
+.json-display {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.json-display code {
+  background: none;
+  color: #495057;
+  padding: 0;
+  font-size: inherit;
 }
 
 /* Responsive */

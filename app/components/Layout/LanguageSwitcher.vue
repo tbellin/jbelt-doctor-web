@@ -41,21 +41,23 @@ const currentLanguageDisplay = computed(() => {
   return lang ? lang.name : currentLanguage.value.toUpperCase();
 });
 
-const changeLanguage = (lang: string) => {
+const changeLanguage = async (lang: string) => {
   if (lang === currentLanguage.value) return;
   
-  // Imposta la nuova lingua
-  setLanguage(lang);
+  console.log('[LanguageSwitcher] Changing language to:', lang);
   
-  // Forza il ricaricamento della pagina corrente per applicare le nuove traduzioni
-  // o aggiunge il parametro alla URL se necessario
-  if (process.client) {
-    // Aggiorna l'attributo lang dell'HTML
-    document.documentElement.setAttribute('lang', lang);
+  try {
+    // Imposta la nuova lingua
+    await setLanguage(lang);
     
-    // Ricarica la pagina corrente per applicare le traduzioni
-    // Opzionale: se preferisci non ricaricare la pagina, rimuovi questa riga
-    window.location.reload();
+    if (process.client) {
+      // Aggiorna l'attributo lang dell'HTML
+      document.documentElement.setAttribute('lang', lang);
+      
+      console.log('[LanguageSwitcher] Language changed successfully, no reload needed');
+    }
+  } catch (error) {
+    console.error('[LanguageSwitcher] Error changing language:', error);
   }
 };
 

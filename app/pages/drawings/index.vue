@@ -2,18 +2,18 @@
   <div class="container mt-5">
     <!-- Header della pagina -->
     <div class="mb-4">
-      <h3 style="color: red;">Pagina Test - Export Disegni</h3>
+      <h3 style="color: red;">{{ t('page_title') }}</h3>
       
       <!-- Campo di ricerca con bottone -->
       <div class="mb-4">
-        <h4>Ricerca Disegni</h4>
+        <h4>{{ t('search_drawings_title') }}</h4>
         <div class="input-group mb-3">
           <input
             v-model="searchQuery"
             type="text"
             class="form-control"
-            placeholder="Inserisci nome disegno"
-            aria-label="Nome Disegno"
+            :placeholder="t('search_placeholder')"
+            :aria-label="t('drawing_name')"
             @keyup.enter="onSearch"
             :disabled="searching"
           />
@@ -24,7 +24,7 @@
             :disabled="searching || !searchQuery.trim()"
           >
             <span v-if="searching" class="spinner-border spinner-border-sm me-2"></span>
-            Cerca
+            {{ t('search_button') }}
           </button>
         </div>
       </div>
@@ -32,7 +32,7 @@
 
     <!-- Lista disegni trovati -->
     <div v-if="searchResults.length > 0 && !showContent" class="mb-4">
-      <h5>Disegni trovati ({{ searchResults.length }})</h5>
+      <h5>{{ t('drawings_found') }} ({{ searchResults.length }})</h5>
       <div class="list-group">
         <a 
           v-for="drawing in searchResults" 
@@ -46,7 +46,7 @@
             <small class="text-muted">ID: {{ drawing.id }}</small>
           </div>
           <p class="mb-1">{{ drawing.code }}</p>
-          <small class="text-muted">{{ drawing.description || 'Nessuna descrizione' }}</small>
+          <small class="text-muted">{{ drawing.description || t('no_description') }}</small>
         </a>
       </div>
     </div>
@@ -54,33 +54,33 @@
     <!-- Messaggio nessun risultato -->
     <div v-if="searchPerformed && searchResults.length === 0 && !searching" class="alert alert-warning">
       <i class="bi bi-search me-2"></i>
-      Nessun disegno trovato con il nome "{{ searchQuery }}"
+      {{ t('no_drawings_found') }} "{{ searchQuery }}"
     </div>
 
     <!-- Loading search -->
     <div v-if="searching" class="text-center py-4">
       <div class="spinner-border text-primary"></div>
-      <p class="mt-2">Ricerca in corso...</p>
+      <p class="mt-2">{{ t('search_in_progress') }}</p>
     </div>
 
     <!-- Contenuto visibile DOPO la selezione del disegno -->
     <div v-if="showContent">
       <!-- Nome Disegno selezionato -->
       <div class="mb-3 alert alert-info">
-        <strong>Disegno selezionato:</strong> {{ selectedDrawing.name || selectedDrawing.code }}
+        <strong>{{ t('selected_drawing') }}:</strong> {{ selectedDrawing.name || selectedDrawing.code }}
         <button @click="goBackToSearch" class="btn btn-sm btn-outline-secondary ms-3">
           <i class="bi bi-arrow-left me-1"></i>
-          Torna alla ricerca
+          {{ t('back_to_search') }}
         </button>
       </div>
 
       <!-- Selezione Foglio -->
       <div class="mb-4" v-if="availableSheets.length > 0">
-        <h5>Seleziona Foglio</h5>
+        <h5>{{ t('select_sheet') }}</h5>
         <div class="row">
           <div class="col-md-6">
             <select v-model="selectedSheetId" @change="onSheetChange" class="form-select">
-              <option value="">Seleziona un foglio...</option>
+              <option value="">{{ t('select_sheet_placeholder') }}</option>
               <option v-for="sheet in availableSheets" :key="sheet.id" :value="sheet.id">
                 {{ sheet.creoId || sheet.code || sheet.name }} - {{ sheet.name }} (ID: {{ sheet.id }})
               </option>
@@ -92,28 +92,28 @@
       <!-- Messaggio nessun foglio -->
       <div v-if="availableSheets.length === 0" class="alert alert-warning">
         <i class="bi bi-exclamation-triangle me-2"></i>
-        Nessun foglio associato a questo disegno
+        {{ t('no_sheets_associated') }}
       </div>
 
       <!-- Contenuto foglio selezionato -->
       <div v-if="selectedSheet">
         <!-- Informazioni foglio -->
         <div class="mb-4">
-          <h5>Foglio: {{ selectedSheet.creoId || selectedSheet.name }}</h5>
-          <p class="text-muted">{{ selectedSheet.name || selectedSheet.description || 'Nessuna descrizione' }}</p>
+          <h5>{{ t('sheet') }}: {{ selectedSheet.creoId || selectedSheet.name }}</h5>
+          <p class="text-muted">{{ selectedSheet.name || selectedSheet.description || t('no_description') }}</p>
         </div>
 
         <!-- Loading dati -->
         <div v-if="loadingSheetData" class="text-center py-4">
           <div class="spinner-border text-primary"></div>
-          <p class="mt-2">Caricamento dati foglio...</p>
+          <p class="mt-2">{{ t('loading_sheet_data') }}</p>
         </div>
 
         <!-- Contenuto dinamico con dati reali -->
         <div v-else-if="balloonData.length > 0">
           <!-- Lista modelli associati al foglio -->
           <div class="mb-4">
-            <h6>Modelli associati al foglio:</h6>
+            <h6>{{ t('associated_models') }}:</h6>
             <div v-if="sheetModels.length > 0" class="mb-3">
               <div class="d-flex flex-wrap gap-2">
                 <span 
@@ -127,7 +127,7 @@
               </div>
             </div>
             <div v-else class="text-muted fst-italic">
-              Nessun modello associato trovato
+              {{ t('no_models_found') }}
             </div>
           </div>
 
@@ -136,12 +136,12 @@
             <table class="table table-bordered table-striped">
               <thead class="table-dark">
                 <tr>
-                  <th>Balloon</th>
-                  <th>Nota</th>
-                  <th>Attributo 1</th>
-                  <th>Attributo 2</th>
-                  <th>Attributo 3</th>
-                  <th>Attributo 4</th>
+                  <th>{{ t('balloon') }}</th>
+                  <th>{{ t('note') }}</th>
+                  <th>{{ t('attribute_1') }}</th>
+                  <th>{{ t('attribute_2') }}</th>
+                  <th>{{ t('attribute_3') }}</th>
+                  <th>{{ t('attribute_4') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -149,12 +149,12 @@
                   <td>
                     <strong>{{ dataPoint.balloon?.baloonValue || dataPoint.balloon?.creoId || '-' }}</strong>
                     <br>
-                    <small class="text-muted">{{ dataPoint.balloon?.creoId || 'No Creo ID' }}</small>
+                    <small class="text-muted">{{ dataPoint.balloon?.creoId || t('no_creo_id') }}</small>
                   </td>
                   <td>
                     <strong>{{ dataPoint.note?.creoId || dataPoint.note?.name || '-' }}</strong>
                     <br>
-                    <small class="text-muted">{{ dataPoint.note?.noteValue || 'No Value' }}</small>
+                    <small class="text-muted">{{ dataPoint.note?.noteValue || t('no_value') }}</small>
                   </td>
                   <td>{{ getAttributeByOrder(dataPoint.attributes, 1) || '-' }}</td>
                   <td>{{ getAttributeByOrder(dataPoint.attributes, 2) || '-' }}</td>
@@ -172,7 +172,7 @@
             :disabled="loadingSheetData"
           >
             <i class="bi bi-file-earmark-excel me-2"></i>
-            Scarica Excel
+            {{ t('download_excel') }}
           </button>
         </div>
 
@@ -180,7 +180,7 @@
         <div v-else-if="!loadingSheetData">
           <!-- Mostra comunque i modelli se ci sono -->
           <div v-if="sheetModels.length > 0" class="mb-4">
-            <h6>Modelli associati al foglio:</h6>
+            <h6>{{ t('associated_models') }}:</h6>
             <div class="d-flex flex-wrap gap-2">
               <span 
                 v-for="model in sheetModels" 
@@ -195,42 +195,64 @@
           
           <div class="alert alert-info">
             <i class="bi bi-info-circle me-2"></i>
-            Nessun balloon trovato per questo foglio
+            {{ t('no_balloons_found') }}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Debug panel temporaneo -->
-    <div v-if="showContent" class="mt-4">
+    <!-- Debug panel collassabile - solo se debug è attivo -->
+    <div v-if="isDebugMode && showContent" class="mt-4">
       <div class="card">
         <div class="card-header">
-          <h6 class="mb-0">Debug Info</h6>
+          <button 
+            class="btn btn-link w-100 text-start p-0 d-flex justify-content-between align-items-center"
+            type="button" 
+            @click="showDebugPanel = !showDebugPanel"
+            :aria-expanded="showDebugPanel"
+          >
+            <span>
+              <i class="bi bi-bug me-2"></i>
+              {{ t('debug_panel_title') }}
+            </span>
+            <i :class="['bi', showDebugPanel ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+          </button>
         </div>
-        <div class="card-body">
-          <div class="row">
+        <div v-show="showDebugPanel" class="card-body">
+          <div class="row small mb-3">
             <div class="col-md-6">
-              <strong>Selected Drawing:</strong> {{ selectedDrawing?.name || 'None' }} (ID: {{ selectedDrawing?.id }})<br>
-              <strong>Available Sheets:</strong> {{ availableSheets.length }}<br>
-              <strong>Selected Sheet ID:</strong> {{ selectedSheetId || 'None' }} ({{ typeof selectedSheetId }})<br>
-              <strong>Selected Sheet:</strong> {{ selectedSheet?.creoId || selectedSheet?.name || 'None' }}<br>
-              <strong>Sheet IDs:</strong> {{ availableSheets.map(s => s.id).join(', ') }}<br>
+              <strong>{{ t('debug.selected_drawing') }}:</strong> {{ selectedDrawing?.name || 'None' }} (ID: {{ selectedDrawing?.id }})<br>
+              <strong>{{ t('debug.available_sheets') }}:</strong> {{ availableSheets.length }}<br>
+              <strong>{{ t('debug.selected_sheet_id') }}:</strong> {{ selectedSheetId || 'None' }} ({{ typeof selectedSheetId }})<br>
+              <strong>{{ t('debug.selected_sheet') }}:</strong> {{ selectedSheet?.creoId || selectedSheet?.name || 'None' }}<br>
+              <strong>{{ t('debug.sheet_ids') }}:</strong> {{ availableSheets.map(s => s.id).join(', ') }}<br>
             </div>
             <div class="col-md-6">
-              <strong>Loading Sheet Data:</strong> {{ loadingSheetData }}<br>
-              <strong>Sheet Models:</strong> {{ sheetModels.length }}<br>
-              <strong>Balloon Data:</strong> {{ balloonData.length }}<br>
-              <strong>Auth Status:</strong> {{ isAuthenticated }}<br>
-              <strong>Show Content:</strong> {{ showContent }}<br>
+              <strong>{{ t('debug.loading_sheet_data') }}:</strong> {{ loadingSheetData }}<br>
+              <strong>{{ t('debug.sheet_models') }}:</strong> {{ sheetModels.length }}<br>
+              <strong>{{ t('debug.balloon_data') }}:</strong> {{ balloonData.length }}<br>
+              <strong>{{ t('debug.auth_status') }}:</strong> {{ isAuthenticated }}<br>
+              <strong>{{ t('debug.show_content') }}:</strong> {{ showContent }}<br>
+              <strong>{{ t('debug.debug_mode') }}:</strong> {{ isDebugMode }}<br>
             </div>
           </div>
           
           <!-- Show available sheets for debug -->
           <div v-if="availableSheets.length > 0" class="mt-2">
-            <strong>Available Sheets Details:</strong>
+            <strong>{{ t('debug.available_sheets_details') }}:</strong>
             <ul class="small">
               <li v-for="sheet in availableSheets.slice(0, 3)" :key="sheet.id">
                 ID: {{ sheet.id }} ({{ typeof sheet.id }}) - {{ sheet.creoId || sheet.name }}
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Show sheet models for debug -->
+          <div v-if="sheetModels.length > 0" class="mt-2">
+            <strong>{{ t('debug.sheet_models_details') }}:</strong>
+            <ul class="small">
+              <li v-for="model in sheetModels" :key="model.id">
+                ID: {{ model.id }} - {{ model.name || model.code }} ({{ model.modelType }})
               </li>
             </ul>
           </div>
@@ -245,6 +267,8 @@ import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
 import { useApi } from '~/composables/useApi'
 import { useAuth } from '~/composables/useAuth'
+import { useDebug } from '~/composables/useDebug'
+import { useI18n } from '~/composables/useI18n'
 import type { IModel } from '~/model/model.model'
 import type { ISheet } from '~/model/sheet.model'
 import type { IBaloon } from '~/model/baloon.model'
@@ -254,11 +278,19 @@ import type { IAttributeEntity } from '~/model/attribute-entity.model'
 // Configurazione della pagina
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth']
+  middleware: ['auth', 'i18n']
 })
 
 const { models: modelsApi, sheets: sheetsApi, balloons: balloonsApi, notes: notesApi, attributeEntities: attributesApi } = useApi()
 const { isAuthenticated } = useAuth()
+const { isDebugMode } = useDebug()
+const { t, loadNamespace } = useI18n('drawings')
+
+// Carica le traduzioni necessarie
+await Promise.all([
+  loadNamespace('drawings'),
+  loadNamespace('common')
+])
 
 // Search state
 const searchQuery = ref('')
@@ -276,6 +308,9 @@ const selectedSheetId = ref('')
 const loadingSheetData = ref(false)
 const balloonData = ref<any[]>([])
 const sheetModels = ref<IModel[]>([])
+
+// Debug panel state
+const showDebugPanel = ref(false)
 
 // Computed property for selected sheet
 const selectedSheet = computed(() => {

@@ -33,19 +33,27 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   // Check if the route has a lang parameter and it differs from current
   if (to.query.lang && to.query.lang !== currentLanguage.value) {
     const newLang = to.query.lang as string;
-    setLanguage(newLang);
+    console.log('[i18n middleware] Language change requested:', newLang);
     
-    // Redirect to the same route without the lang query parameter
-    // to avoid keeping it in the URL
-    if (Object.keys(to.query).length > 1) {
-      const query = { ...to.query };
-      delete query.lang;
-      return navigateTo({
-        path: to.path,
-        query
-      });
-    } else {
-      return navigateTo(to.path);
+    try {
+      await setLanguage(newLang);
+      console.log('[i18n middleware] Language changed successfully');
+      
+      // Only redirect if we're not already on the right path
+      // Redirect to the same route without the lang query parameter
+      if (Object.keys(to.query).length > 1) {
+        const query = { ...to.query };
+        delete query.lang;
+        return navigateTo({
+          path: to.path,
+          query
+        }, { replace: true }); // Use replace to avoid history issues
+      } else {
+        return navigateTo(to.path, { replace: true });
+      }
+    } catch (error) {
+      console.error('[i18n middleware] Error changing language:', error);
+      // Continue without redirecting on error
     }
   }
 });

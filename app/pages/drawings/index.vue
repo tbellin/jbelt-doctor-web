@@ -584,7 +584,7 @@ const downloadExcel = () => {
     // Generate filename
     const drawingName = selectedDrawing.value.name || selectedDrawing.value.code || 'disegno'
     const sheetName = selectedSheet.value.creoId || selectedSheet.value.name || 'foglio'
-    const filename = `${drawingName}_${sheetName}_export.xlsx`.replace(/[^a-zA-Z0-9_]/g, '_')
+    const filename = `${drawingName}_${sheetName}_export.xlsx`.replace(/[^a-zA-Z0-9_.]/g, '_')
     
     // Download file
     XLSX.writeFile(wb, filename)

@@ -442,8 +442,9 @@ export const useApi = () => {
 
   // ===== GESTIONE BALLOON =====
   const balloons = {
-    async getAll(): Promise<ApiResponse<any[]>> {
-      return apiCall<any[]>('/api/baloons')
+    async getAll(queryParams?: string): Promise<ApiResponse<any[]>> {
+      const endpoint = queryParams ? `/api/baloons?${queryParams}` : '/api/baloons'
+      return apiCall<any[]>(endpoint)
     },
 
     async getById(id: number): Promise<ApiResponse<any>> {

@@ -920,28 +920,37 @@ const loadFilteredData = async () => {
       console.log('[Balloons] Loading data for sheet:', selectedSheet.creoId || selectedSheet.name)
     }
     
-    // Use already loaded data and filter client-side by sheet association
-    console.log('[Balloons] Filtering already loaded data by sheet ID:', filterSheetId.value)
+    // Use API filter by sheet ID
+    console.log('[Balloons] Loading filtered data via API for sheet ID:', filterSheetId.value)
     
-    // Filter balloons by sheet ID
-    filteredBalloons.value = balloons.value.filter(balloon => 
-      balloon.sheet?.id?.toString() === filterSheetId.value
-    )
-    console.log(`[Balloons] Filtered ${filteredBalloons.value.length} balloons for sheet from ${balloons.value.length} total`)
+    // Make API call with sheet filter
+    const balloonsResponse = await balloonsApi.getAll(`sheetId.in=${filterSheetId.value}`)
     
-    // Filter notes that belong to balloons associated with the selected sheet
-    const balloonIds = new Set(filteredBalloons.value.map(b => b.id))
-    filteredNotes.value = notes.value.filter(note => 
-      note.baloon?.id && balloonIds.has(note.baloon.id)
-    )
-    console.log(`[Balloons] Filtered ${filteredNotes.value.length} notes for sheet from ${notes.value.length} total`)
-    
-    // Filter attributes that belong to notes of balloons associated with the selected sheet
-    const noteIds = new Set(filteredNotes.value.map(n => n.id))
-    filteredAttributes.value = attributeEntities.value.filter(attr => 
-      attr.note?.id && noteIds.has(attr.note.id)
-    )
-    console.log(`[Balloons] Filtered ${filteredAttributes.value.length} attributes for sheet from ${attributeEntities.value.length} total`)
+    if (balloonsResponse.success) {
+      filteredBalloons.value = balloonsResponse.data || []
+      console.log(`[Balloons] Loaded ${filteredBalloons.value.length} balloons for sheet via API`)
+      
+      // Get balloon IDs to filter notes and attributes
+      const balloonIds = new Set(filteredBalloons.value.map(b => b.id))
+      
+      // Filter notes from already loaded data that belong to these balloons
+      filteredNotes.value = notes.value.filter(note => 
+        note.baloon?.id && balloonIds.has(note.baloon.id)
+      )
+      console.log(`[Balloons] Filtered ${filteredNotes.value.length} notes for sheet from loaded data`)
+      
+      // Filter attributes from already loaded data that belong to these notes
+      const noteIds = new Set(filteredNotes.value.map(n => n.id))
+      filteredAttributes.value = attributeEntities.value.filter(attr => 
+        attr.note?.id && noteIds.has(attr.note.id)
+      )
+      console.log(`[Balloons] Filtered ${filteredAttributes.value.length} attributes for sheet from loaded data`)
+    } else {
+      console.error('[Balloons] Failed to load filtered balloons:', balloonsResponse.error)
+      filteredBalloons.value = []
+      filteredNotes.value = []
+      filteredAttributes.value = []
+    }
     
   } catch (err) {
     console.error('[Balloons] Error filtering data:', err)

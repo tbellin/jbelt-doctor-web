@@ -11,16 +11,16 @@
         <div class="d-flex justify-content-between align-items-center">
           <h1 class="h3 mb-0">
             <i class="bi bi-geo-alt me-2"></i>
-            {{ t('balloons:title') }}
+            Balloons
           </h1>
           <div class="btn-group">
             <button class="btn btn-outline-secondary" @click="handleRefresh" :disabled="loading">
               <i class="bi bi-arrow-clockwise me-2"></i>
-              {{ t('balloons:actions.refresh') }}
+              Aggiorna
             </button>
             <NuxtLink to="/dashboard/balloon/new" class="btn btn-primary">
               <i class="bi bi-plus-lg me-2"></i>
-              {{ t('balloons:actions.create') }}
+              Crea Balloon
             </NuxtLink>
           </div>
         </div>
@@ -32,7 +32,7 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h6 class="stats-title mb-0">
           <i class="bi bi-graph-up me-2"></i>
-          {{ t('balloons:stats.title') }}
+          Statistiche
         </h6>
         <button 
           class="btn btn-sm btn-outline-secondary"
@@ -49,7 +49,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.totalBalloons') }}</h6>
+                  <h6 class="card-subtitle mb-2 text-muted">Totale Balloons</h6>
                   <h3 class="card-title mb-0">{{ balloons.length }}</h3>
                 </div>
                 <div class="text-primary">
@@ -65,7 +65,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.totalNotes') }}</h6>
+                  <h6 class="card-subtitle mb-2 text-muted">Totale Note</h6>
                   <h3 class="card-title mb-0">{{ notes.length }}</h3>
                 </div>
                 <div class="text-success">
@@ -81,7 +81,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.associatedPairs') }}</h6>
+                  <h6 class="card-subtitle mb-2 text-muted">Coppie Associate</h6>
                   <h3 class="card-title mb-0">{{ associatedPairsCount }}</h3>
                 </div>
                 <div class="text-warning">
@@ -97,7 +97,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h6 class="card-subtitle mb-2 text-muted">{{ t('balloons:stats.totalAttributes') }}</h6>
+                  <h6 class="card-subtitle mb-2 text-muted">Totale Attributi</h6>
                   <h3 class="card-title mb-0">{{ totalAttributesCount }}</h3>
                 </div>
                 <div class="text-info">
@@ -116,7 +116,7 @@
         <div class="d-flex justify-content-between align-items-center">
           <h6 class="mb-0">
             <i class="bi bi-funnel me-2"></i>
-            {{ t('balloons:filters.title') }}
+            Filtri
           </h6>
           <button 
             class="btn btn-sm btn-outline-secondary"
@@ -131,14 +131,14 @@
       <div class="card-body collapse-content" v-show="!isFiltersCollapsed">
         <div class="row">
           <div class="col-md-6">
-            <label for="filterDrawing" class="form-label">{{ t('balloons:filters.drawing') }}</label>
+            <label for="filterDrawing" class="form-label">Disegno</label>
             <select
               id="filterDrawing"
               v-model="filterDrawingId"
               @change="onFilterDrawingChange($event)"
               class="form-select"
             >
-              <option value="">{{ t('balloons:filters.selectDrawing') }}</option>
+              <option value="">Seleziona un disegno...</option>
               <option v-for="drawing in availableDrawings" :key="drawing.id" :value="drawing.id">
                 {{ drawing.code || drawing.name }} - {{ drawing.name }}
               </option>
@@ -146,7 +146,7 @@
           </div>
           
           <div class="col-md-6">
-            <label for="filterSheet" class="form-label">{{ t('balloons:filters.sheet') }} ({{ t('balloons:filters.sheetCreoId') }})</label>
+            <label for="filterSheet" class="form-label">Foglio (Creo ID)</label>
             <select
               id="filterSheet"
               v-model="filterSheetId"
@@ -154,7 +154,7 @@
               class="form-select"
               :disabled="!filterDrawingId"
             >
-              <option value="">{{ t('balloons:filters.selectSheet') }}</option>
+              <option value="">Seleziona un foglio...</option>
               <option v-for="sheet in filteredSheetsForFilter" :key="sheet.id" :value="sheet.id">
                 {{ sheet.creoId || sheet.code || sheet.name }} - {{ sheet.name }}
               </option>
@@ -169,7 +169,7 @@
               @click="clearFilters"
             >
               <i class="bi bi-x-circle me-1"></i>
-              {{ t('balloons:filters.clear') }}
+              Pulisci Filtri
             </button>
             <small class="text-muted">
               Visualizzati: {{ filteredBalloonNoteRows.length }} 
@@ -185,7 +185,7 @@
     <div class="card">
       <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">{{ t('balloons:table.title') }}</h5>
+          <h5 class="mb-0">Tabella Balloons</h5>
           <button 
             class="btn btn-sm btn-outline-secondary"
             @click="toggleTableCollapse"
@@ -200,14 +200,14 @@
         <!-- Loading state -->
         <div v-if="loading || loadingFiltered" class="text-center py-4">
           <div class="spinner-border text-primary"></div>
-          <p class="mt-2">{{ loadingFiltered ? t('balloons:loadingFiltered') : t('balloons:loading') }}</p>
+          <p class="mt-2">{{ loadingFiltered ? 'Caricamento dati filtrati...' : 'Caricamento...' }}</p>
         </div>
 
         <!-- Error state -->
         <div v-else-if="error" class="alert alert-danger">
-          <strong>{{ t('common:error') }}:</strong> {{ error }}
+          <strong>Errore:</strong> {{ error }}
           <button class="btn btn-sm btn-outline-danger ms-2" @click="handleRefresh">
-            {{ t('common:retry') }}
+            Riprova
           </button>
         </div>
 
@@ -225,11 +225,11 @@
         <!-- Empty state - Sheet selected but no balloons -->
         <div v-else-if="!filteredBalloonNoteRows.length" class="text-center py-5">
           <i class="bi bi-geo-alt display-1 text-muted"></i>
-          <h4 class="mt-3">{{ t('balloons:empty.noBalloonsForSheet') }}</h4>
-          <p class="text-muted">{{ t('balloons:empty.createBalloonForSheet') }}</p>
+          <h4 class="mt-3">Nessun Balloon per questo Foglio</h4>
+          <p class="text-muted">Non ci sono balloon associati al foglio selezionato. Crea un nuovo balloon.</p>
           <NuxtLink to="/dashboard/balloon/new" class="btn btn-primary">
             <i class="bi bi-plus-lg me-2"></i>
-            {{ t('balloons:actions.createForSheet') }}
+            Crea Balloon per Foglio
           </NuxtLink>
         </div>
 
@@ -238,13 +238,13 @@
           <table class="table table-hover table-bordered table-sm">
             <thead class="table-secondary">
               <tr>
-                <th style="width: 12%">{{ t('balloons:table.balloon') }}</th>
-                <th style="width: 12%">{{ t('balloons:table.note') }}</th>
-                <th style="width: 16%">{{ t('balloons:table.attribute1') }}</th>
-                <th style="width: 16%">{{ t('balloons:table.attribute2') }}</th>
-                <th style="width: 16%">{{ t('balloons:table.attribute3') }}</th>
-                <th style="width: 16%">{{ t('balloons:table.attribute4') }}</th>
-                <th style="width: 12%">{{ t('common:actions') }}</th>
+                <th style="width: 12%">Balloon</th>
+                <th style="width: 12%">Nota</th>
+                <th style="width: 16%">Attributo 1</th>
+                <th style="width: 16%">Attributo 2</th>
+                <th style="width: 16%">Attributo 3</th>
+                <th style="width: 16%">Attributo 4</th>
+                <th style="width: 12%">Azioni</th>
               </tr>
             </thead>
             <tbody>
@@ -261,7 +261,7 @@
                     </div>
                   </div>
                   <div v-else class="text-muted fst-italic">
-                    {{ t('balloons:table.noBalloon') }}
+                    Nessun Balloon
                   </div>
                 </td>
 
@@ -277,7 +277,7 @@
                     </div>
                   </div>
                   <div v-else class="text-muted fst-italic">
-                    {{ t('balloons:table.noNote') }}
+                    Nessuna Nota
                   </div>
                 </td>
 
@@ -304,14 +304,14 @@
                       v-if="!row.balloon || !row.note"
                       @click="associateRow(row)" 
                       class="btn btn-outline-warning btn-sm"
-                      :title="t('balloons:table.associate')"
+                      title="Associa"
                     >
                       <i class="bi bi-link"></i>
                     </button>
                     <button 
                       @click="viewBalloonJson(row)" 
                       class="btn btn-outline-primary btn-sm"
-                      :title="t('balloons:table.viewJson')"
+                      title="Visualizza JSON"
                     >
                       <i class="bi bi-eye"></i>
                     </button>
@@ -319,7 +319,7 @@
                       v-if="row.balloon?.id"
                       :to="`/dashboard/balloon/${row.balloon.id}`"
                       class="btn btn-outline-secondary btn-sm"
-                      :title="t('balloons:table.edit')"
+                      title="Modifica"
                     >
                       <i class="bi bi-pencil"></i>
                     </NuxtLink>
@@ -327,7 +327,7 @@
                       v-else
                       @click="editRow(row)" 
                       class="btn btn-outline-secondary btn-sm"
-                      :title="t('balloons:table.edit')"
+                      title="Modifica"
                       disabled
                     >
                       <i class="bi bi-pencil"></i>
@@ -335,7 +335,7 @@
                     <button 
                       @click="deleteRow(row)" 
                       class="btn btn-outline-danger btn-sm"
-                      :title="t('balloons:table.delete')"
+                      title="Elimina"
                     >
                       <i class="bi bi-trash"></i>
                     </button>
@@ -368,26 +368,26 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <h5>{{ t('balloons:modal.viewJson') }} - {{ jsonViewBalloon?.baloonValue || jsonViewBalloon?.name || 'Balloon' }}</h5>
+            <h5>Visualizza JSON - {{ jsonViewBalloon?.baloonValue || jsonViewBalloon?.name || 'Balloon' }}</h5>
             <button class="btn-close" @click="closeJsonModal"></button>
           </div>
           <div class="modal-body">
             <div v-if="loadingJson" class="text-center py-4">
               <div class="spinner-border text-primary"></div>
-              <p class="mt-2">{{ t('balloons:loading') }}</p>
+              <p class="mt-2">Caricamento...</p>
             </div>
             <div v-else-if="jsonError" class="alert alert-danger">
-              <strong>{{ t('common:error') }}:</strong> {{ jsonError }}
+              <strong>Errore:</strong> {{ jsonError }}
             </div>
             <div v-else>
               <pre class="json-display"><code>{{ formattedBalloonJson }}</code></pre>
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="closeJsonModal">{{ t('common:close') }}</button>
+            <button class="btn btn-secondary" @click="closeJsonModal">Chiudi</button>
             <button class="btn btn-primary" @click="copyJsonToClipboard" :disabled="!jsonViewBalloon">
               <i class="bi bi-clipboard me-2"></i>
-              {{ t('balloons:actions.copyJson') }}
+              Copia JSON
             </button>
           </div>
         </div>
@@ -399,24 +399,24 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5>{{ t('balloons:modal.associate') }}</h5>
+            <h5>Associa Balloon e Nota</h5>
             <button class="btn-close" @click="closeAssociationModal"></button>
           </div>
           <div class="modal-body">
             <div class="row">
               <div class="col-md-6">
-                <label class="form-label">{{ t('balloons:modal.selectBalloon') }}</label>
+                <label class="form-label">Seleziona Balloon</label>
                 <select v-model="selectedBalloonId" class="form-select">
-                  <option value="">{{ t('balloons:modal.chooseBalloon') }}</option>
+                  <option value="">Scegli un balloon...</option>
                   <option v-for="balloon in availableBalloons" :key="balloon.id" :value="balloon.id">
                     {{ balloon.baloonValue || balloon.name }} ({{ balloon.creoId }})
                   </option>
                 </select>
               </div>
               <div class="col-md-6">
-                <label class="form-label">{{ t('balloons:modal.selectNote') }}</label>
+                <label class="form-label">Seleziona Nota</label>
                 <select v-model="selectedNoteId" class="form-select">
-                  <option value="">{{ t('balloons:modal.chooseNote') }}</option>
+                  <option value="">Scegli una nota...</option>
                   <option v-for="note in availableNotes" :key="note.id" :value="note.id">
                     {{ note.creoId || note.name }} ({{ note.noteValue }})
                   </option>
@@ -425,9 +425,9 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="closeAssociationModal">{{ t('common:cancel') }}</button>
+            <button class="btn btn-secondary" @click="closeAssociationModal">Annulla</button>
             <button class="btn btn-primary" @click="performAssociation" :disabled="!selectedBalloonId || !selectedNoteId">
-              {{ t('balloons:modal.associate') }}
+              Associa
             </button>
           </div>
         </div>
@@ -492,7 +492,6 @@ import type { IAttributeEntity } from '~/model/attribute-entity.model'
 import type { IModel } from '~/model/model.model'
 import type { ISheet } from '~/model/sheet.model'
 import { useAuth } from '~/composables/useAuth'
-import { useI18n } from '~/composables/useI18n'
 import { useDebug } from '~/composables/useDebug'
 import BalloonFormModal from '~/components/Balloons/BalloonFormModal.vue'
 
@@ -502,7 +501,6 @@ definePageMeta({
   middleware: ['auth']
 })
 
-const { t } = useI18n()
 const { balloons: balloonsApi, notes: notesApi, attributeEntities: attributesApi, models: modelsApi, sheets: sheetsApi } = useApi()
 const { isAuthenticated, user } = useAuth()
 const { isDebugMode } = useDebug()
@@ -1426,7 +1424,7 @@ const editRow = async (row: any) => {
 }
 
 const deleteRow = async (row: any) => {
-  if (!confirm(t('balloons:confirmDelete'))) return
+  if (!confirm('Sei sicuro di voler eliminare questo elemento?')) return
   
   console.log('Delete row:', row)
   await loadData()

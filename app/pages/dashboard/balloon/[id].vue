@@ -14,7 +14,7 @@
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                  <NuxtLink to="/dashboard">Dashboard</NuxtLink>
+                  <NuxtLink to="/dashboard">Panel</NuxtLink>
                 </li>
                 <li class="breadcrumb-item">
                   <NuxtLink to="/dashboard/balloons">Balloons</NuxtLink>

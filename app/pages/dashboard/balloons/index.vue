@@ -283,36 +283,17 @@
 
                 <!-- Attribute Columns (1-4) -->
                 <td v-for="i in 4" :key="`attr-${i}`" class="attribute-cell">
-                  <div v-if="row.attributes && row.attributes[i-1]" class="attribute-info">
-                    <div v-if="editingAttribute === getAttributeKey(row, i-1)" class="edit-mode">
-                      <input 
-                        v-model="editingValue"
-                        @keyup.enter="saveAttribute(row, i-1)"
-                        @keyup.escape="cancelEdit"
-                        class="form-control form-control-sm"
-                        :placeholder="t('balloons:table.enterValue')"
-                        ref="editInput"
-                      >
-                      <div class="mt-1">
-                        <button @click="saveAttribute(row, i-1)" class="btn btn-success btn-sm me-1">
-                          <i class="bi bi-check"></i>
-                        </button>
-                        <button @click="cancelEdit" class="btn btn-secondary btn-sm">
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
+                  <div v-if="row.attributes && row.attributes[i-1] && row.attributes[i-1].attributeValue" class="attribute-info">
+                    <div class="attribute-value">
+                      {{ row.attributes[i-1].attributeValue }}
                     </div>
-                    <div v-else class="view-mode">
-                      <div class="attribute-value" @click="startEdit(row, i-1)">
-                        {{ row.attributes[i-1].attributeValue || t('balloons:table.clickToEdit') }}
-                      </div>
-                      <div class="small text-muted">
-                        {{ t('balloons:table.order') }} {{ i }}
-                      </div>
+                    <div class="small text-muted d-flex justify-content-between">
+                      <span>Ordine {{ i }}</span>
+                      <span class="badge bg-secondary">{{ row.attributes[i-1].typeValue || 'STRING' }}</span>
                     </div>
                   </div>
                   <div v-else class="text-muted fst-italic">
-                    {{ t('balloons:table.noAttribute') }}
+                    -
                   </div>
                 </td>
 
@@ -503,7 +484,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useApi } from '~/composables/useApi'
 import type { IBaloon } from '~/model/baloon.model'
 import type { INote } from '~/model/note.model'
@@ -543,10 +524,6 @@ const isFiltersCollapsed = ref(false)
 // Filter states
 const filterDrawingId = ref('')
 const filterSheetId = ref('')
-
-// Edit state
-const editingAttribute = ref<string | null>(null)
-const editingValue = ref('')
 
 // Modal state
 const showCreateModal = ref(false)
@@ -862,10 +839,6 @@ const getRowKey = (row: any) => {
   return `${row.balloon?.id || 'b-null'}-${row.note?.id || 'n-null'}`
 }
 
-const getAttributeKey = (row: any, index: number) => {
-  return `${getRowKey(row)}-attr-${index}`
-}
-
 // Toggle functions
 const toggleStatsCollapse = () => {
   isStatsCollapsed.value = !isStatsCollapsed.value
@@ -1032,38 +1005,6 @@ const loadFilteredData = async () => {
   }
 }
 
-// Edit functions
-const startEdit = (row: any, attributeIndex: number) => {
-  const attribute = row.attributes[attributeIndex]
-  editingAttribute.value = getAttributeKey(row, attributeIndex)
-  editingValue.value = attribute.attributeValue || ''
-  
-  nextTick(() => {
-    const input = document.querySelector('input.form-control-sm:focus') as HTMLInputElement
-    if (input) input.select()
-  })
-}
-
-const cancelEdit = () => {
-  editingAttribute.value = null
-  editingValue.value = ''
-}
-
-const saveAttribute = async (row: any, attributeIndex: number) => {
-  // Implementation will depend on your API
-  console.log('Saving attribute:', {
-    row,
-    attributeIndex,
-    value: editingValue.value
-  })
-  
-  // Update local state
-  if (row.attributes[attributeIndex]) {
-    row.attributes[attributeIndex].attributeValue = editingValue.value
-  }
-  
-  cancelEdit()
-}
 
 // Association functions
 const associateRow = (row: any) => {
@@ -1582,6 +1523,20 @@ const loadData = async () => {
 
 const handleRefresh = async () => {
   await loadData()
+  // Reload filtered data if a sheet is selected
+  if (filterSheetId.value) {
+    await loadFilteredData()
+  } else {
+    await loadBalloonsWithoutSheet()
+  }
+}
+
+// Auto-refresh when returning from editor
+const handleVisibilityChange = async () => {
+  if (!document.hidden && isAuthenticated.value) {
+    console.log('[Balloons] Page became visible, refreshing data')
+    await handleRefresh()
+  }
 }
 
 // Initialize
@@ -1590,9 +1545,17 @@ onMounted(async () => {
     await loadData()
     // After loading all data, show balloons without sheet by default
     await loadBalloonsWithoutSheet()
+    
+    // Listen for page visibility changes to auto-refresh
+    document.addEventListener('visibilitychange', handleVisibilityChange)
   } else {
     error.value = 'Authentication required'
   }
+})
+
+// Cleanup
+onUnmounted(() => {
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 
@@ -1637,39 +1600,22 @@ onMounted(async () => {
 
 .attribute-cell {
   background-color: #fefff8;
-  cursor: pointer;
-}
-
-.attribute-cell:hover {
-  background-color: #f0f8f0;
 }
 
 .actions-cell {
   background-color: #fafafa;
 }
 
-/* Edit mode styling */
-.edit-mode {
-  padding: 0.25rem;
-}
-
-.view-mode {
-  padding: 0.5rem;
-  min-height: 3rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s;
-}
-
+/* Attribute display styling */
 .attribute-value {
   font-weight: 500;
   color: #495057;
   min-height: 1.2rem;
+  padding: 0.5rem;
 }
 
-.attribute-value:empty::before {
-  content: attr(data-placeholder);
-  color: #6c757d;
-  font-style: italic;
+.badge {
+  font-size: 0.7rem;
 }
 
 /* Group styling */

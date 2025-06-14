@@ -265,7 +265,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
-import ExcelPropertiesEngine from '~/utils/excel-properties-engine'
 import { useApi } from '~/composables/useApi'
 import { useAuth } from '~/composables/useAuth'
 import { useDebug } from '~/composables/useDebug'
@@ -570,14 +569,14 @@ const getAttributeByOrder = (attributes: IAttributeEntity[], order: number): str
   return attribute?.attributeValue || ''
 }
 
-// Excel download function using properties-based template
+// Excel download function using template coordinates
 const downloadExcel = async () => {
   if (!selectedDrawing.value || !selectedSheet.value) {
     console.warn('[Drawings] Cannot download Excel: missing data')
     return
   }
   
-  console.log('[Drawings] Generating Excel using properties configuration for:', {
+  console.log('[Drawings] Generating Excel using template coordinates for:', {
     drawing: selectedDrawing.value.name,
     sheet: selectedSheet.value.creoId || selectedSheet.value.name,
     balloonCount: balloonData.value.length,
@@ -585,49 +584,61 @@ const downloadExcel = async () => {
   })
   
   try {
-    // Crea engine basato su properties
-    console.log('[Drawings] Creating ExcelPropertiesEngine with properties path: /excel.properties')
-    const engine = await ExcelPropertiesEngine.create('/excel.properties')
-    console.log('[Drawings] Properties engine created successfully')
-    console.log('[Drawings] Engine properties:', engine.getProperties())
-    
-    // Prepara i dati semplificati secondo la nuova struttura
-    const firstModel = sheetModels.value.length > 0 ? sheetModels.value[0] : null
-    
-    const templateData = {
-      drawing_name: selectedDrawing.value.name || selectedDrawing.value.code || '',
-      model_name: firstModel ? (firstModel.name || firstModel.code || '') : 'Nessun modello',
-      balloons: balloonData.value.map((dataPoint, index) => {
-        const balloonInfo = {
-          balloon_value: dataPoint.balloon?.baloonValue || dataPoint.balloon?.creoId || `Balloon_${index + 1}`,
-          attribute1_value: getAttributeByOrder(dataPoint.attributes, 1) || `Attr1_${index + 1}`,
-          attribute2_value: getAttributeByOrder(dataPoint.attributes, 2) || `Attr2_${index + 1}`,
-          attribute3_value: getAttributeByOrder(dataPoint.attributes, 3) || `Attr3_${index + 1}`,
-          attribute4_value: getAttributeByOrder(dataPoint.attributes, 4) || `Attr4_${index + 1}`
-        };
-        console.log(`[Drawings] Balloon ${index} data:`, balloonInfo);
-        return balloonInfo;
-      })
+    // Prepara i dati per la nuova API
+    const requestData = {
+      drawingName: selectedDrawing.value.name || '',
+      drawingCode: selectedDrawing.value.code || '',
+      sheetName: selectedSheet.value.name || '',
+      sheetId: selectedSheet.value.id?.toString() || '',
+      sheetCreoId: selectedSheet.value.creoId || '',
+      models: sheetModels.value.map(model => ({
+        id: model.id?.toString() || '',
+        name: model.name || '',
+        code: model.code || '',
+        modelType: model.modelType || ''
+      })),
+      balloons: balloonData.value
     }
     
-    console.log('[Drawings] Template data prepared:', templateData)
-    console.log('[Drawings] Using first model only:', firstModel?.name || 'None')
+    console.log('[Drawings] Request data prepared:', {
+      drawingName: requestData.drawingName,
+      sheetName: requestData.sheetName,
+      modelsCount: requestData.models.length,
+      balloonsCount: requestData.balloons.length
+    })
     
-    // Popola il template
-    engine.populateTemplate(templateData)
+    // Chiama la nuova API per drawings
+    console.log('[Drawings] Calling generateExcelDrawings API...')
+    const response = await $fetch('/api/generateExcelDrawings', {
+      method: 'POST',
+      body: requestData,
+      responseType: 'blob'
+    })
+    
+    // Crea il blob e avvia il download
+    const blob = new Blob([response], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    })
+    
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
     
     // Genera filename
     const drawingName = selectedDrawing.value.name || selectedDrawing.value.code || 'disegno'
     const sheetName = selectedSheet.value.creoId || selectedSheet.value.name || 'foglio'
-    const filename = `${drawingName}_${sheetName}_properties.xlsx`.replace(/[^a-zA-Z0-9_.]/g, '_')
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-')
+    link.download = `${drawingName}_${sheetName}_${timestamp}.xlsx`.replace(/[^a-zA-Z0-9_.]/g, '_')
     
-    // Scarica il file
-    engine.generateFile(filename)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
     
-    console.log('[Drawings] Properties-based Excel file downloaded:', filename)
+    console.log('[Drawings] Excel file downloaded successfully:', link.download)
     
   } catch (err) {
-    console.error('[Drawings] Error generating properties Excel:', err)
+    console.error('[Drawings] Error generating Excel with coordinates:', err)
     console.log('[Drawings] Falling back to simple Excel generation')
     await downloadExcelFallback()
   }

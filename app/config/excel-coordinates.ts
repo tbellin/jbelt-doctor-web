@@ -48,27 +48,27 @@ export const TEMPLATE_01: ExcelTemplate = {
     // Header cells - posizioni fisse nel template
     drawing_name: { cell: "J2", type: "text" },
     drawing_code: { cell: "Z1", type: "text" },
-    sheet_name: { cell: "Z2", type: "text" },
-    sheet_id: { cell: "Z3", type: "number" },
-    sheet_creo_id: { cell: "Z6", type: "text" },
-    export_date: { cell: "Z7", type: "date", format: "dd/mm/yyyy hh:mm" },
+    sheet_name: { cell: "AA2", type: "text" },
+    sheet_id: { cell: "AA3", type: "number" },
+    sheet_creo_id: { cell: "AA6", type: "text" },
+    export_date: { cell: "AA7", type: "date", format: "dd/mm/yyyy hh:mm" },
     
     // Models section - starting from row 10
-    models_start_row: 7,
+    models_start_row: 10,
     models_columns: {
-      id: "A",       // Column A
-      name: "B",     // Column B  
-      code: "C",     // Column C
-      type: "D"      // Column D
+      id: "AB",       // Column A
+      name: "AC",     // Column B  
+      code: "AD",     // Column C
+      type: "AE"      // Column D
     },
     
     // Balloons section - starting from row 20 (will be calculated dynamically)
-    balloons_start_row: 20,
+    balloons_start_row: 10,
     balloons_columns: {
-      balloon_value: "A",    // Column A
-      balloon_creo_id: "B",  // Column B
-      note_value: "C",       // Column C
-      note_creo_id: "D",     // Column D
+      balloon_value: "E",    // Column A
+      balloon_creo_id: "AH",  // Column B
+      note_value: "AH",       // Column C
+      note_creo_id: "AH",     // Column D
       attribute_1: "E",      // Column E
       attribute_2: "F",      // Column F
       attribute_3: "G",      // Column G

@@ -18,9 +18,13 @@
               <i class="bi bi-arrow-clockwise me-2"></i>
               Aggiorna
             </button>
+            <button class="btn btn-success" @click="openCreateModal" :disabled="loading">
+              <i class="bi bi-plus-lg me-2"></i>
+              Crea Balloon (Modal)
+            </button>
             <NuxtLink to="/dashboard/balloon/new" class="btn btn-primary">
               <i class="bi bi-plus-lg me-2"></i>
-              Crea Balloon
+              Crea Balloon (Pagina)
             </NuxtLink>
           </div>
         </div>
@@ -1029,6 +1033,28 @@ const performAssociation = async () => {
 }
 
 // Modal functions
+const openCreateModal = () => {
+  console.log('[Balloons] Opening create modal')
+  
+  // Reset form data for new balloon
+  editingBalloon.value = null
+  resetFormData()
+  formErrors.value = {}
+  
+  // Reset selections
+  selectedDrawingId.value = ''
+  selectedSheetId.value = ''
+  
+  // Open modal
+  showCreateModal.value = true
+  
+  console.log('[Balloons] Create modal opened with available data:', {
+    drawings: availableDrawings.value.length,
+    sheets: allSheets.value.length,
+    sheetsWithDrawing: allSheets.value.filter(s => s.drawing?.id).length
+  })
+}
+
 const closeCreateModal = () => {
   showCreateModal.value = false
   editingBalloon.value = null

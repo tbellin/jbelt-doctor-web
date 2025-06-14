@@ -287,7 +287,7 @@ import type { IBaloon } from '~/model/baloon.model'
 import type { INote } from '~/model/note.model'
 import type { IModel } from '~/model/model.model'
 import type { ISheet } from '~/model/sheet.model'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n()
@@ -431,12 +431,37 @@ const selectedSheetId = computed({
 // Update functions for Drawing and Sheet dropdowns
 const updateDrawingSelection = (event: Event) => {
   const target = event.target as HTMLSelectElement
-  selectedDrawingId.value = target.value
+  const newDrawingId = target.value
+  
+  console.log('[BalloonFormModal] Drawing selection changed:', {
+    newDrawingId: newDrawingId,
+    availableSheets: props.availableSheets.length,
+    sheetsWithDrawing: props.availableSheets.filter(s => s.drawing?.id).length
+  })
+  
+  // Debug: show first few sheets and their drawing associations
+  console.log('[BalloonFormModal] First 3 available sheets:')
+  props.availableSheets.slice(0, 3).forEach((sheet, idx) => {
+    console.log(`Sheet ${idx + 1}:`, {
+      id: sheet.id,
+      name: sheet.name || sheet.creoId,
+      hasDrawing: !!sheet.drawing,
+      drawingId: sheet.drawing?.id,
+      drawingName: sheet.drawing?.name
+    })
+  })
+  
+  selectedDrawingId.value = newDrawingId
   // Reset sheet when drawing changes
   selectedSheetId.value = ''
   // Emit changes to parent
-  emit('update:selectedDrawingId', target.value)
+  emit('update:selectedDrawingId', newDrawingId)
   emit('update:selectedSheetId', '')
+  
+  // Debug: show available sheets for this drawing after a short delay
+  setTimeout(() => {
+    console.log('[BalloonFormModal] Available sheets after drawing change:', filteredSheets.value.length)
+  }, 100)
 }
 
 const updateSheetSelection = (event: Event) => {
@@ -448,11 +473,60 @@ const updateSheetSelection = (event: Event) => {
 
 // Computed property to filter sheets based on selected drawing
 const filteredSheets = computed(() => {
-  if (!selectedDrawingId.value) return []
+  console.log('[BalloonFormModal] COMPUTING filteredSheets - selectedDrawingId:', selectedDrawingId.value)
+  console.log('[BalloonFormModal] Available sheets total:', props.availableSheets.length)
   
-  return props.availableSheets.filter(sheet => 
-    sheet.drawing?.id?.toString() === selectedDrawingId.value
-  )
+  if (!selectedDrawingId.value) {
+    console.log('[BalloonFormModal] No drawing selected, returning empty array')
+    return []
+  }
+  
+  // Convert both values to string for robust comparison
+  const selectedId = selectedDrawingId.value.toString()
+  console.log('[BalloonFormModal] Looking for sheets with drawing ID:', selectedId)
+  
+  // Debug all sheets and their drawing associations
+  console.log('[BalloonFormModal] ALL SHEETS:')
+  props.availableSheets.forEach((sheet, idx) => {
+    console.log(`  Sheet ${idx}: ID=${sheet.id}, name=${sheet.name || sheet.creoId}, drawingId=${sheet.drawing?.id}, drawingName=${sheet.drawing?.name}`)
+  })
+  
+  const filtered = props.availableSheets.filter(sheet => {
+    const sheetDrawingId = sheet.drawing?.id?.toString()
+    const matches = sheetDrawingId === selectedId
+    
+    console.log(`[BalloonFormModal] Sheet ${sheet.id} check: ${sheetDrawingId} === ${selectedId} ? ${matches}`)
+    
+    return matches
+  })
+  
+  console.log('[BalloonFormModal] *** FINAL RESULT: Filtered sheets for drawing ID', selectedId, ':', filtered.length)
+  filtered.forEach(sheet => {
+    console.log(`  -> Sheet ${sheet.id}: ${sheet.name || sheet.creoId}`)
+  })
+  
+  return filtered
+})
+
+// Watch for modal opening to log data
+watch(() => props.show, (newValue) => {
+  if (newValue) {
+    console.log('[BalloonFormModal] Modal opened with props:', {
+      availableDrawings: props.availableDrawings.length,
+      availableSheets: props.availableSheets.length,
+      selectedDrawingId: props.selectedDrawingId,
+      selectedSheetId: props.selectedSheetId,
+      editingBalloon: !!props.editingBalloon
+    })
+    
+    // Show sheet-drawing associations
+    console.log('[BalloonFormModal] Sheet-Drawing associations:')
+    props.availableSheets.forEach((sheet, idx) => {
+      if (idx < 5) { // Show first 5
+        console.log(`  Sheet ${sheet.id}: ${sheet.name || sheet.creoId} -> Drawing ${sheet.drawing?.id} (${sheet.drawing?.name})`)
+      }
+    })
+  }
 })
 </script>
 

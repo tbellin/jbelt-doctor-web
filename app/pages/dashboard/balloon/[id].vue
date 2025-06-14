@@ -592,11 +592,39 @@ const availableDrawings = computed(() => {
 })
 
 const filteredSheets = computed(() => {
-  if (!selectedDrawingId.value) return []
+  console.log('[BalloonEditor] COMPUTING filteredSheets - selectedDrawingId:', selectedDrawingId.value)
+  console.log('[BalloonEditor] Available sheets total:', allSheets.value.length)
   
-  return allSheets.value.filter(sheet => 
-    sheet.drawing?.id?.toString() === selectedDrawingId.value
-  )
+  if (!selectedDrawingId.value) {
+    console.log('[BalloonEditor] No drawing selected, returning empty array')
+    return []
+  }
+  
+  // Convert both values to string for robust comparison
+  const selectedId = selectedDrawingId.value.toString()
+  console.log('[BalloonEditor] Looking for sheets with drawing ID:', selectedId)
+  
+  // Debug all sheets and their drawing associations
+  console.log('[BalloonEditor] ALL SHEETS:')
+  allSheets.value.forEach((sheet, idx) => {
+    console.log(`  Sheet ${idx}: ID=${sheet.id}, name=${sheet.name || sheet.creoId}, drawingId=${sheet.drawing?.id}, drawingName=${sheet.drawing?.name}`)
+  })
+  
+  const filtered = allSheets.value.filter(sheet => {
+    const sheetDrawingId = sheet.drawing?.id?.toString()
+    const matches = sheetDrawingId === selectedId
+    
+    console.log(`[BalloonEditor] Sheet ${sheet.id} check: ${sheetDrawingId} === ${selectedId} ? ${matches}`)
+    
+    return matches
+  })
+  
+  console.log('[BalloonEditor] *** FINAL RESULT: Filtered sheets for drawing ID', selectedId, ':', filtered.length)
+  filtered.forEach(sheet => {
+    console.log(`  -> Sheet ${sheet.id}: ${sheet.name || sheet.creoId}`)
+  })
+  
+  return filtered
 })
 
 const formattedBalloonJson = computed(() => {
@@ -745,9 +773,23 @@ const loadNoteAndAttributes = async () => {
 }
 
 const onDrawingChange = () => {
+  console.log('[BalloonEditor] Drawing selection changed to:', selectedDrawingId.value)
+  
   // Reset sheet when drawing changes
   selectedSheetId.value = ''
-  console.log('[BalloonEditor] Drawing changed, reset sheet')
+  console.log('[BalloonEditor] Sheet selection reset')
+  
+  // Debug: show available data
+  console.log('[BalloonEditor] Available data:', {
+    drawings: availableDrawings.value.length,
+    sheets: allSheets.value.length,
+    sheetsWithDrawing: allSheets.value.filter(s => s.drawing?.id).length
+  })
+  
+  // Force reactivity by triggering filteredSheets computation
+  setTimeout(() => {
+    console.log('[BalloonEditor] Available sheets after drawing change:', filteredSheets.value.length)
+  }, 100)
 }
 
 const addAttribute = () => {
@@ -797,15 +839,44 @@ const reorderAttributes = () => {
   })
 }
 
+
+
+const initializeEmptyAttributes = () => {
+  console.log('[BalloonEditor] Initializing 4 empty attributes for new balloon')
+  
+  attributes.value = []
+  for (let i = 1; i <= 4; i++) {
+    attributes.value.push({
+      id: null,
+      order: i,
+      attributeValue: '',
+      typeValue: 'STRING',
+      note: null
+    })
+  }
+  
+  console.log('[BalloonEditor] Empty attributes initialized:', attributes.value.length)
+}
+
 const validateForm = (): boolean => {
+  console.log('[BalloonEditor] Validating form with:', {
+    selectedDrawingId: selectedDrawingId.value,
+    selectedSheetId: selectedSheetId.value,
+    balloonCreoId: balloonFormData.value.balloon.creoId,
+    balloonValue: balloonFormData.value.balloon.baloonValue,
+    noteCreoId: balloonFormData.value.note.creoId
+  })
+  
   const errors: Record<string, string> = {}
   
   // Validate drawing and sheet
   if (!selectedDrawingId.value) {
     errors.drawing = 'È obbligatorio selezionare un disegno'
+    console.log('[BalloonEditor] Validation error: no drawing selected')
   }
   if (!selectedSheetId.value) {
     errors.sheet = 'È obbligatorio selezionare un foglio'
+    console.log('[BalloonEditor] Validation error: no sheet selected')
   }
   
   // Validate balloon
@@ -821,8 +892,13 @@ const validateForm = (): boolean => {
     errors.noteCreoId = 'Questo campo è obbligatorio'
   }
   
+  console.log('[BalloonEditor] Validation errors:', errors)
+  
   formErrors.value = errors
-  return Object.keys(errors).length === 0
+  const isValid = Object.keys(errors).length === 0
+  console.log('[BalloonEditor] Form is valid:', isValid)
+  
+  return isValid
 }
 
 const handleSave = async () => {
@@ -837,14 +913,51 @@ const handleSave = async () => {
   error.value = null
   
   try {
-    // Get selected sheet
-    const selectedSheet = allSheets.value.find(sheet => 
-      sheet.id?.toString() === selectedSheetId.value
-    )
+    console.log('[BalloonEditor] Looking for selected sheet:', {
+      selectedSheetId: selectedSheetId.value,
+      selectedSheetIdType: typeof selectedSheetId.value,
+      availableSheets: allSheets.value.length
+    })
+    
+    // Debug: show all sheets
+    console.log('[BalloonEditor] Available sheets:')
+    allSheets.value.forEach(sheet => {
+      console.log(`  Sheet ID: ${sheet.id} (${typeof sheet.id}) - ${sheet.name || sheet.creoId}`)
+    })
+    
+    // Get selected sheet with robust comparison
+    const selectedSheet = allSheets.value.find(sheet => {
+      const sheetIdStr = sheet.id?.toString()
+      const selectedIdStr = selectedSheetId.value.toString()
+      const matches = sheetIdStr === selectedIdStr
+      
+      if (matches) {
+        console.log('[BalloonEditor] FOUND matching sheet:', {
+          id: sheet.id,
+          name: sheet.name || sheet.creoId,
+          match: `${sheetIdStr} === ${selectedIdStr}`
+        })
+      }
+      
+      return matches
+    })
+    
+    console.log('[BalloonEditor] Selected sheet search result:', !!selectedSheet)
     
     if (!selectedSheet) {
-      throw new Error('Foglio selezionato non trovato')
+      console.error('[BalloonEditor] Sheet not found! Debug info:', {
+        searchingFor: selectedSheetId.value,
+        availableIds: allSheets.value.map(s => s.id),
+        filteredSheets: filteredSheets.value.length
+      })
+      throw new Error(`Foglio selezionato non trovato. ID cercato: ${selectedSheetId.value}`)
     }
+    
+    console.log('[BalloonEditor] Using sheet for creation:', {
+      id: selectedSheet.id,
+      name: selectedSheet.name,
+      creoId: selectedSheet.creoId
+    })
     
     if (isEditMode.value && currentBalloon.value) {
       // Update existing balloon
@@ -902,7 +1015,7 @@ const createBalloon = async (selectedSheet: ISheet) => {
   const createdNote = noteResponse.data
   console.log('[BalloonEditor] Note created:', createdNote)
   
-  // Create attributes
+  // Create attributes (4 empty attributes)
   await createAttributes(createdNote)
 }
 
@@ -970,22 +1083,28 @@ const updateBalloon = async (selectedSheet: ISheet) => {
 
 const createAttributes = async (note: INote) => {
   console.log('[BalloonEditor] Creating attributes for note:', note.id)
+  console.log('[BalloonEditor] Attributes to create:', attributes.value.length)
   
+  // Always create 4 attributes, even if empty
   for (const attr of attributes.value) {
-    if (!attr.attributeValue?.trim()) continue
-    
     const attributeData = {
       order: attr.order,
-      attributeValue: attr.attributeValue,
+      attributeValue: attr.attributeValue || '', // Allow empty values
       typeValue: attr.typeValue || 'STRING',
       note: note
     }
     
+    console.log(`[BalloonEditor] Creating attribute ${attr.order}:`, attributeData.attributeValue || '(empty)')
+    
     const result = await attributesApi.create(attributeData)
     if (!result.success) {
-      console.warn('[BalloonEditor] Attribute creation failed:', result.error)
+      console.warn(`[BalloonEditor] Attribute ${attr.order} creation failed:`, result.error)
+    } else {
+      console.log(`[BalloonEditor] Attribute ${attr.order} created successfully`)
     }
   }
+  
+  console.log('[BalloonEditor] All attributes created')
 }
 
 const updateAttributes = async () => {
@@ -1008,11 +1127,11 @@ const updateAttributes = async () => {
       if (!result.success) {
         console.warn('[BalloonEditor] Attribute update failed:', result.error)
       }
-    } else if (attr.attributeValue?.trim()) {
-      // Create new attribute
+    } else {
+      // Create new attribute (allow empty values)
       const attributeData = {
         order: attr.order,
-        attributeValue: attr.attributeValue,
+        attributeValue: attr.attributeValue || '',
         typeValue: attr.typeValue || 'STRING',
         note: currentNote.value
       }
@@ -1020,6 +1139,8 @@ const updateAttributes = async () => {
       const result = await attributesApi.create(attributeData)
       if (!result.success) {
         console.warn('[BalloonEditor] Attribute creation failed:', result.error)
+      } else {
+        console.log(`[BalloonEditor] New attribute ${attr.order} created`)
       }
     }
   }
@@ -1109,11 +1230,15 @@ onMounted(async () => {
   
   if (isEditMode.value) {
     await loadBalloonForEdit()
+  } else {
+    // Initialize empty attributes for new balloon creation
+    initializeEmptyAttributes()
   }
   
   console.log('[BalloonEditor] Component initialized:', {
     isEditMode: isEditMode.value,
-    balloonId: balloonId.value
+    balloonId: balloonId.value,
+    attributesCount: attributes.value.length
   })
 })
 </script>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Properties Loading</title>
+</head>
+<body>
+    <h1>Debug Properties Loading</h1>
+    <button onclick="testPropertiesLoading()">Test Properties Loading</button>
+    <pre id="output"></pre>
+    
+    <script>
+        async function testPropertiesLoading() {
+            const output = document.getElementById('output');
+            output.innerHTML = 'Testing properties loading...\n';
+            
+            try {
+                // Test 1: Carica il file properties
+                console.log('Loading properties from /excel.properties');
+                const response = await fetch('/excel.properties');
+                
+                output.innerHTML += `Properties fetch status: ${response.status} ${response.statusText}\n`;
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load properties: ${response.statusText}`);
+                }
+                
+                const content = await response.text();
+                output.innerHTML += 'Properties content:\n' + content + '\n\n';
+                
+                // Test 2: Parse del contenuto
+                const lines = content.split('\n');
+                const props = {};
+                
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (trimmed.startsWith('#') || trimmed === '') continue;
+                    
+                    const equalIndex = trimmed.indexOf('=');
+                    if (equalIndex > 0) {
+                        const key = trimmed.substring(0, equalIndex).trim();
+                        const value = trimmed.substring(equalIndex + 1).trim();
+                        props[key] = value;
+                    }
+                }
+                
+                output.innerHTML += 'Parsed properties:\n' + JSON.stringify(props, null, 2) + '\n\n';
+                
+                // Test 3: Costruisci la configurazione come fa il sistema
+                const config = {
+                    templateFile: props['TEMPLATE_FILE'] || 'template-01.xlsx',
+                    coordinates: {
+                        drawing_name: props['DRAWING_NAME'] || 'J2',
+                        model_name: props['MODEL_NAME'] || 'J4',
+                        balloon_value: props['BALLOON_VALUE+']?.replace(/\+$/, '') || 'A7',
+                        attribute1_value: props['ATTRIBUTE1_VALUE+']?.replace(/\+$/, '') || 'B7',
+                        attribute2_value: props['ATTRIBUTE2_VALUE+']?.replace(/\+$/, '') || 'C7',
+                        attribute3_value: props['ATTRIBUTE3_VALUE+']?.replace(/\+$/, '') || 'D7',
+                        attribute4_value: props['ATTRIBUTE4_VALUE+']?.replace(/\+$/, '') || 'E7'
+                    }
+                };
+                
+                output.innerHTML += 'Final config:\n' + JSON.stringify(config, null, 2) + '\n\n';
+                
+                // Test 4: Test coordinate calculation
+                function getCoordinateForRow(baseCoordinate, rowOffset) {
+                    const match = baseCoordinate.match(/^([A-Z]+)(\d+)$/);
+                    if (!match) throw new Error(`Invalid coordinate: ${baseCoordinate}`);
+                    
+                    const column = match[1];
+                    const baseRow = parseInt(match[2]);
+                    const newRow = baseRow + rowOffset;
+                    
+                    return `${column}${newRow}`;
+                }
+                
+                output.innerHTML += 'Coordinate calculations:\n';
+                output.innerHTML += `Balloon row 0: ${getCoordinateForRow(config.coordinates.balloon_value, 0)}\n`;
+                output.innerHTML += `Balloon row 1: ${getCoordinateForRow(config.coordinates.balloon_value, 1)}\n`;
+                output.innerHTML += `Attr1 row 0: ${getCoordinateForRow(config.coordinates.attribute1_value, 0)}\n`;
+                output.innerHTML += `Attr1 row 1: ${getCoordinateForRow(config.coordinates.attribute1_value, 1)}\n`;
+                
+                output.innerHTML += '\n✅ Properties loading test SUCCESSFUL!';
+                
+            } catch (error) {
+                output.innerHTML += `\n❌ Error: ${error.message}`;
+                console.error('Properties loading error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

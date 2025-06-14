@@ -2,7 +2,7 @@
   <div class="container mt-5">
     <!-- Header della pagina -->
     <div class="mb-4">
-      <h3 style="color: red;">{{ t('page_title') }}</h3>
+      <h3 style="color: blue;">{{ t('page_title') }}</h3>
       
       <!-- Campo di ricerca con bottone -->
       <div class="mb-4">
@@ -134,7 +134,7 @@
           <!-- Tabella balloon con note e attributi -->
           <div class="table-responsive mb-4">
             <table class="table table-bordered table-striped">
-              <thead class="table-dark">
+              <thead class="table-primary">
                 <tr>
                   <th>{{ t('balloon') }}</th>
                   <th>{{ t('note') }}</th>
@@ -265,6 +265,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx'
+import ExcelPropertiesEngine from '~/utils/excel-properties-engine'
 import { useApi } from '~/composables/useApi'
 import { useAuth } from '~/composables/useAuth'
 import { useDebug } from '~/composables/useDebug'
@@ -569,25 +570,77 @@ const getAttributeByOrder = (attributes: IAttributeEntity[], order: number): str
   return attribute?.attributeValue || ''
 }
 
-// Excel download function
-const downloadExcel = () => {
-  if (!selectedDrawing.value || !selectedSheet.value || balloonData.value.length === 0) {
+// Excel download function using properties-based template
+const downloadExcel = async () => {
+  if (!selectedDrawing.value || !selectedSheet.value) {
     console.warn('[Drawings] Cannot download Excel: missing data')
     return
   }
   
-  console.log('[Drawings] Generating Excel for:', {
+  console.log('[Drawings] Generating Excel using properties configuration for:', {
     drawing: selectedDrawing.value.name,
     sheet: selectedSheet.value.creoId || selectedSheet.value.name,
-    balloonCount: balloonData.value.length
+    balloonCount: balloonData.value.length,
+    modelsCount: sheetModels.value.length
   })
   
   try {
-    // Create worksheet data with models section
+    // Crea engine basato su properties
+    console.log('[Drawings] Creating ExcelPropertiesEngine with properties path: /excel.properties')
+    const engine = await ExcelPropertiesEngine.create('/excel.properties')
+    console.log('[Drawings] Properties engine created successfully')
+    console.log('[Drawings] Engine properties:', engine.getProperties())
+    
+    // Prepara i dati semplificati secondo la nuova struttura
+    const firstModel = sheetModels.value.length > 0 ? sheetModels.value[0] : null
+    
+    const templateData = {
+      drawing_name: selectedDrawing.value.name || selectedDrawing.value.code || '',
+      model_name: firstModel ? (firstModel.name || firstModel.code || '') : 'Nessun modello',
+      balloons: balloonData.value.map((dataPoint, index) => {
+        const balloonInfo = {
+          balloon_value: dataPoint.balloon?.baloonValue || dataPoint.balloon?.creoId || `Balloon_${index + 1}`,
+          attribute1_value: getAttributeByOrder(dataPoint.attributes, 1) || `Attr1_${index + 1}`,
+          attribute2_value: getAttributeByOrder(dataPoint.attributes, 2) || `Attr2_${index + 1}`,
+          attribute3_value: getAttributeByOrder(dataPoint.attributes, 3) || `Attr3_${index + 1}`,
+          attribute4_value: getAttributeByOrder(dataPoint.attributes, 4) || `Attr4_${index + 1}`
+        };
+        console.log(`[Drawings] Balloon ${index} data:`, balloonInfo);
+        return balloonInfo;
+      })
+    }
+    
+    console.log('[Drawings] Template data prepared:', templateData)
+    console.log('[Drawings] Using first model only:', firstModel?.name || 'None')
+    
+    // Popola il template
+    engine.populateTemplate(templateData)
+    
+    // Genera filename
+    const drawingName = selectedDrawing.value.name || selectedDrawing.value.code || 'disegno'
+    const sheetName = selectedSheet.value.creoId || selectedSheet.value.name || 'foglio'
+    const filename = `${drawingName}_${sheetName}_properties.xlsx`.replace(/[^a-zA-Z0-9_.]/g, '_')
+    
+    // Scarica il file
+    engine.generateFile(filename)
+    
+    console.log('[Drawings] Properties-based Excel file downloaded:', filename)
+    
+  } catch (err) {
+    console.error('[Drawings] Error generating properties Excel:', err)
+    console.log('[Drawings] Falling back to simple Excel generation')
+    await downloadExcelFallback()
+  }
+}
+
+// Fallback function per Excel semplice
+const downloadExcelFallback = () => {
+  try {
+    // Create worksheet data with models section (fallback method)
     const worksheetData = [
-      ['Nome Disegno', selectedDrawing.value.name || selectedDrawing.value.code || ''],
-      ['Nome Foglio', selectedSheet.value.creoId || selectedSheet.value.name || ''],
-      ['ID Foglio', selectedSheet.value.id?.toString() || ''],
+      ['Nome Disegno', selectedDrawing.value?.name || selectedDrawing.value?.code || ''],
+      ['Nome Foglio', selectedSheet.value?.creoId || selectedSheet.value?.name || ''],
+      ['ID Foglio', selectedSheet.value?.id?.toString() || ''],
       [],
       ['MODELLI ASSOCIATI AL FOGLIO'],
       ['ID Modello', 'Nome Modello', 'Codice', 'Tipo'],
@@ -617,17 +670,17 @@ const downloadExcel = () => {
     XLSX.utils.book_append_sheet(wb, ws, 'Dati Disegno')
     
     // Generate filename
-    const drawingName = selectedDrawing.value.name || selectedDrawing.value.code || 'disegno'
-    const sheetName = selectedSheet.value.creoId || selectedSheet.value.name || 'foglio'
-    const filename = `${drawingName}_${sheetName}_export.xlsx`.replace(/[^a-zA-Z0-9_.]/g, '_')
+    const drawingName = selectedDrawing.value?.name || selectedDrawing.value?.code || 'disegno'
+    const sheetName = selectedSheet.value?.creoId || selectedSheet.value?.name || 'foglio'
+    const filename = `${drawingName}_${sheetName}_fallback.xlsx`.replace(/[^a-zA-Z0-9_.]/g, '_')
     
     // Download file
     XLSX.writeFile(wb, filename)
     
-    console.log('[Drawings] Excel file downloaded:', filename)
+    console.log('[Drawings] Fallback Excel file downloaded:', filename)
     
   } catch (err) {
-    console.error('[Drawings] Error generating Excel:', err)
+    console.error('[Drawings] Error generating fallback Excel:', err)
   }
 }
 </script>

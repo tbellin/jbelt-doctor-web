@@ -20,37 +20,54 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
       ],
       htmlAttrs: {
-        lang: 'it' // Default language
+        lang: 'it'
       }
     },
-    // Configurazione per la struttura con directory app
     rootId: 'app',
     buildAssetsDir: '/assets/'
   },
 
   // Configurazione degli asset statici
   vite: {
-    assetsInclude: ['**/*.png', '**/*.jpg', '**/*.svg', '**/*.gif'],
+    assetsInclude: ['**/*.png', '**/*.jpg', '**/*.svg', '**/*.gif', '**/*.xlsx', '**/*.properties'],
     logLevel: process.env.NUXT_DEBUG === 'true' ? 'info' : 'warn'
+  },
+
+  // Configurazione per servire file statici
+  nitro: {
+    publicAssets: [
+      {
+        baseURL: '/',
+        dir: 'public',
+        maxAge: 60 * 60 * 24 * 7
+      }
+    ],
+    storage: {
+      'assets:server': {
+        driver: 'fs',
+        readOnly: true,
+        base: './public'
+      }
+    }
   },
 
   css: [
     'bootstrap/dist/css/bootstrap.min.css',
-    '@/assets/css/main.css',  // Percorso aggiornato per la struttura app/
+    '@/assets/css/main.css',
     '@/assets/css/sidebar.css',
-    '@/assets/css/dashboard.css' // Stili specifici per il layout dashboard
+    '@/assets/css/dashboard.css'
   ],
 
   modules: ['@pinia/nuxt', 'nuxt-bootstrap-icons'],
 
   plugins: [
-    // Percorsi aggiornati relativi alla directory app/
     '@/plugins/debug.ts',
     '@/plugins/axios.ts',
     '@/plugins/bootstrap.client.ts',
-    '@/plugins/i18n.client.ts' // Aggiunto nuovo plugin per i18n
+    '@/plugins/i18n.client.ts'
   ],
 
+  // MANTIENE LA PORTA 8080 PER I SERVIZI BACKEND ESISTENTI
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080',
@@ -58,19 +75,18 @@ export default defineNuxtConfig({
       apiPort: process.env.NUXT_PUBLIC_API_PORT || '8080',
       frontendHost: process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost',
       frontendPort: process.env.NUXT_PUBLIC_FRONTEND_PORT || '3000',
-      debug: process.env.NUXT_DEBUG || 'false'
+      debug: process.env.NUXT_DEBUG || 'false',
+      templatePath: '/templates/template-01.xlsx'
     }
   },
 
-  // Opzioni di debug avanzate
   debug: process.env.NUXT_DEBUG === 'true',
 
   build: {
     transpile: ['@popperjs/core'],
   },
 
-  // Log dettagliati in modalità debug
   logLevel: process.env.NUXT_DEBUG === 'true' ? 'verbose' : 'info'
 })
 
-// Version: 1.2.0
+// Version: 1.4.0

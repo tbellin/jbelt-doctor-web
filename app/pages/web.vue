@@ -30,11 +30,26 @@
 
           <div class="col-lg-5 hero-newsletter">
             <p>Subscribe now to get the latest updates!</p>
-            <form action="forms/newsletter.php" method="post" class="php-email-form">
-              <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
-              <div class="loading">Loading</div>
-              <div class="error-message"></div>
-              <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+            <form @submit.prevent="handleNewsletterSubmit" class="php-email-form">
+              <div class="newsletter-form">
+                <input 
+                  type="email" 
+                  name="newsletter" 
+                  v-model="newsletterEmail"
+                  :disabled="newsletterLoading"
+                  placeholder="Enter your email"
+                  style="color: #333333 !important;"
+                  required
+                >
+                <input 
+                  type="submit" 
+                  value="Subscribe"
+                  :disabled="newsletterLoading"
+                >
+              </div>
+              <div class="loading" v-show="newsletterLoading">Loading</div>
+              <div class="error-message" v-show="newsletterError">{{ newsletterError }}</div>
+              <div class="sent-message" v-show="newsletterSuccess">{{ newsletterSuccess }}</div>
             </form>
           </div>
 
@@ -170,8 +185,68 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+import axios from 'axios';
+
 // Configurazione della pagina
 definePageMeta({
   layout: 'maundy'
 });
+
+// Newsletter state
+const newsletterEmail = ref('');
+const newsletterLoading = ref(false);
+const newsletterError = ref('');
+const newsletterSuccess = ref('');
+
+// Handle newsletter subscription
+const handleNewsletterSubmit = async () => {
+  if (!newsletterEmail.value) return;
+  
+  newsletterLoading.value = true;
+  newsletterError.value = '';
+  newsletterSuccess.value = '';
+  
+  try {
+    const config = useRuntimeConfig();
+    const apiBase = config.public.apiBase;
+    
+    const payload = {
+      email: newsletterEmail.value,
+      isSubscribed: true
+    };
+    
+    await axios.post(`${apiBase}/api/public/newsletter-subscribers`, payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    newsletterSuccess.value = 'Your subscription request has been sent. Thank you!';
+    newsletterEmail.value = ''; // Reset form
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      newsletterSuccess.value = '';
+    }, 5000);
+    
+  } catch (error: any) {
+    console.error('Newsletter subscription error:', error);
+    
+    if (error.response?.status === 409) {
+      newsletterError.value = 'This email is already subscribed to our newsletter.';
+    } else if (error.response?.data?.message) {
+      newsletterError.value = error.response.data.message;
+    } else {
+      newsletterError.value = 'An error occurred. Please try again later.';
+    }
+    
+    // Hide error message after 5 seconds
+    setTimeout(() => {
+      newsletterError.value = '';
+    }, 5000);
+  } finally {
+    newsletterLoading.value = false;
+  }
+};
 </script>

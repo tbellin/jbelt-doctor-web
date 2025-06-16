@@ -19,6 +19,11 @@
           <nav class="main-nav d-none d-md-flex">
             <ul class="nav">
               <li class="nav-item">
+                <NuxtLink to="/web" class="nav-link">
+                  <BootstrapIcon name="globe" class="me-1" />
+                  Web</NuxtLink>
+              </li>
+              <li class="nav-item">
                 <NuxtLink to="/" class="nav-link">
                   <BootstrapIcon name="building" class="me-1" />
                   {{ t('home') }}</NuxtLink>

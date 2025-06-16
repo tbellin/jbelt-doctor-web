@@ -76,7 +76,8 @@ export default defineNuxtConfig({
       frontendHost: process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost',
       frontendPort: process.env.NUXT_PUBLIC_FRONTEND_PORT || '3000',
       debug: process.env.NUXT_DEBUG || 'false',
-      templatePath: '/templates/template-01.xlsx'
+      templatePath: '/templates/template-01.xlsx',
+      htmlPath: '/Maundy/index.html'
     }
   },
 

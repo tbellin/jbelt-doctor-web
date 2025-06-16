@@ -96,7 +96,7 @@ const imageUrl = ref(props.imageUrl || '');
 const imageError = ref(false);
 
 // Percorso corretto all'immagine di default
-const DEFAULT_AVATAR_PATH = '/assets/images/default-avatar.png';
+const DEFAULT_AVATAR_PATH = '/default-avatar.png';
 // Dimensione massima consentita in byte (5MB)
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -289,16 +289,16 @@ onBeforeUnmount(() => {
 
 .profile-image-wrapper {
   position: relative;
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .profile-image {
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   background-color: #f8f9fa;
 }

@@ -29,14 +29,14 @@
       <!-- Form di cambio password -->
       <form @submit.prevent="handleSubmit">
         <div class="mb-3">
-          <label for="currentPassword" class="form-label">{{ t('current_password') }}</label>
+          <label for="currentPassword" class="form-label">{{ t('password:current_password') }}</label>
           <input
             type="password"
             class="form-control"
             id="currentPassword"
             v-model="formData.currentPassword"
             required
-            :placeholder="t('current_password')"
+            :placeholder="t('password:current_password')"
             :disabled="loading"
             :class="{'is-invalid': validationErrors.currentPassword}"
           />
@@ -46,14 +46,14 @@
         </div>
         
         <div class="mb-3">
-          <label for="newPassword" class="form-label">{{ t('new_password') }}</label>
+          <label for="newPassword" class="form-label">{{ t('password:new_password') }}</label>
           <input
             type="password"
             class="form-control"
             id="newPassword"
             v-model="formData.newPassword"
             required
-            :placeholder="t('new_password')"
+            :placeholder="t('password:new_password')"
             :disabled="loading"
             :class="{'is-invalid': validationErrors.newPassword}"
             @input="validateNewPassword"
@@ -61,18 +61,18 @@
           <div class="invalid-feedback" v-if="validationErrors.newPassword">
             {{ validationErrors.newPassword }}
           </div>
-          <small class="form-text text-muted">{{ t('password_requirements') }}</small>
+          <small class="form-text text-muted">{{ t('password:password_requirements') }}</small>
         </div>
         
         <div class="mb-3">
-          <label for="confirmPassword" class="form-label">{{ t('confirm_password') }}</label>
+          <label for="confirmPassword" class="form-label">{{ t('password:confirm_password') }}</label>
           <input
             type="password"
             class="form-control"
             id="confirmPassword"
             v-model="confirmPassword"
             required
-            :placeholder="t('confirm_password')"
+            :placeholder="t('password:confirm_password')"
             :disabled="loading"
             :class="{'is-invalid': validationErrors.confirmPassword}"
             @input="validateConfirmPassword"
@@ -89,7 +89,7 @@
             :disabled="loading || !isFormValid"
           >
             <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            {{ t('save_changes') }}
+            {{ t('password:save_changes') }}
           </button>
         </div>
       </form>
@@ -101,9 +101,14 @@
   import { useAuth } from '~/composables/useAuth';
   import { useI18n } from '~/composables/useI18n';
   
+  definePageMeta({
+    layout: 'dashboard',
+    middleware: ['auth', 'i18n']
+  });
+
   // Composable e store per l'autenticazione
   const { changePassword, isAuthenticated, error: authError, loading } = useAuth();
-  const { t } = useI18n();
+  const { t, loadNamespace } = useI18n();
   
   // Stato locale del form
   const formData = reactive({
@@ -123,10 +128,13 @@
   const isDebugMode = ref(false);
   
   // Al montaggio del componente, controlla se siamo in modalità debug
-  onMounted(() => {
+  onMounted(async () => {
     // Verifica NUXT_DEBUG nell'ambiente
     const debugEnv = process.env.NUXT_DEBUG;
     isDebugMode.value = debugEnv === 'true';
+    
+    // Carica le traduzioni del namespace password
+    await loadNamespace('password');
     
     // Log per verifica variabili d'ambiente
     if (isDebugMode.value) {
@@ -139,7 +147,7 @@
     validationErrors.newPassword = '';
     
     if (formData.newPassword.length < 6) {
-      validationErrors.newPassword = t('password_too_short');
+      validationErrors.newPassword = t('password:password_too_short');
     }
     
     // Se la conferma password è già stata inserita, validala nuovamente
@@ -153,7 +161,7 @@
     validationErrors.confirmPassword = '';
     
     if (formData.newPassword !== confirmPassword.value) {
-      validationErrors.confirmPassword = t('passwords_not_match');
+      validationErrors.confirmPassword = t('password:passwords_not_match');
     }
   };
   
@@ -175,22 +183,22 @@
     
     // Validazione base
     if (!formData.currentPassword) {
-      validationErrors.currentPassword = t('required_field');
+      validationErrors.currentPassword = t('password:required_field');
       return;
     }
     
     if (!formData.newPassword) {
-      validationErrors.newPassword = t('required_field');
+      validationErrors.newPassword = t('password:required_field');
       return;
     }
     
     if (formData.newPassword.length < 6) {
-      validationErrors.newPassword = t('password_too_short');
+      validationErrors.newPassword = t('password:password_too_short');
       return;
     }
     
     if (confirmPassword.value !== formData.newPassword) {
-      validationErrors.confirmPassword = t('passwords_not_match');
+      validationErrors.confirmPassword = t('password:passwords_not_match');
       return;
     }
     
@@ -206,19 +214,19 @@
       }
       
       if (success) {
-        successMessage.value = t('password_changed_success');
+        successMessage.value = t('password:password_changed_success');
         // Reset form
         formData.currentPassword = '';
         formData.newPassword = '';
         confirmPassword.value = '';
       } else {
-        error.value = authError.value || t('password_change_failed');
+        error.value = authError.value || t('password:password_change_failed');
       }
     } catch (e) {
       if (isDebugMode.value) {
         console.error('[ChangePasswordForm] Error during password change:', e);
       }
-      error.value = t('error_during_password_change');
+      error.value = t('password:error_during_password_change');
     }
   };
   </script>

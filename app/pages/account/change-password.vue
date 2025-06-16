@@ -25,7 +25,7 @@
   
       <div class="card shadow">
         <div class="card-header bg-primary text-white">
-          <h4 class="mb-0">{{ t('change_password') }}</h4>
+          <h4 class="mb-0">{{ t('password:change_password') }}</h4>
         </div>
         
         <div class="card-body p-4">
@@ -33,12 +33,12 @@
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">{{ t('loading') }}</span>
             </div>
-            <p class="mt-2">{{ t('loading_profile') }}</p>
+            <p class="mt-2">{{ t('password:loading_profile') }}</p>
           </div>
   
           <div v-else-if="!isAuthenticated" class="alert alert-warning">
-            <h4 class="alert-heading">{{ t('access_denied') }}</h4>
-            <p>{{ t('must_login_change_password') }}</p>
+            <h4 class="alert-heading">{{ t('password:access_denied') }}</h4>
+            <p>{{ t('password:must_login_change_password') }}</p>
             <hr>
             <div class="d-flex">
               <NuxtLink to="/login" class="btn btn-primary">
@@ -48,14 +48,14 @@
           </div>
   
           <div v-else>
-            <p class="mb-4">{{ t('change_password_instructions') }}</p>
+            <p class="mb-4">{{ t('password:change_password_instructions') }}</p>
             
             <!-- Componente form di cambio password -->
             <ChangePasswordForm />
             
             <div class="mt-4 text-center">
               <NuxtLink to="/auth/profile" class="btn btn-outline-secondary">
-                {{ t('back_to_profile') }}
+                {{ t('password:back_to_profile') }}
               </NuxtLink>
             </div>
           </div>
@@ -73,21 +73,24 @@
   
   // Configurazione della pagina
   definePageMeta({
-    layout: 'default',
+    layout: 'dashboard',
     middleware: ['auth']
   });
   
   // Hooks e composables
   const route = useRoute();
   const { isAuthenticated, isAdmin, loading, error, user } = useAuth();
-  const { t } = useI18n();
+  const { t, loadNamespace } = useI18n();
   
   // Stato locale
   const isDebugMode = ref(process.env.NUXT_DEBUG === 'true');
   const isDebugExpanded = ref(false);
   
   // Controlli all'avvio del componente
-  onMounted(() => {
+  onMounted(async () => {
+    // Carica le traduzioni del namespace password
+    await loadNamespace('password');
+    
     if (isDebugMode.value) {
       console.log('[ChangePasswordPage] Mounted', {
         route: route.fullPath,

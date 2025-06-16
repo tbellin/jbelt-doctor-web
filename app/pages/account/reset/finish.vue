@@ -3,7 +3,7 @@
     <div>
       <div class="card">
         <div class="card-header bg-primary text-white">
-          <h4 class="mb-0">{{ t('reset_password_complete') }}</h4>
+          <h4 class="mb-0">{{ t('password:reset_password_complete') }}</h4>
         </div>
         <div class="card-body p-4">
           <!-- Debug panel (visibile solo in modalità debug) -->
@@ -27,22 +27,22 @@
   
           <!-- Alert di successo -->
           <div v-if="success" class="alert alert-success" role="alert">
-            {{ t('reset_password_success') }}
+            {{ t('password:reset_password_success') }}
           </div>
   
           <!-- Form per impostare la nuova password -->
           <form @submit.prevent="handleSubmit" v-if="!success && key">
-            <p class="mb-4">{{ t('reset_password_finish_instructions') }}</p>
+            <p class="mb-4">{{ t('password:reset_password_finish_instructions') }}</p>
             
             <div class="mb-3">
-              <label for="newPassword" class="form-label">{{ t('new_password') }}</label>
+              <label for="newPassword" class="form-label">{{ t('password:new_password') }}</label>
               <input
                 type="password"
                 class="form-control"
                 id="newPassword"
                 v-model="newPassword"
                 required
-                :placeholder="t('new_password_placeholder')"
+                :placeholder="t('password:new_password_placeholder')"
                 :disabled="loading"
                 :class="{ 'is-invalid': passwordError }"
                 @input="validatePassword"
@@ -53,14 +53,14 @@
             </div>
             
             <div class="mb-3">
-              <label for="confirmPassword" class="form-label">{{ t('confirm_password') }}</label>
+              <label for="confirmPassword" class="form-label">{{ t('password:confirm_password') }}</label>
               <input
                 type="password"
                 class="form-control"
                 id="confirmPassword"
                 v-model="confirmPassword"
                 required
-                :placeholder="t('confirm_password_placeholder')"
+                :placeholder="t('password:confirm_password_placeholder')"
                 :disabled="loading"
                 :class="{ 'is-invalid': confirmPasswordError }"
                 @input="validateConfirmPassword"
@@ -77,22 +77,22 @@
                 :disabled="loading || !isFormValid"
               >
                 <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                {{ t('save_new_password') }}
+                {{ t('password:save_new_password') }}
               </button>
             </div>
           </form>
   
           <!-- Messaggio se il key non è valido -->
           <div v-if="!key" class="alert alert-warning">
-            {{ t('reset_key_invalid') }}
+            {{ t('password:reset_key_invalid') }}
           </div>
   
           <!-- Azioni dopo il reset completo -->
           <div v-if="success" class="mt-4">
-            <p>{{ t('reset_password_complete_message') }}</p>
+            <p>{{ t('password:reset_password_complete_message') }}</p>
             <div class="d-grid gap-2">
               <NuxtLink to="/login" class="btn btn-outline-primary">
-                {{ t('go_to_login') }}
+                {{ t('password:go_to_login') }}
               </NuxtLink>
             </div>
           </div>
@@ -115,7 +115,7 @@
   
   // Composables
   const route = useRoute();
-  const { t } = useI18n();
+  const { t, loadNamespace } = useI18n();
   const { resetPasswordFinish, loading, error } = useAuth();
   
   // Stato locale
@@ -142,11 +142,11 @@
     passwordError.value = '';
     
     if (newPassword.value.length < 6) {
-      passwordError.value = t('password_too_short');
+      passwordError.value = t('password:password_too_short');
     }
     
     if (confirmPassword.value && newPassword.value !== confirmPassword.value) {
-      confirmPasswordError.value = t('passwords_not_match');
+      confirmPasswordError.value = t('password:passwords_not_match');
     } else {
       confirmPasswordError.value = '';
     }
@@ -157,7 +157,7 @@
     confirmPasswordError.value = '';
     
     if (newPassword.value !== confirmPassword.value) {
-      confirmPasswordError.value = t('passwords_not_match');
+      confirmPasswordError.value = t('password:passwords_not_match');
     }
   };
   
@@ -184,7 +184,10 @@
   };
   
   // Inizializzazione
-  onMounted(() => {
+  onMounted(async () => {
+    // Carica le traduzioni del namespace password
+    await loadNamespace('password');
+    
     // Recupera il key dalla query string
     key.value = route.query.key as string || '';
     

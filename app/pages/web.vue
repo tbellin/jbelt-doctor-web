@@ -47,9 +47,9 @@
                   :disabled="newsletterLoading"
                 >
               </div>
-              <div class="loading" v-show="newsletterLoading" style="display: block !important;">Sending subscription...</div>
-              <div class="error-message" v-show="newsletterError" style="display: block !important;">{{ newsletterError }}</div>
-              <div class="sent-message" v-show="newsletterSuccess" style="display: block !important;">{{ newsletterSuccess }}</div>
+              <div class="newsletter-loading" v-show="newsletterLoading">Sending subscription...</div>
+              <div class="newsletter-error" v-show="newsletterError">{{ newsletterError }}</div>
+              <div class="newsletter-success" v-show="newsletterSuccess">{{ newsletterSuccess }}</div>
             </form>
           </div>
 
@@ -213,6 +213,38 @@ const handleNewsletterSubmit = async () => {
     const config = useRuntimeConfig();
     const apiBase = config.public.apiBase;
     
+    // Prima controlla se l'email esiste già usando il filtro contains
+    try {
+      const checkResponse = await axios.get(`${apiBase}/api/public/newsletter-subscribers`, {
+        params: {
+          'email.contains': newsletterEmail.value
+        }
+      });
+      
+      // Se la risposta contiene dati, l'email esiste già
+      if (checkResponse.data && checkResponse.data.length > 0) {
+        // Verifica se c'è una corrispondenza esatta
+        const exactMatch = checkResponse.data.find((subscriber: any) => 
+          subscriber.email === newsletterEmail.value
+        );
+        
+        if (exactMatch) {
+          newsletterSending.value = false;
+          newsletterError.value = 'This email is already subscribed to our newsletter.';
+          
+          setTimeout(() => {
+            newsletterError.value = '';
+          }, 5000);
+          
+          return; // Esce senza registrare
+        }
+      }
+    } catch (checkError: any) {
+      // Se c'è un errore nel controllo, continua comunque con la registrazione
+      console.log('Check error (proceeding anyway):', checkError);
+    }
+    
+    // L'email non esiste, procedi con la registrazione
     const payload = {
       email: newsletterEmail.value,
       isSubscribed: true
@@ -245,6 +277,7 @@ const handleNewsletterSubmit = async () => {
     newsletterSending.value = false;
     
     if (error.response?.status === 409) {
+      // Email già presente - non registrare
       newsletterError.value = 'This email is already subscribed to our newsletter.';
     } else if (error.response?.data?.message) {
       newsletterError.value = error.response.data.message;
@@ -261,3 +294,54 @@ const handleNewsletterSubmit = async () => {
   }
 };
 </script>
+
+<style scoped>
+/* Stili personalizzati per i messaggi newsletter */
+.newsletter-loading,
+.newsletter-error,
+.newsletter-success {
+  margin-top: 15px;
+  padding: 12px 20px;
+  border-radius: 25px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.newsletter-loading {
+  background: #24b7a4;
+  color: #ffffff;
+  border: 2px solid #24b7a4;
+}
+
+.newsletter-success {
+  background: #24b7a4;
+  color: #ffffff;
+  border: 2px solid #24b7a4;
+}
+
+.newsletter-error {
+  background: #dc3545;
+  color: #ffffff;
+  border: 2px solid #dc3545;
+}
+
+/* Aggiunge un effetto di pulsazione per il loading */
+.newsletter-loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 8px rgba(36, 183, 164, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(36, 183, 164, 0.6);
+  }
+  100% {
+    box-shadow: 0 4px 8px rgba(36, 183, 164, 0.3);
+  }
+}
+</style>

@@ -1,0 +1,130 @@
+{
+  "editor": {
+    "breadcrumb": {
+      "panel": "Panel",
+      "balloons": "Balloons",
+      "edit": "Edit",
+      "new": "New",
+      "balloon": "Balloon"
+    },
+    "title": {
+      "edit": "Edit Balloon",
+      "new": "New Balloon"
+    },
+    "buttons": {
+      "backToList": "Back to List",
+      "viewJson": "View JSON",
+      "retry": "Retry",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "create": "Create",
+      "update": "Update",
+      "saving": "Saving..."
+    },
+    "sections": {
+      "drawingSheetAssociation": "Drawing and Sheet Association",
+      "balloonData": "Balloon Data",
+      "noteData": "Note Data",
+      "attributes": "Attributes"
+    },
+    "fields": {
+      "drawing": "Drawing",
+      "sheet": "Sheet",
+      "selectDrawing": "Select a drawing...",
+      "selectSheet": "Select a sheet...",
+      "selectSheetFirst": "Select a drawing first to enable sheet selection",
+      "creoId": "Creo ID",
+      "value": "Value",
+      "type": "Type",
+      "name": "Name",
+      "code": "Code",
+      "selectType": "Select type...",
+      "balloonName": "Balloon name",
+      "noteCreoId": "Note Creo ID",
+      "noteName": "Note name",
+      "noteCode": "Note code",
+      "noteType": "Note Type",
+      "noteValue": "Note Value",
+      "attributeValue": "Attribute value",
+      "valueType": "Value Type",
+      "order": "Order"
+    },
+    "placeholders": {
+      "creoId": "B001",
+      "value": "1",
+      "balloonName": "Balloon name",
+      "balloonCode": "BALL_001",
+      "noteCreoId": "N001",
+      "noteValue": "Note value",
+      "noteName": "Note name",
+      "noteCode": "NOTE_001",
+      "attributeValue": "Attribute value"
+    },
+    "types": {
+      "balloon": {
+        "circle": "Circle",
+        "square": "Square",
+        "triangle": "Triangle",
+        "diamond": "Diamond"
+      },
+      "note": {
+        "standard": "Standard",
+        "leader": "Leader",
+        "arrow": "Arrow"
+      },
+      "attribute": {
+        "string": "String",
+        "integer": "Integer",
+        "double": "Decimal",
+        "boolean": "Boolean",
+        "date": "Date",
+        "content": "Content",
+        "url": "URL"
+      }
+    },
+    "attributes": {
+      "title": "Attributes ({count}/4)",
+      "addAttribute": "Add Attribute",
+      "noAttributes": "No attributes defined",
+      "addFirstAttribute": "Add the first attribute",
+      "attribute": "Attribute",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove",
+      "confirmRemove": "Are you sure you want to remove this attribute?"
+    },
+    "loading": {
+      "default": "Loading...",
+      "baseData": "Loading base data...",
+      "balloon": "Loading balloon...",
+      "json": "Loading..."
+    },
+    "errors": {
+      "title": "Error",
+      "baseDataLoad": "Error loading base data",
+      "balloonNotFound": "Balloon not found",
+      "sheetNotFound": "Selected sheet not found. ID searched: {id}",
+      "balloonCreation": "Error creating balloon",
+      "noteCreation": "Error creating note",
+      "balloonUpdate": "Error updating balloon",
+      "balloonDelete": "Error deleting balloon",
+      "save": "Error saving",
+      "delete": "Error deleting",
+      "authRequired": "Authentication required",
+      "json": "Error loading JSON"
+    },
+    "validation": {
+      "drawingRequired": "A drawing must be selected",
+      "sheetRequired": "A sheet must be selected",
+      "required": "This field is required"
+    },
+    "confirmations": {
+      "delete": "Are you sure you want to delete this balloon? This action cannot be undone."
+    },
+    "json": {
+      "title": "JSON Balloon - {value}",
+      "close": "Close",
+      "copy": "Copy JSON"
+    }
+  }
+}

@@ -14,19 +14,19 @@
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                  <NuxtLink to="/dashboard">Panel</NuxtLink>
+                  <NuxtLink to="/dashboard">{{ t('balloon:editor.breadcrumb.panel') }}</NuxtLink>
                 </li>
                 <li class="breadcrumb-item">
-                  <NuxtLink to="/dashboard/balloons">Balloons</NuxtLink>
+                  <NuxtLink to="/dashboard/balloons">{{ t('balloon:editor.breadcrumb.balloons') }}</NuxtLink>
                 </li>
                 <li class="breadcrumb-item active">
-                  {{ isEditMode ? 'Modifica' : 'Nuovo' }} Balloon
+                  {{ isEditMode ? t('balloon:editor.breadcrumb.edit') : t('balloon:editor.breadcrumb.new') }} {{ t('balloon:editor.breadcrumb.balloon') }}
                 </li>
               </ol>
             </nav>
             <h1 class="h3 mb-0">
               <i class="bi bi-geo-alt me-2"></i>
-              {{ isEditMode ? 'Modifica Balloon' : 'Nuovo Balloon' }}
+              {{ isEditMode ? t('balloon:editor.title.edit') : t('balloon:editor.title.new') }}
               <span v-if="isEditMode && balloonFormData.balloon.baloonValue" class="text-muted ms-2">
                 #{{ balloonFormData.balloon.baloonValue }}
               </span>
@@ -35,7 +35,7 @@
           <div class="btn-group">
             <NuxtLink to="/dashboard/balloons" class="btn btn-outline-secondary">
               <i class="bi bi-arrow-left me-2"></i>
-              Torna alla Lista
+              {{ t('balloon:editor.buttons.backToList') }}
             </NuxtLink>
             <button 
               v-if="isEditMode && currentBalloon" 
@@ -43,7 +43,7 @@
               class="btn btn-outline-info"
             >
               <i class="bi bi-eye me-2"></i>
-              Visualizza JSON
+              {{ t('balloon:editor.buttons.viewJson') }}
             </button>
           </div>
         </div>
@@ -53,23 +53,23 @@
     <!-- Loading state -->
     <div v-if="loading" class="text-center py-5">
       <div class="spinner-border text-primary"></div>
-      <p class="mt-2">{{ loadingMessage }}</p>
+      <p class="mt-2">{{ loadingMessage || t('balloon:editor.loading.default') }}</p>
     </div>
 
     <!-- Error state -->
     <div v-else-if="error" class="alert alert-danger">
       <h5 class="alert-heading">
         <i class="bi bi-exclamation-triangle me-2"></i>
-        Errore
+        {{ t('balloon:editor.errors.title') }}
       </h5>
       <p class="mb-3">{{ error }}</p>
       <div>
         <button class="btn btn-outline-danger me-2" @click="handleRefresh">
           <i class="bi bi-arrow-clockwise me-2"></i>
-          Riprova
+          {{ t('balloon:editor.buttons.retry') }}
         </button>
         <NuxtLink to="/dashboard/balloons" class="btn btn-secondary">
-          Torna alla Lista
+          {{ t('balloon:editor.buttons.backToList') }}
         </NuxtLink>
       </div>
     </div>
@@ -81,13 +81,13 @@
         <div class="card-header">
           <h5 class="mb-0">
             <i class="bi bi-diagram-3 me-2"></i>
-            Associazione Disegno e Foglio
+            {{ t('balloon:editor.sections.drawingSheetAssociation') }}
           </h5>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-6">
-              <label for="drawingSelect" class="form-label">Disegno *</label>
+              <label for="drawingSelect" class="form-label">{{ t('balloon:editor.fields.drawing') }} *</label>
               <select
                 id="drawingSelect"
                 v-model="selectedDrawingId"
@@ -96,7 +96,7 @@
                 :class="{ 'is-invalid': formErrors.drawing }"
                 required
               >
-                <option value="">Seleziona un disegno...</option>
+                <option value="">{{ t('balloon:editor.fields.selectDrawing') }}</option>
                 <option v-for="drawing in availableDrawings" :key="drawing.id" :value="drawing.id">
                   {{ drawing.code || drawing.name }} - {{ drawing.name }}
                 </option>
@@ -107,7 +107,7 @@
             </div>
             
             <div class="col-md-6">
-              <label for="sheetSelect" class="form-label">Foglio *</label>
+              <label for="sheetSelect" class="form-label">{{ t('balloon:editor.fields.sheet') }} *</label>
               <select
                 id="sheetSelect"
                 v-model="selectedSheetId"
@@ -116,7 +116,7 @@
                 :disabled="!selectedDrawingId"
                 required
               >
-                <option value="">Seleziona un foglio...</option>
+                <option value="">{{ t('balloon:editor.fields.selectSheet') }}</option>
                 <option v-for="sheet in filteredSheets" :key="sheet.id" :value="sheet.id">
                   {{ sheet.creoId || sheet.code || sheet.name }} - {{ sheet.name }}
                 </option>
@@ -125,7 +125,7 @@
                 {{ formErrors.sheet }}
               </div>
               <div v-if="!selectedDrawingId" class="form-text">
-                Seleziona prima un disegno per abilitare la scelta del foglio
+                {{ t('balloon:editor.fields.selectSheetFirst') }}
               </div>
             </div>
           </div>
@@ -137,13 +137,13 @@
         <div class="card-header">
           <h5 class="mb-0">
             <i class="bi bi-geo-alt me-2"></i>
-            Dati Balloon
+            {{ t('balloon:editor.sections.balloonData') }}
           </h5>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-4">
-              <label for="balloonCreoId" class="form-label">Creo ID *</label>
+              <label for="balloonCreoId" class="form-label">{{ t('balloon:editor.fields.creoId') }} *</label>
               <input
                 id="balloonCreoId"
                 v-model="balloonFormData.balloon.creoId"
@@ -151,7 +151,7 @@
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.balloonCreoId }"
                 required
-                placeholder="B001"
+                :placeholder="t('balloon:editor.placeholders.creoId')"
               >
               <div v-if="formErrors.balloonCreoId" class="invalid-feedback">
                 {{ formErrors.balloonCreoId }}
@@ -159,7 +159,7 @@
             </div>
             
             <div class="col-md-4">
-              <label for="balloonValue" class="form-label">Valore *</label>
+              <label for="balloonValue" class="form-label">{{ t('balloon:editor.fields.value') }} *</label>
               <input
                 id="balloonValue"
                 v-model="balloonFormData.balloon.baloonValue"
@@ -167,7 +167,7 @@
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.balloonValue }"
                 required
-                placeholder="1"
+                :placeholder="t('balloon:editor.placeholders.value')"
               >
               <div v-if="formErrors.balloonValue" class="invalid-feedback">
                 {{ formErrors.balloonValue }}
@@ -175,18 +175,18 @@
             </div>
             
             <div class="col-md-4">
-              <label for="balloonType" class="form-label">Tipo</label>
+              <label for="balloonType" class="form-label">{{ t('balloon:editor.fields.type') }}</label>
               <select
                 id="balloonType"
                 v-model="balloonFormData.balloon.baloonType"
                 class="form-select"
                 :class="{ 'is-invalid': formErrors.balloonType }"
               >
-                <option value="">Seleziona tipo...</option>
-                <option value="CIRCLE">Cerchio</option>
-                <option value="SQUARE">Quadrato</option>
-                <option value="TRIANGLE">Triangolo</option>
-                <option value="DIAMOND">Rombo</option>
+                <option value="">{{ t('balloon:editor.fields.selectType') }}</option>
+                <option value="CIRCLE">{{ t('balloon:editor.types.balloon.circle') }}</option>
+                <option value="SQUARE">{{ t('balloon:editor.types.balloon.square') }}</option>
+                <option value="TRIANGLE">{{ t('balloon:editor.types.balloon.triangle') }}</option>
+                <option value="DIAMOND">{{ t('balloon:editor.types.balloon.diamond') }}</option>
               </select>
               <div v-if="formErrors.balloonType" class="invalid-feedback">
                 {{ formErrors.balloonType }}
@@ -196,14 +196,14 @@
 
           <div class="row mt-3">
             <div class="col-md-6">
-              <label for="balloonName" class="form-label">Nome</label>
+              <label for="balloonName" class="form-label">{{ t('balloon:editor.fields.name') }}</label>
               <input
                 id="balloonName"
                 v-model="balloonFormData.balloon.name"
                 type="text"
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.balloonName }"
-                placeholder="Nome del balloon"
+                :placeholder="t('balloon:editor.placeholders.balloonName')"
               >
               <div v-if="formErrors.balloonName" class="invalid-feedback">
                 {{ formErrors.balloonName }}
@@ -211,14 +211,14 @@
             </div>
             
             <div class="col-md-6">
-              <label for="balloonCode" class="form-label">Codice</label>
+              <label for="balloonCode" class="form-label">{{ t('balloon:editor.fields.code') }}</label>
               <input
                 id="balloonCode"
                 v-model="balloonFormData.balloon.code"
                 type="text"
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.balloonCode }"
-                placeholder="BALL_001"
+                :placeholder="t('balloon:editor.placeholders.balloonCode')"
               >
               <div v-if="formErrors.balloonCode" class="invalid-feedback">
                 {{ formErrors.balloonCode }}
@@ -233,13 +233,13 @@
         <div class="card-header">
           <h5 class="mb-0">
             <i class="bi bi-sticky me-2"></i>
-            Dati Nota
+            {{ t('balloon:editor.sections.noteData') }}
           </h5>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-4">
-              <label for="noteCreoId" class="form-label">Creo ID *</label>
+              <label for="noteCreoId" class="form-label">{{ t('balloon:editor.fields.creoId') }} *</label>
               <input
                 id="noteCreoId"
                 v-model="balloonFormData.note.creoId"
@@ -247,7 +247,7 @@
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.noteCreoId }"
                 required
-                placeholder="N001"
+                :placeholder="t('balloon:editor.placeholders.noteCreoId')"
               >
               <div v-if="formErrors.noteCreoId" class="invalid-feedback">
                 {{ formErrors.noteCreoId }}
@@ -255,14 +255,14 @@
             </div>
             
             <div class="col-md-4">
-              <label for="noteValue" class="form-label">Valore</label>
+              <label for="noteValue" class="form-label">{{ t('balloon:editor.fields.value') }}</label>
               <input
                 id="noteValue"
                 v-model="balloonFormData.note.noteValue"
                 type="text"
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.noteValue }"
-                placeholder="Valore della nota"
+                :placeholder="t('balloon:editor.placeholders.noteValue')"
               >
               <div v-if="formErrors.noteValue" class="invalid-feedback">
                 {{ formErrors.noteValue }}
@@ -270,17 +270,17 @@
             </div>
             
             <div class="col-md-4">
-              <label for="noteType" class="form-label">Tipo</label>
+              <label for="noteType" class="form-label">{{ t('balloon:editor.fields.type') }}</label>
               <select
                 id="noteType"
                 v-model="balloonFormData.note.noteType"
                 class="form-select"
                 :class="{ 'is-invalid': formErrors.noteType }"
               >
-                <option value="">Seleziona tipo...</option>
-                <option value="STANDARD">Standard</option>
-                <option value="LEADER">Leader</option>
-                <option value="ARROW">Freccia</option>
+                <option value="">{{ t('balloon:editor.fields.selectType') }}</option>
+                <option value="STANDARD">{{ t('balloon:editor.types.note.standard') }}</option>
+                <option value="LEADER">{{ t('balloon:editor.types.note.leader') }}</option>
+                <option value="ARROW">{{ t('balloon:editor.types.note.arrow') }}</option>
               </select>
               <div v-if="formErrors.noteType" class="invalid-feedback">
                 {{ formErrors.noteType }}
@@ -290,14 +290,14 @@
 
           <div class="row mt-3">
             <div class="col-md-6">
-              <label for="noteName" class="form-label">Nome</label>
+              <label for="noteName" class="form-label">{{ t('balloon:editor.fields.name') }}</label>
               <input
                 id="noteName"
                 v-model="balloonFormData.note.name"
                 type="text"
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.noteName }"
-                placeholder="Nome della nota"
+                :placeholder="t('balloon:editor.placeholders.noteName')"
               >
               <div v-if="formErrors.noteName" class="invalid-feedback">
                 {{ formErrors.noteName }}
@@ -305,14 +305,14 @@
             </div>
             
             <div class="col-md-6">
-              <label for="noteCode" class="form-label">Codice</label>
+              <label for="noteCode" class="form-label">{{ t('balloon:editor.fields.code') }}</label>
               <input
                 id="noteCode"
                 v-model="balloonFormData.note.code"
                 type="text"
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.noteCode }"
-                placeholder="NOTE_001"
+                :placeholder="t('balloon:editor.placeholders.noteCode')"
               >
               <div v-if="formErrors.noteCode" class="invalid-feedback">
                 {{ formErrors.noteCode }}
@@ -328,7 +328,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <h5 class="mb-0">
               <i class="bi bi-tags me-2"></i>
-              Attributi ({{ attributes.length }}/4)
+              {{ t('balloon:editor.attributes.title', { count: attributes.length }) }}
             </h5>
             <button 
               v-if="attributes.length < 4" 
@@ -337,17 +337,17 @@
               class="btn btn-sm btn-outline-primary"
             >
               <i class="bi bi-plus me-1"></i>
-              Aggiungi Attributo
+              {{ t('balloon:editor.attributes.addAttribute') }}
             </button>
           </div>
         </div>
         <div class="card-body">
           <div v-if="attributes.length === 0" class="text-center py-4 text-muted">
             <i class="bi bi-tags display-4"></i>
-            <p class="mt-2">Nessun attributo definito</p>
+            <p class="mt-2">{{ t('balloon:editor.attributes.noAttributes') }}</p>
             <button type="button" @click="addAttribute" class="btn btn-outline-primary">
               <i class="bi bi-plus me-2"></i>
-              Aggiungi il primo attributo
+              {{ t('balloon:editor.attributes.addFirstAttribute') }}
             </button>
           </div>
           
@@ -363,7 +363,7 @@
                   <div class="card-header bg-light py-2">
                     <div class="d-flex justify-content-between align-items-center">
                       <h6 class="mb-0">
-                        Attributo {{ attribute.order || (index + 1) }}
+                        {{ t('balloon:editor.attributes.attribute') }} {{ attribute.order || (index + 1) }}
                       </h6>
                       <div class="btn-group btn-group-sm">
                         <button 
@@ -371,7 +371,7 @@
                           type="button" 
                           @click="moveAttributeUp(index)"
                           class="btn btn-outline-secondary"
-                          title="Sposta su"
+                          :title="t('balloon:editor.attributes.moveUp')"
                         >
                           <i class="bi bi-arrow-up"></i>
                         </button>
@@ -380,7 +380,7 @@
                           type="button" 
                           @click="moveAttributeDown(index)"
                           class="btn btn-outline-secondary"
-                          title="Sposta giù"
+                          :title="t('balloon:editor.attributes.moveDown')"
                         >
                           <i class="bi bi-arrow-down"></i>
                         </button>
@@ -388,7 +388,7 @@
                           type="button" 
                           @click="removeAttribute(index)"
                           class="btn btn-outline-danger"
-                          title="Rimuovi"
+                          :title="t('balloon:editor.attributes.remove')"
                         >
                           <i class="bi bi-trash"></i>
                         </button>
@@ -398,34 +398,34 @@
                   <div class="card-body py-3">
                     <div class="row">
                       <div class="col-md-4">
-                        <label :for="`attrValue-${index}`" class="form-label">Valore</label>
+                        <label :for="`attrValue-${index}`" class="form-label">{{ t('balloon:editor.fields.value') }}</label>
                         <input
                           :id="`attrValue-${index}`"
                           v-model="attribute.attributeValue"
                           type="text"
                           class="form-control"
-                          placeholder="Valore dell'attributo"
+                          :placeholder="t('balloon:editor.placeholders.attributeValue')"
                         >
                       </div>
                       <div class="col-md-4">
-                        <label :for="`attrType-${index}`" class="form-label">Tipo Valore</label>
+                        <label :for="`attrType-${index}`" class="form-label">{{ t('balloon:editor.fields.valueType') }}</label>
                         <select
                           :id="`attrType-${index}`"
                           v-model="attribute.typeValue"
                           class="form-select"
                         >
-                          <option value="">Seleziona tipo...</option>
-                          <option value="STRING">Stringa</option>
-                          <option value="INTEGER">Intero</option>
-                          <option value="DOUBLE">Decimale</option>
-                          <option value="BOOLEAN">Booleano</option>
-                          <option value="DATE">Data</option>
-                          <option value="CONTENT">Contenuto</option>
-                          <option value="URL">URL</option>
+                          <option value="">{{ t('balloon:editor.fields.selectType') }}</option>
+                          <option value="STRING">{{ t('balloon:editor.types.attribute.string') }}</option>
+                          <option value="INTEGER">{{ t('balloon:editor.types.attribute.integer') }}</option>
+                          <option value="DOUBLE">{{ t('balloon:editor.types.attribute.double') }}</option>
+                          <option value="BOOLEAN">{{ t('balloon:editor.types.attribute.boolean') }}</option>
+                          <option value="DATE">{{ t('balloon:editor.types.attribute.date') }}</option>
+                          <option value="CONTENT">{{ t('balloon:editor.types.attribute.content') }}</option>
+                          <option value="URL">{{ t('balloon:editor.types.attribute.url') }}</option>
                         </select>
                       </div>
                       <div class="col-md-4">
-                        <label :for="`attrOrder-${index}`" class="form-label">Ordine</label>
+                        <label :for="`attrOrder-${index}`" class="form-label">{{ t('balloon:editor.fields.order') }}</label>
                         <input
                           :id="`attrOrder-${index}`"
                           v-model.number="attribute.order"
@@ -452,7 +452,7 @@
             <div>
               <NuxtLink to="/dashboard/balloons" class="btn btn-outline-secondary">
                 <i class="bi bi-x-lg me-2"></i>
-                Annulla
+                {{ t('balloon:editor.buttons.cancel') }}
               </NuxtLink>
             </div>
             <div>
@@ -464,7 +464,7 @@
                 :disabled="saving"
               >
                 <i class="bi bi-trash me-2"></i>
-                Elimina
+                {{ t('balloon:editor.buttons.delete') }}
               </button>
               <button 
                 type="submit" 
@@ -473,7 +473,7 @@
               >
                 <span v-if="saving" class="spinner-border spinner-border-sm me-2"></span>
                 <i v-else class="bi me-2" :class="isEditMode ? 'bi-check-lg' : 'bi-plus-lg'"></i>
-                {{ saving ? 'Salvataggio...' : (isEditMode ? 'Aggiorna' : 'Crea') }}
+                {{ saving ? t('balloon:editor.buttons.saving') : (isEditMode ? t('balloon:editor.buttons.update') : t('balloon:editor.buttons.create')) }}
               </button>
             </div>
           </div>
@@ -486,26 +486,26 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <h5>JSON Balloon - {{ currentBalloon?.baloonValue || 'N/A' }}</h5>
+            <h5>{{ t('balloon:editor.json.title', { value: currentBalloon?.baloonValue || 'N/A' }) }}</h5>
             <button class="btn-close" @click="closeJsonModal"></button>
           </div>
           <div class="modal-body">
             <div v-if="loadingJson" class="text-center py-4">
               <div class="spinner-border text-primary"></div>
-              <p class="mt-2">Caricamento...</p>
+              <p class="mt-2">{{ t('balloon:editor.loading.json') }}</p>
             </div>
             <div v-else-if="jsonError" class="alert alert-danger">
-              <strong>Errore:</strong> {{ jsonError }}
+              <strong>{{ t('balloon:editor.errors.title') }}:</strong> {{ jsonError }}
             </div>
             <div v-else>
               <pre class="json-display"><code>{{ formattedBalloonJson }}</code></pre>
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="closeJsonModal">Chiudi</button>
+            <button class="btn btn-secondary" @click="closeJsonModal">{{ t('balloon:editor.json.close') }}</button>
             <button class="btn btn-primary" @click="copyJsonToClipboard" :disabled="!currentBalloon">
               <i class="bi bi-clipboard me-2"></i>
-              Copia JSON
+              {{ t('balloon:editor.json.copy') }}
             </button>
           </div>
         </div>
@@ -519,6 +519,7 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
 import { useAuth } from '~/composables/useAuth'
+import { useI18n } from '~/composables/useI18n'
 import type { IBaloon } from '~/model/baloon.model'
 import type { INote } from '~/model/note.model'
 import type { IAttributeEntity } from '~/model/attribute-entity.model'
@@ -535,6 +536,7 @@ const route = useRoute()
 const router = useRouter()
 const { balloons: balloonsApi, notes: notesApi, attributeEntities: attributesApi, models: modelsApi, sheets: sheetsApi } = useApi()
 const { isAuthenticated } = useAuth()
+const { t, loadNamespace, pageNamespace, currentLanguage } = useI18n('balloon')
 
 // Reactive state
 const loading = ref(false)
@@ -639,7 +641,7 @@ const formattedBalloonJson = computed(() => {
 // Methods
 const loadInitialData = async () => {
   loading.value = true
-  loadingMessage.value = 'Caricamento dati base...'
+  loadingMessage.value = t('balloon:editor.loading.baseData')
   error.value = null
   
   try {
@@ -665,7 +667,7 @@ const loadInitialData = async () => {
     
   } catch (err) {
     console.error('[BalloonEditor] Error loading initial data:', err)
-    error.value = 'Errore nel caricamento dei dati base'
+    error.value = t('balloon:editor.errors.baseDataLoad')
   } finally {
     loading.value = false
   }
@@ -675,7 +677,7 @@ const loadBalloonForEdit = async () => {
   if (!balloonId.value) return
   
   loading.value = true
-  loadingMessage.value = 'Caricamento balloon...'
+  loadingMessage.value = t('balloon:editor.loading.balloon')
   error.value = null
   
   try {
@@ -683,7 +685,7 @@ const loadBalloonForEdit = async () => {
     const balloonResponse = await balloonsApi.getById(balloonId.value)
     
     if (!balloonResponse.success || !balloonResponse.data) {
-      throw new Error(balloonResponse.error || 'Balloon non trovato')
+      throw new Error(balloonResponse.error || t('balloon:editor.errors.balloonNotFound'))
     }
     
     const balloon = balloonResponse.data
@@ -726,7 +728,7 @@ const loadBalloonForEdit = async () => {
     
   } catch (err) {
     console.error('[BalloonEditor] Error loading balloon:', err)
-    error.value = err instanceof Error ? err.message : 'Errore nel caricamento del balloon'
+    error.value = err instanceof Error ? err.message : t('balloon:editor.errors.balloonNotFound')
   } finally {
     loading.value = false
   }
@@ -806,7 +808,7 @@ const addAttribute = () => {
 }
 
 const removeAttribute = (index: number) => {
-  if (!confirm('Sei sicuro di voler rimuovere questo attributo?')) return
+  if (!confirm(t('balloon:editor.attributes.confirmRemove'))) return
   
   attributes.value.splice(index, 1)
   // Reorder remaining attributes
@@ -871,25 +873,25 @@ const validateForm = (): boolean => {
   
   // Validate drawing and sheet
   if (!selectedDrawingId.value) {
-    errors.drawing = 'È obbligatorio selezionare un disegno'
+    errors.drawing = t('balloon:editor.validation.drawingRequired')
     console.log('[BalloonEditor] Validation error: no drawing selected')
   }
   if (!selectedSheetId.value) {
-    errors.sheet = 'È obbligatorio selezionare un foglio'
+    errors.sheet = t('balloon:editor.validation.sheetRequired')
     console.log('[BalloonEditor] Validation error: no sheet selected')
   }
   
   // Validate balloon
   if (!balloonFormData.value.balloon.creoId?.trim()) {
-    errors.balloonCreoId = 'Questo campo è obbligatorio'
+    errors.balloonCreoId = t('balloon:editor.validation.required')
   }
   if (!balloonFormData.value.balloon.baloonValue?.trim()) {
-    errors.balloonValue = 'Questo campo è obbligatorio'
+    errors.balloonValue = t('balloon:editor.validation.required')
   }
   
   // Validate note
   if (!balloonFormData.value.note.creoId?.trim()) {
-    errors.noteCreoId = 'Questo campo è obbligatorio'
+    errors.noteCreoId = t('balloon:editor.validation.required')
   }
   
   console.log('[BalloonEditor] Validation errors:', errors)
@@ -950,7 +952,7 @@ const handleSave = async () => {
         availableIds: allSheets.value.map(s => s.id),
         filteredSheets: filteredSheets.value.length
       })
-      throw new Error(`Foglio selezionato non trovato. ID cercato: ${selectedSheetId.value}`)
+      throw new Error(t('balloon:editor.errors.sheetNotFound', { id: selectedSheetId.value }))
     }
     
     console.log('[BalloonEditor] Using sheet for creation:', {
@@ -972,7 +974,7 @@ const handleSave = async () => {
     
   } catch (err) {
     console.error('[BalloonEditor] Save error:', err)
-    error.value = err instanceof Error ? err.message : 'Errore nel salvataggio'
+    error.value = err instanceof Error ? err.message : t('balloon:editor.errors.save')
   } finally {
     saving.value = false
   }
@@ -991,7 +993,7 @@ const createBalloon = async (selectedSheet: ISheet) => {
   
   const balloonResponse = await balloonsApi.create(balloonData)
   if (!balloonResponse.success || !balloonResponse.data) {
-    throw new Error(balloonResponse.error || 'Errore nella creazione del balloon')
+    throw new Error(balloonResponse.error || t('balloon:editor.errors.balloonCreation'))
   }
   
   const createdBalloon = balloonResponse.data
@@ -1009,7 +1011,7 @@ const createBalloon = async (selectedSheet: ISheet) => {
   
   const noteResponse = await notesApi.create(noteData)
   if (!noteResponse.success || !noteResponse.data) {
-    throw new Error(noteResponse.error || 'Errore nella creazione della nota')
+    throw new Error(noteResponse.error || t('balloon:editor.errors.noteCreation'))
   }
   
   const createdNote = noteResponse.data
@@ -1037,7 +1039,7 @@ const updateBalloon = async (selectedSheet: ISheet) => {
   
   const balloonResponse = await balloonsApi.update(currentBalloon.value.id, balloonData)
   if (!balloonResponse.success) {
-    throw new Error(balloonResponse.error || 'Errore nell\'aggiornamento del balloon')
+    throw new Error(balloonResponse.error || t('balloon:editor.errors.balloonUpdate'))
   }
   
   console.log('[BalloonEditor] Balloon updated')
@@ -1149,7 +1151,7 @@ const updateAttributes = async () => {
 const handleDelete = async () => {
   if (!isEditMode.value || !currentBalloon.value?.id) return
   
-  if (!confirm('Sei sicuro di voler eliminare questo balloon? Questa azione non può essere annullata.')) {
+  if (!confirm(t('balloon:editor.confirmations.delete'))) {
     return
   }
   
@@ -1159,7 +1161,7 @@ const handleDelete = async () => {
   try {
     const result = await balloonsApi.delete(currentBalloon.value.id)
     if (!result.success) {
-      throw new Error(result.error || 'Errore nell\'eliminazione')
+      throw new Error(result.error || t('balloon:editor.errors.balloonDelete'))
     }
     
     console.log('[BalloonEditor] Balloon deleted')
@@ -1167,7 +1169,7 @@ const handleDelete = async () => {
     
   } catch (err) {
     console.error('[BalloonEditor] Delete error:', err)
-    error.value = err instanceof Error ? err.message : 'Errore nell\'eliminazione'
+    error.value = err instanceof Error ? err.message : t('balloon:editor.errors.delete')
   } finally {
     saving.value = false
   }
@@ -1191,12 +1193,12 @@ const viewBalloonJson = async () => {
   try {
     const response = await balloonsApi.getById(currentBalloon.value.id)
     if (!response.success || !response.data) {
-      throw new Error(response.error || 'Errore nel caricamento')
+      throw new Error(response.error || t('balloon:editor.errors.json'))
     }
     
     currentBalloon.value = response.data
   } catch (err) {
-    jsonError.value = err instanceof Error ? err.message : 'Errore nel caricamento'
+    jsonError.value = err instanceof Error ? err.message : t('balloon:editor.errors.json')
   } finally {
     loadingJson.value = false
   }
@@ -1221,8 +1223,29 @@ const copyJsonToClipboard = async () => {
 
 // Initialize
 onMounted(async () => {
+  // Load translations
+  await loadNamespace('balloon')
+  
+  // Debug: check if translations are loaded
+  console.log('[BalloonEditor] Checking translations:', {
+    namespace: 'balloon',
+    pageNamespace: pageNamespace?.value,
+    currentLang: currentLanguage?.value,
+    testTranslation: t('balloon:editor.title.edit'),
+    testWithPrefix: t('balloon:editor.title.edit'),
+    hasNamespace: !!t('balloon:editor.title.edit')
+  })
+  
+  // Test manual translation loading
+  try {
+    const balloonTranslations = await import('../../../i18n/en/balloon.json')
+    console.log('[BalloonEditor] Manual balloon translations loaded:', balloonTranslations.default?.editor?.title?.edit)
+  } catch (e) {
+    console.error('[BalloonEditor] Failed to manually load balloon translations:', e)
+  }
+  
   if (!isAuthenticated.value) {
-    error.value = 'Autenticazione richiesta'
+    error.value = t('balloon:editor.errors.authRequired')
     return
   }
   

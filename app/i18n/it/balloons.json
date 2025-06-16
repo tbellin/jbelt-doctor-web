@@ -36,7 +36,9 @@
     "selectBalloon": "Seleziona Balloon",
     "selectNote": "Seleziona Nota",
     "chooseBalloon": "Scegli un balloon...",
-    "chooseNote": "Scegli una nota..."
+    "chooseNote": "Scegli una nota...",
+    "create": "Crea Nuovo Balloon e Nota",
+    "edit": "Modifica Balloon e Nota"
   },
   "empty": {
     "title": "Nessun balloon trovato",
@@ -78,8 +80,90 @@
     "leader": "Linea guida",
     "arrow": "Freccia"
   },
+  "dashboard": {
+    "title": "Balloons",
+    "buttons": {
+      "refresh": "Aggiorna",
+      "createModal": "Crea Balloon (Modal)",
+      "createPage": "Crea Balloon (Pagina)",
+      "clearFilters": "Pulisci Filtri",
+      "retry": "Riprova",
+      "cancel": "Annulla",
+      "associate": "Associa",
+      "viewJson": "Visualizza JSON",
+      "edit": "Modifica",
+      "delete": "Elimina"
+    },
+    "stats": {
+      "title": "Statistiche",
+      "expand": "Espandi statistiche",
+      "collapse": "Comprimi statistiche"
+    },
+    "filters": {
+      "title": "Filtri",
+      "expand": "Espandi filtri", 
+      "collapse": "Comprimi filtri",
+      "drawing": "Disegno",
+      "sheet": "Foglio (Creo ID)",
+      "selectDrawing": "Seleziona un disegno...",
+      "selectSheet": "Seleziona un foglio...",
+      "displayed": "Visualizzati: {count}",
+      "balloonsForSheet": "balloon per foglio selezionato",
+      "balloonsWithoutSheet": "balloon senza foglio associato"
+    },
+    "table": {
+      "title": "Tabella Balloons",
+      "expand": "Espandi tabella",
+      "collapse": "Comprimi tabella",
+      "headers": {
+        "balloon": "Balloon",
+        "note": "Nota",
+        "attribute1": "Attributo 1",
+        "attribute2": "Attributo 2",
+        "attribute3": "Attributo 3", 
+        "attribute4": "Attributo 4",
+        "actions": "Azioni"
+      },
+      "cells": {
+        "noBalloon": "Nessun Balloon",
+        "noNote": "Nessuna Nota",
+        "noAttribute": "Nessun Attributo",
+        "noCreoId": "No Creo ID",
+        "noValue": "No Value",
+        "order": "Ordine"
+      }
+    },
+    "loading": {
+      "default": "Caricamento...",
+      "filtered": "Caricamento dati filtrati..."
+    },
+    "errors": {
+      "title": "Errore",
+      "general": "Si è verificato un errore durante il caricamento dei dati"
+    },
+    "empty": {
+      "noBalloonsWithoutSheet": {
+        "title": "Nessun Balloon senza foglio associato",
+        "message": "Tutti i balloon hanno un foglio associato. Seleziona un foglio per visualizzare i balloon correlati o crea nuovi balloon.",
+        "button": "Crea nuovo Balloon"
+      },
+      "noBalloonsForSheet": {
+        "title": "Nessun Balloon per questo Foglio",
+        "message": "Non ci sono balloon associati al foglio selezionato. Crea un nuovo balloon.",
+        "button": "Crea Balloon per Foglio"
+      }
+    }
+  },
   "modal": {
-    "create": "Crea Nuovo Balloon e Nota",
-    "edit": "Modifica Balloon e Nota"
-  }
+    "viewJson": "Visualizza JSON",
+    "close": "Chiudi",
+    "copy": "Copia JSON",
+    "associate": "Associa Balloon e Nota",
+    "selectBalloon": "Seleziona Balloon",
+    "selectNote": "Seleziona Nota",
+    "chooseBalloon": "Scegli un balloon...",
+    "chooseNote": "Scegli una nota...",
+    "cancel": "Annulla"
+  },
+  "confirmDelete": "Sei sicuro di voler eliminare questo elemento?"
 }

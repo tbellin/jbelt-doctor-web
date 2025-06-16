@@ -36,7 +36,9 @@
     "selectBalloon": "Select Balloon",
     "selectNote": "Select Note",
     "chooseBalloon": "Choose a balloon...",
-    "chooseNote": "Choose a note..."
+    "chooseNote": "Choose a note...",
+    "create": "Create New Balloon & Note",
+    "edit": "Edit Balloon & Note"
   },
   "empty": {
     "title": "No balloons found",
@@ -78,8 +80,90 @@
     "leader": "Leader Line",
     "arrow": "Arrow"
   },
+  "dashboard": {
+    "title": "Balloons",
+    "buttons": {
+      "refresh": "Refresh",
+      "createModal": "Create Balloon (Modal)",
+      "createPage": "Create Balloon (Page)",
+      "clearFilters": "Clear Filters",
+      "retry": "Retry",
+      "cancel": "Cancel",
+      "associate": "Associate",
+      "viewJson": "View JSON",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "stats": {
+      "title": "Statistics",
+      "expand": "Expand statistics",
+      "collapse": "Collapse statistics"
+    },
+    "filters": {
+      "title": "Filters",
+      "expand": "Expand filters",
+      "collapse": "Collapse filters",
+      "drawing": "Drawing",
+      "sheet": "Sheet (Creo ID)",
+      "selectDrawing": "Select a drawing...",
+      "selectSheet": "Select a sheet...",
+      "displayed": "Displayed: {count}",
+      "balloonsForSheet": "balloons for selected sheet",
+      "balloonsWithoutSheet": "balloons without associated sheet"
+    },
+    "table": {
+      "title": "Balloons Table",
+      "expand": "Expand table",
+      "collapse": "Collapse table",
+      "headers": {
+        "balloon": "Balloon",
+        "note": "Note",
+        "attribute1": "Attribute 1",
+        "attribute2": "Attribute 2", 
+        "attribute3": "Attribute 3",
+        "attribute4": "Attribute 4",
+        "actions": "Actions"
+      },
+      "cells": {
+        "noBalloon": "No Balloon",
+        "noNote": "No Note",
+        "noAttribute": "No Attribute",
+        "noCreoId": "No Creo ID",
+        "noValue": "No Value",
+        "order": "Order"
+      }
+    },
+    "loading": {
+      "default": "Loading...",
+      "filtered": "Loading filtered data..."
+    },
+    "errors": {
+      "title": "Error",
+      "general": "An error occurred while loading data"
+    },
+    "empty": {
+      "noBalloonsWithoutSheet": {
+        "title": "No Balloons without associated sheet",
+        "message": "All balloons have an associated sheet. Select a sheet to view related balloons or create new balloons.",
+        "button": "Create new Balloon"
+      },
+      "noBalloonsForSheet": {
+        "title": "No Balloons for this Sheet", 
+        "message": "There are no balloons associated with the selected sheet. Create a new balloon.",
+        "button": "Create Balloon for Sheet"
+      }
+    }
+  },
   "modal": {
-    "create": "Create New Balloon & Note",
-    "edit": "Edit Balloon & Note"
-  }
+    "viewJson": "View JSON",
+    "close": "Close",
+    "copy": "Copy JSON",
+    "associate": "Associate Balloon & Note",
+    "selectBalloon": "Select Balloon",
+    "selectNote": "Select Note",
+    "chooseBalloon": "Choose a balloon...",
+    "chooseNote": "Choose a note...",
+    "cancel": "Cancel"
+  },
+  "confirmDelete": "Are you sure you want to delete this item?"
 }

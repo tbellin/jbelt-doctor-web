@@ -1,0 +1,130 @@
+{
+  "editor": {
+    "breadcrumb": {
+      "panel": "Pannello",
+      "balloons": "Balloon",
+      "edit": "Modifica",
+      "new": "Nuovo",
+      "balloon": "Balloon"
+    },
+    "title": {
+      "edit": "Modifica Balloon",
+      "new": "Nuovo Balloon"
+    },
+    "buttons": {
+      "backToList": "Torna alla Lista",
+      "viewJson": "Visualizza JSON",
+      "retry": "Riprova",
+      "cancel": "Annulla",
+      "delete": "Elimina",
+      "create": "Crea",
+      "update": "Aggiorna",
+      "saving": "Salvataggio..."
+    },
+    "sections": {
+      "drawingSheetAssociation": "Associazione Disegno e Foglio",
+      "balloonData": "Dati Balloon",
+      "noteData": "Dati Nota",
+      "attributes": "Attributi"
+    },
+    "fields": {
+      "drawing": "Disegno",
+      "sheet": "Foglio",
+      "selectDrawing": "Seleziona un disegno...",
+      "selectSheet": "Seleziona un foglio...",
+      "selectSheetFirst": "Seleziona prima un disegno per abilitare la scelta del foglio",
+      "creoId": "Creo ID",
+      "value": "Valore",
+      "type": "Tipo",
+      "name": "Nome",
+      "code": "Codice",
+      "selectType": "Seleziona tipo...",
+      "balloonName": "Nome del balloon",
+      "noteCreoId": "Creo ID Nota",
+      "noteName": "Nome della nota",
+      "noteCode": "Codice nota",
+      "noteType": "Tipo Nota",
+      "noteValue": "Valore Nota",
+      "attributeValue": "Valore dell'attributo",
+      "valueType": "Tipo Valore",
+      "order": "Ordine"
+    },
+    "placeholders": {
+      "creoId": "B001",
+      "value": "1",
+      "balloonName": "Nome del balloon",
+      "balloonCode": "BALL_001",
+      "noteCreoId": "N001",
+      "noteValue": "Valore della nota",
+      "noteName": "Nome della nota",
+      "noteCode": "NOTE_001",
+      "attributeValue": "Valore dell'attributo"
+    },
+    "types": {
+      "balloon": {
+        "circle": "Cerchio",
+        "square": "Quadrato",
+        "triangle": "Triangolo",
+        "diamond": "Rombo"
+      },
+      "note": {
+        "standard": "Standard",
+        "leader": "Leader",
+        "arrow": "Freccia"
+      },
+      "attribute": {
+        "string": "Stringa",
+        "integer": "Intero",
+        "double": "Decimale",
+        "boolean": "Booleano",
+        "date": "Data",
+        "content": "Contenuto",
+        "url": "URL"
+      }
+    },
+    "attributes": {
+      "title": "Attributi ({count}/4)",
+      "addAttribute": "Aggiungi Attributo",
+      "noAttributes": "Nessun attributo definito",
+      "addFirstAttribute": "Aggiungi il primo attributo",
+      "attribute": "Attributo",
+      "moveUp": "Sposta su",
+      "moveDown": "Sposta giù",
+      "remove": "Rimuovi",
+      "confirmRemove": "Sei sicuro di voler rimuovere questo attributo?"
+    },
+    "loading": {
+      "default": "Caricamento...",
+      "baseData": "Caricamento dati base...",
+      "balloon": "Caricamento balloon...",
+      "json": "Caricamento..."
+    },
+    "errors": {
+      "title": "Errore",
+      "baseDataLoad": "Errore nel caricamento dei dati base",
+      "balloonNotFound": "Balloon non trovato",
+      "sheetNotFound": "Foglio selezionato non trovato. ID cercato: {id}",
+      "balloonCreation": "Errore nella creazione del balloon",
+      "noteCreation": "Errore nella creazione della nota",
+      "balloonUpdate": "Errore nell'aggiornamento del balloon",
+      "balloonDelete": "Errore nell'eliminazione del balloon",
+      "save": "Errore nel salvataggio",
+      "delete": "Errore nell'eliminazione",
+      "authRequired": "Autenticazione richiesta",
+      "json": "Errore nel caricamento JSON"
+    },
+    "validation": {
+      "drawingRequired": "È obbligatorio selezionare un disegno",
+      "sheetRequired": "È obbligatorio selezionare un foglio",
+      "required": "Questo campo è obbligatorio"
+    },
+    "confirmations": {
+      "delete": "Sei sicuro di voler eliminare questo balloon? Questa azione non può essere annullata."
+    },
+    "json": {
+      "title": "JSON Balloon - {value}",
+      "close": "Chiudi",
+      "copy": "Copia JSON"
+    }
+  }
+}

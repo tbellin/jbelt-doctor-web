@@ -55,7 +55,8 @@ export default defineNuxtConfig({
     'bootstrap/dist/css/bootstrap.min.css',
     '@/assets/css/main.css',
     '@/assets/css/sidebar.css',
-    '@/assets/css/dashboard.css'
+    '@/assets/css/dashboard.css',
+    '@/assets/css/compact.css'
   ],
 
   modules: ['@pinia/nuxt', 'nuxt-bootstrap-icons'],

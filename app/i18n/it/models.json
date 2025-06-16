@@ -26,7 +26,8 @@
   "types": {
     "part": "Parte",
     "assembly": "Assieme",
-    "drawing": "Disegno"
+    "drawing": "Disegno",
+    "format": "Formato"
   },
   "instances": {
     "parametric": "Parametrico",
@@ -71,13 +72,57 @@
     "code": "Codice",
     "name": "Nome",
     "type": "Tipo Modello",
-    "instance": "Tipo Istanza"
+    "instance": "Tipo Istanza",
+    "basicInfo": "Informazioni di Base",
+    "codePlaceholder": "Inserisci codice modello...",
+    "namePlaceholder": "Inserisci nome modello...",
+    "fileInfo": "Informazioni File e Versione",
+    "file": "File",
+    "version": "Versione",
+    "item": "Articolo",
+    "noFile": "Nessun file selezionato",
+    "noVersion": "Nessuna versione selezionata",
+    "noItem": "Nessun articolo selezionato",
+    "fileHelp": "Seleziona il file associato a questo modello",
+    "versionHelp": "Seleziona la versione di questo modello",
+    "itemHelp": "Seleziona il codice articolo per questo modello",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "associations": "Associazioni Modello",
+    "generic": "Modello Generico",
+    "parent": "Modello Padre",
+    "noGeneric": "Nessun modello generico",
+    "noParent": "Nessun modello padre",
+    "genericHelp": "Seleziona un modello generico se questo è un'istanza",
+    "parentHelp": "Seleziona un assieme padre se questo è un componente",
+    "sheetAssociations": "Associazioni Fogli",
+    "sheets": "Fogli Associati",
+    "sheetsHelp": "Seleziona i fogli associati a questo modello",
+    "searchSheets": "Cerca fogli...",
+    "noSheetsAvailable": "Nessun foglio disponibile",
+    "noSheetsMatchSearch": "Nessun foglio corrisponde alla ricerca",
+    "selectedSheets": "Fogli selezionati",
+    "removeSheet": "Rimuovi associazione foglio",
+    "demo": {
+      "title": "Demo Form Completo Modello",
+      "createMode": "Modalità Creazione",
+      "editMode": "Modalità Modifica",
+      "currentMode": "Modalità Corrente",
+      "editing": "Modifica",
+      "loadSample": "Carica Dati Esempio",
+      "result": "Risultato Invio Form",
+      "cancelled": "Invio form annullato",
+      "createError": "Errore nella creazione del modello",
+      "updateError": "Errore nell'aggiornamento del modello"
+    }
   },
   "validation": {
     "codeRequired": "Il codice è obbligatorio",
     "nameRequired": "Il nome è obbligatorio",
     "typeRequired": "Il tipo di modello è obbligatorio",
-    "instanceRequired": "Il tipo di istanza è obbligatorio"
+    "instanceRequired": "Il tipo di istanza è obbligatorio",
+    "codeMinLength": "Il codice deve essere di almeno 2 caratteri",
+    "nameMinLength": "Il nome deve essere di almeno 2 caratteri"
   },
   "messages": {
     "createSuccess": "Modello creato con successo",

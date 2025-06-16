@@ -26,7 +26,8 @@
   "types": {
     "part": "Part",
     "assembly": "Assembly",
-    "drawing": "Drawing"
+    "drawing": "Drawing",
+    "format": "Format"
   },
   "instances": {
     "parametric": "Parametric",
@@ -71,13 +72,57 @@
     "code": "Code",
     "name": "Name",
     "type": "Model Type",
-    "instance": "Instance Type"
+    "instance": "Instance Type",
+    "basicInfo": "Basic Information",
+    "codePlaceholder": "Enter model code...",
+    "namePlaceholder": "Enter model name...",
+    "fileInfo": "File and Version Information",
+    "file": "File",
+    "version": "Version",
+    "item": "Item",
+    "noFile": "No file selected",
+    "noVersion": "No version selected",
+    "noItem": "No item selected",
+    "fileHelp": "Select the file associated with this model",
+    "versionHelp": "Select the version of this model",
+    "itemHelp": "Select the item code for this model",
+    "active": "Active",
+    "inactive": "Inactive",
+    "associations": "Model Associations",
+    "generic": "Generic Model",
+    "parent": "Parent Model",
+    "noGeneric": "No generic model",
+    "noParent": "No parent model",
+    "genericHelp": "Select a generic model if this is an instance",
+    "parentHelp": "Select a parent assembly if this is a component",
+    "sheetAssociations": "Sheet Associations",
+    "sheets": "Associated Sheets",
+    "sheetsHelp": "Select sheets that are associated with this model",
+    "searchSheets": "Search sheets...",
+    "noSheetsAvailable": "No sheets available",
+    "noSheetsMatchSearch": "No sheets match your search",
+    "selectedSheets": "Selected sheets",
+    "removeSheet": "Remove sheet association",
+    "demo": {
+      "title": "Comprehensive Model Form Demo",
+      "createMode": "Create Mode",
+      "editMode": "Edit Mode",
+      "currentMode": "Current Mode",
+      "editing": "Editing",
+      "loadSample": "Load Sample Data",
+      "result": "Form Submission Result",
+      "cancelled": "Form submission cancelled",
+      "createError": "Error creating model",
+      "updateError": "Error updating model"
+    }
   },
   "validation": {
     "codeRequired": "Code is required",
     "nameRequired": "Name is required",
     "typeRequired": "Model type is required",
-    "instanceRequired": "Instance type is required"
+    "instanceRequired": "Instance type is required",
+    "codeMinLength": "Code must be at least 2 characters long",
+    "nameMinLength": "Name must be at least 2 characters long"
   },
   "messages": {
     "createSuccess": "Model created successfully",

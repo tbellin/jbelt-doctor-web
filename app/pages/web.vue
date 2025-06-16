@@ -47,9 +47,9 @@
                   :disabled="newsletterLoading"
                 >
               </div>
-              <div class="loading" v-show="newsletterLoading">Loading</div>
-              <div class="error-message" v-show="newsletterError">{{ newsletterError }}</div>
-              <div class="sent-message" v-show="newsletterSuccess">{{ newsletterSuccess }}</div>
+              <div class="loading" v-show="newsletterLoading" style="display: block !important;">Sending subscription...</div>
+              <div class="error-message" v-show="newsletterError" style="display: block !important;">{{ newsletterError }}</div>
+              <div class="sent-message" v-show="newsletterSuccess" style="display: block !important;">{{ newsletterSuccess }}</div>
             </form>
           </div>
 
@@ -198,12 +198,14 @@ const newsletterEmail = ref('');
 const newsletterLoading = ref(false);
 const newsletterError = ref('');
 const newsletterSuccess = ref('');
+const newsletterSending = ref(false);
 
 // Handle newsletter subscription
 const handleNewsletterSubmit = async () => {
   if (!newsletterEmail.value) return;
   
   newsletterLoading.value = true;
+  newsletterSending.value = true;
   newsletterError.value = '';
   newsletterSuccess.value = '';
   
@@ -222,16 +224,25 @@ const handleNewsletterSubmit = async () => {
       }
     });
     
-    newsletterSuccess.value = 'Your subscription request has been sent. Thank you!';
-    newsletterEmail.value = ''; // Reset form
+    // Mostra messaggio di invio completato per 1 secondo
+    newsletterSending.value = false;
+    newsletterSuccess.value = 'Subscription sent successfully!';
     
-    // Hide success message after 5 seconds
+    // Dopo 1.5 secondi mostra il messaggio finale
     setTimeout(() => {
-      newsletterSuccess.value = '';
-    }, 5000);
+      newsletterSuccess.value = 'Your subscription request has been sent. Thank you!';
+      newsletterEmail.value = ''; // Reset form
+      
+      // Hide success message after altri 4 secondi
+      setTimeout(() => {
+        newsletterSuccess.value = '';
+      }, 4000);
+    }, 1500);
     
   } catch (error: any) {
     console.error('Newsletter subscription error:', error);
+    
+    newsletterSending.value = false;
     
     if (error.response?.status === 409) {
       newsletterError.value = 'This email is already subscribed to our newsletter.';

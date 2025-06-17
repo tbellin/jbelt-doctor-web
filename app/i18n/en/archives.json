@@ -1,0 +1,62 @@
+{
+  "page": {
+    "title": "Archive Management",
+    "description": "Manage files, documents and digital assets",
+    "create": "New Archive",
+    "import": "Import Files",
+    "export": "Export Archives"
+  },
+  "stats": {
+    "total": "Total Files",
+    "cad": "CAD Files", 
+    "images": "Images",
+    "size": "Total Size"
+  },
+  "form": {
+    "fields": {
+      "code": {
+        "label": "Code",
+        "placeholder": "Enter archive code"
+      },
+      "name": {
+        "label": "Name", 
+        "placeholder": "Enter archive name"
+      },
+      "type": {
+        "label": "Type"
+      },
+      "category": {
+        "label": "Category"
+      },
+      "fileName": {
+        "label": "File Name"
+      },
+      "extension": {
+        "label": "Extension"
+      },
+      "folder": {
+        "label": "Folder"
+      },
+      "contentType": {
+        "label": "Content Type"
+      }
+    }
+  },
+  "modal": {
+    "create": {
+      "title": "Create New Archive"
+    },
+    "edit": {
+      "title": "Edit Archive"
+    },
+    "view": {
+      "title": "View Archive",
+      "preview": "File Preview",
+      "binaryFile": "Binary file - Preview not available"
+    },
+    "delete": {
+      "title": "Delete Archive",
+      "message": "Are you sure you want to delete '{name}'? This action cannot be undone."
+    }
+  }
+}

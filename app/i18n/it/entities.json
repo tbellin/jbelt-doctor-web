@@ -1,0 +1,77 @@
+{
+  "page": {
+    "title": "Gestione Entità",
+    "description": "Gestisci tutte le entità del sistema e le loro relazioni",
+    "refreshAll": "Aggiorna Tutti i Dati",
+    "exportAll": "Esporta Tutti i Dati"
+  },
+  "cards": {
+    "archives": {
+      "title": "Archivi",
+      "subtitle": "Gestione File e Documenti",
+      "description": "Gestisci file, documenti e risorse digitali del sistema."
+    },
+    "formats": {
+      "title": "Formati", 
+      "subtitle": "Standard Formati Disegno",
+      "description": "Gestisci le definizioni dei formati DIN e personalizzati."
+    },
+    "positions": {
+      "title": "Posizioni",
+      "subtitle": "Coordinate Posizioni 3D", 
+      "description": "Gestisci le coordinate spaziali e i dati di posizionamento."
+    },
+    "markers": {
+      "title": "Marcatori",
+      "subtitle": "Marcatori Annotazione Disegni",
+      "description": "Gestisci vari tipi di marcatori e annotazioni dei disegni."
+    },
+    "modelVersions": {
+      "title": "Versioni Modelli",
+      "subtitle": "Sistema Controllo Versioni",
+      "description": "Traccia e gestisci diverse versioni dei modelli CAD."
+    },
+    "items": {
+      "title": "Elementi",
+      "subtitle": "Gestione Componenti e Assiemi",
+      "description": "Gestisci strutture gerarchiche di componenti e assiemi."
+    },
+    "authors": {
+      "title": "Autori",
+      "subtitle": "Gestione Utenti e Progettisti", 
+      "description": "Gestisci utenti, progettisti e i loro lavori associati."
+    },
+    "teams": {
+      "title": "Team",
+      "subtitle": "Gestione Team e Dipartimenti",
+      "description": "Organizza gli utenti in team e gestisci i dipartimenti."
+    }
+  },
+  "stats": {
+    "total": "Totale",
+    "cad": "CAD",
+    "size": "Dimensione",
+    "din": "DIN",
+    "custom": "Personalizzati",
+    "with3d": "3D",
+    "types": "Tipi",
+    "approved": "Approvati",
+    "components": "Componenti",
+    "assemblies": "Assiemi",
+    "active": "Attivi",
+    "departments": "Dipart.",
+    "members": "Membri"
+  },
+  "priority": {
+    "high": "Alta Priorità",
+    "medium": "Media Priorità",
+    "low": "Bassa Priorità"
+  },
+  "quickActions": {
+    "title": "Azioni Rapide",
+    "standardFormats": "Crea Formati Standard",
+    "bulkImport": "Importazione Massiva",
+    "syncCreo": "Sincronizza con Creo",
+    "validateData": "Valida Dati"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "page": {
+    "title": "Format Management",
+    "description": "Manage drawing formats, paper sizes and layout standards",
+    "create": "New Format",
+    "createStandard": "Add Standard Formats"
+  },
+  "table": {
+    "search": {
+      "placeholder": "Search formats..."
+    },
+    "filters": {
+      "category": {
+        "all": "All Categories",
+        "custom": "Custom"
+      },
+      "orientation": {
+        "all": "All Orientations",
+        "portrait": "Portrait",
+        "landscape": "Landscape"
+      }
+    },
+    "columns": {
+      "name": "Name",
+      "dimensions": "Dimensions",
+      "orientation": "Orientation",
+      "category": "Category",
+      "ratio": "Aspect Ratio",
+      "standard": "Standard"
+    },
+    "orientation": {
+      "portrait": "Portrait",
+      "landscape": "Landscape"
+    },
+    "standard": {
+      "yes": "Standard format",
+      "no": "Custom format"
+    },
+    "noResults": {
+      "title": "No Formats Found",
+      "message": "Try adjusting your search criteria",
+      "reset": "Reset Filters"
+    }
+  }
+}

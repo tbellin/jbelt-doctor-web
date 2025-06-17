@@ -1,0 +1,82 @@
+{
+  "page": {
+    "title": "Marker Management",
+    "description": "Manage markers, symbols and their properties for balloons and annotations",
+    "create": "New Marker",
+    "symbolLibrary": "Symbol Library"
+  },
+  "stats": {
+    "total": "Total Markers",
+    "balloonEnabled": "Balloon Enabled",
+    "annotationEnabled": "Annotation Enabled",
+    "byType": "Unique Types"
+  },
+  "types": {
+    "BALLOON": "Balloon",
+    "ANNOTATION": "Annotation",
+    "SYMBOL": "Symbol",
+    "DIMENSION": "Dimension",
+    "REFERENCE": "Reference"
+  },
+  "shapes": {
+    "CIRCLE": "Circle",
+    "SQUARE": "Square",
+    "ROUNDED_SQUARE": "Rounded Square",
+    "TRIANGLE": "Triangle",
+    "DIAMOND": "Diamond"
+  },
+  "search": {
+    "placeholder": "Search markers..."
+  },
+  "filters": {
+    "type": {
+      "all": "All Types"
+    },
+    "shape": {
+      "all": "All Shapes"
+    },
+    "usage": {
+      "all": "All Usage",
+      "balloons": "Balloons Only",
+      "annotations": "Annotations Only",
+      "both": "Both"
+    }
+  },
+  "table": {
+    "columns": {
+      "preview": "Preview",
+      "name": "Name",
+      "type": "Type",
+      "properties": "Properties",
+      "usage": "Usage"
+    },
+    "unnamed": "Unnamed Marker",
+    "noType": "No Type",
+    "useInBalloons": "Use in balloons",
+    "useInAnnotations": "Use in annotations",
+    "balloons": "Balloons",
+    "annotations": "Annotations",
+    "noUsage": "Not used",
+    "noData": {
+      "title": "No Markers Found",
+      "message": "Create your first marker to get started"
+    }
+  },
+  "card": {
+    "unnamed": "Unnamed Marker",
+    "color": "Color",
+    "size": "Size",
+    "shape": "Shape",
+    "useInBalloons": "Used in balloons",
+    "useInAnnotations": "Used in annotations",
+    "balloons": "Balloons",
+    "annotations": "Annotations"
+  },
+  "noResults": {
+    "title": "No Markers Found",
+    "message": "Try adjusting your search criteria"
+  },
+  "common": {
+    "marker": "marker"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Gestione Team",
+    "description": "Gestisci i team in struttura gerarchica",
+    "create": "Nuovo Team"
+  },
+  "modal": {
+    "create": {
+      "title": "Crea Nuovo Team"
+    },
+    "createChild": {
+      "title": "Crea Sotto-Team"
+    },
+    "edit": {
+      "title": "Modifica Team"
+    }
+  },
+  "table": {
+    "name": "Nome Team",
+    "members": "Membri",
+    "location": "Posizione",
+    "contact": "Contatto",
+    "status": "Stato",
+    "noData": "Nessun team trovato",
+    "expandAll": "Espandi Tutto",
+    "collapseAll": "Comprimi Tutto"
+  },
+  "form": {
+    "name": "Nome Team",
+    "description": "Descrizione",
+    "department": "Dipartimento",
+    "parentTeam": "Team Genitore",
+    "noParent": "Nessun genitore (team radice)",
+    "contactEmail": "Email di Contatto",
+    "contactPhone": "Telefono di Contatto",
+    "address": "Indirizzo",
+    "city": "Città",
+    "isActive": "Team attivo"
+  },
+  "status": {
+    "active": "Attivo",
+    "inactive": "Inattivo"
+  },
+  "actions": {
+    "addChild": "Aggiungi Sotto-Team"
+  },
+  "messages": {
+    "cannotDeleteWithChildren": "Impossibile eliminare team con sotto-team. Elimina prima i sotto-team."
+  }
+}

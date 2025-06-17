@@ -1,0 +1,17 @@
+{
+  "entities": {
+    "title": "Entity Management",
+    "overview": "Overview",
+    "archives": "Archives",
+    "formats": "Formats", 
+    "positions": "Positions",
+    "markers": "Markers",
+    "modelVersions": "Model Versions",
+    "items": "Items",
+    "authors": "Authors",
+    "teams": "Teams"
+  },
+  "models": "Models",
+  "sheets": "Sheets", 
+  "balloons": "Balloons"
+}

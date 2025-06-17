@@ -1,0 +1,75 @@
+{
+  "page": {
+    "title": "Model Version Management",
+    "description": "Manage model versions, approvals and change history",
+    "create": "New Version",
+    "timeline": "Version Timeline"
+  },
+  "table": {
+    "noData": "No model versions found"
+  },
+  "modal": {
+    "create": {
+      "title": "Create New Model Version"
+    },
+    "edit": {
+      "title": "Edit Model Version"
+    }
+  },
+  "stats": {
+    "total": "Total Versions",
+    "approved": "Approved",
+    "current": "Current Versions",
+    "models": "Unique Models"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "REVIEW": "In Review",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "OBSOLETE": "Obsolete"
+  },
+  "search": {
+    "placeholder": "Search versions..."
+  },
+  "filters": {
+    "model": {
+      "all": "All Models"
+    },
+    "status": {
+      "all": "All Status"
+    },
+    "current": {
+      "all": "All Versions",
+      "current": "Current Only",
+      "previous": "Previous Only"
+    },
+    "approved": {
+      "all": "All Approval States",
+      "approved": "Approved Only",
+      "pending": "Pending Approval"
+    }
+  },
+  "table": {
+    "title": "Model Versions",
+    "columns": {
+      "version": "Version",
+      "model": "Model",
+      "status": "Status",
+      "date": "Date",
+      "current": "Current",
+      "approved": "Approved"
+    },
+    "noData": {
+      "title": "No Versions Found",
+      "message": "Create your first model version to get started"
+    }
+  },
+  "noResults": {
+    "title": "No Versions Found",
+    "message": "Try adjusting your search criteria"
+  },
+  "common": {
+    "version": "version"
+  }
+}

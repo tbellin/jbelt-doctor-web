@@ -1,0 +1,7 @@
+export enum VersionStatus {
+  DRAFT = 'DRAFT',
+  REVIEW = 'REVIEW',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  OBSOLETE = 'OBSOLETE'
+}

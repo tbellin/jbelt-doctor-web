@@ -1,0 +1,77 @@
+{
+  "page": {
+    "title": "Entity Management",
+    "description": "Manage all system entities and their relationships",
+    "refreshAll": "Refresh All Data",
+    "exportAll": "Export All Data"
+  },
+  "cards": {
+    "archives": {
+      "title": "Archives",
+      "subtitle": "File & Document Management",
+      "description": "Manage files, documents and digital assets in the system."
+    },
+    "formats": {
+      "title": "Formats", 
+      "subtitle": "Drawing Format Standards",
+      "description": "Manage DIN and custom drawing format definitions."
+    },
+    "positions": {
+      "title": "Positions",
+      "subtitle": "3D Position Coordinates", 
+      "description": "Manage spatial coordinates and positioning data."
+    },
+    "markers": {
+      "title": "Markers",
+      "subtitle": "Drawing Annotation Markers",
+      "description": "Manage various types of drawing markers and annotations."
+    },
+    "modelVersions": {
+      "title": "Model Versions",
+      "subtitle": "Version Control System",
+      "description": "Track and manage different versions of CAD models."
+    },
+    "items": {
+      "title": "Items",
+      "subtitle": "Component & Assembly Management",
+      "description": "Manage hierarchical structures of components and assemblies."
+    },
+    "authors": {
+      "title": "Authors",
+      "subtitle": "User & Designer Management", 
+      "description": "Manage users, designers and their associated works."
+    },
+    "teams": {
+      "title": "Teams",
+      "subtitle": "Team & Department Management",
+      "description": "Organize users into teams and manage departments."
+    }
+  },
+  "stats": {
+    "total": "Total",
+    "cad": "CAD",
+    "size": "Size",
+    "din": "DIN",
+    "custom": "Custom",
+    "with3d": "3D",
+    "types": "Types",
+    "approved": "Approved",
+    "components": "Components",
+    "assemblies": "Assemblies",
+    "active": "Active",
+    "departments": "Depts",
+    "members": "Members"
+  },
+  "priority": {
+    "high": "High Priority",
+    "medium": "Medium Priority",
+    "low": "Low Priority"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "standardFormats": "Create Standard Formats",
+    "bulkImport": "Bulk Import Data",
+    "syncCreo": "Sync with Creo",
+    "validateData": "Validate Data"
+  }
+}

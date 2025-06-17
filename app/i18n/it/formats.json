@@ -1,0 +1,45 @@
+{
+  "page": {
+    "title": "Gestione Formati",
+    "description": "Gestisci formati disegno, dimensioni carta e standard layout",
+    "create": "Nuovo Formato",
+    "createStandard": "Aggiungi Formati Standard"
+  },
+  "table": {
+    "search": {
+      "placeholder": "Cerca formati..."
+    },
+    "filters": {
+      "category": {
+        "all": "Tutte le Categorie",
+        "custom": "Personalizzato"
+      },
+      "orientation": {
+        "all": "Tutti gli Orientamenti",
+        "portrait": "Verticale",
+        "landscape": "Orizzontale"
+      }
+    },
+    "columns": {
+      "name": "Nome",
+      "dimensions": "Dimensioni",
+      "orientation": "Orientamento",
+      "category": "Categoria",
+      "ratio": "Rapporto Aspetto",
+      "standard": "Standard"
+    },
+    "orientation": {
+      "portrait": "Verticale",
+      "landscape": "Orizzontale"
+    },
+    "standard": {
+      "yes": "Formato standard",
+      "no": "Formato personalizzato"
+    },
+    "noResults": {
+      "title": "Nessun Formato Trovato",
+      "message": "Prova a modificare i criteri di ricerca",
+      "reset": "Resetta Filtri"
+    }
+  }
+}

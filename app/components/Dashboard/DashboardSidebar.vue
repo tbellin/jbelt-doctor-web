@@ -89,6 +89,65 @@
                     <i class="bi bi-geo-alt me-2"></i> {{ t('navigation.balloons') }}
                   </NuxtLink>
                 </li>
+                
+              </ul>
+            </div>
+          </div>
+
+          <!-- Entity Management Section (Admin Only) -->
+          <div class="accordion-item sidebar-accordion" v-if="isAuthenticated && isAdmin">
+            <h2 class="accordion-header" id="headingEntities">
+              <div class="section-header">
+                <i class="bi bi-collection me-2"></i> {{ t('navigation.entities.title') }}
+              </div>
+            </h2>
+            <div class="section-content">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities" class="nav-link">
+                    <i class="bi bi-grid-3x3-gap me-2"></i> {{ t('navigation.entities.overview') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/archives" class="nav-link">
+                    <i class="bi bi-archive me-2"></i> {{ t('navigation.entities.archives') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/formats" class="nav-link">
+                    <i class="bi bi-grid-3x3 me-2"></i> {{ t('navigation.entities.formats') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/positions" class="nav-link">
+                    <i class="bi bi-geo-alt me-2"></i> {{ t('navigation.entities.positions') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/markers" class="nav-link">
+                    <i class="bi bi-bookmark me-2"></i> {{ t('navigation.entities.markers') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/model-versions" class="nav-link">
+                    <i class="bi bi-clock-history me-2"></i> {{ t('navigation.entities.modelVersions') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/items" class="nav-link">
+                    <i class="bi bi-collection me-2"></i> {{ t('navigation.entities.items') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/authors" class="nav-link">
+                    <i class="bi bi-people me-2"></i> {{ t('navigation.entities.authors') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/teams" class="nav-link">
+                    <i class="bi bi-diagram-3 me-2"></i> {{ t('navigation.entities.teams') }}
+                  </NuxtLink>
+                </li>
               </ul>
             </div>
           </div>
@@ -150,7 +209,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useI18n } from '~/composables/useI18n';
 import { useAuth } from '~/composables/useAuth';
 
@@ -181,6 +239,8 @@ const handleLogout = () => {
     emit('toggle', false);
   }
 };
+
+// Lifecycle (no special setup needed now)
 </script>
 
 <style scoped>
@@ -249,6 +309,7 @@ const handleLogout = () => {
   width: 20px;
   text-align: center;
 }
+
 
 @media (min-width: 768px) {
   .dashboard-sidebar {

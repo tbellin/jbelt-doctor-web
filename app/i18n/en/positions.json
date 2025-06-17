@@ -1,0 +1,52 @@
+{
+  "page": {
+    "title": "Position Management",
+    "description": "Manage balloon positions, coordinates and marker associations",
+    "create": "New Position"
+  },
+  "stats": {
+    "total": "Total Positions",
+    "active": "Active Positions",
+    "withCoordinates": "With Coordinates",
+    "withMarkers": "With Markers"
+  },
+  "search": {
+    "placeholder": "Search positions..."
+  },
+  "filters": {
+    "drawing": {
+      "all": "All Drawings"
+    },
+    "sheet": {
+      "all": "All Sheets"
+    },
+    "status": {
+      "all": "All Status",
+      "active": "Active Only",
+      "inactive": "Inactive Only"
+    }
+  },
+  "table": {
+    "title": "Positions",
+    "columns": {
+      "balloon": "Balloon",
+      "coordinates": "Coordinates", 
+      "drawing": "Drawing",
+      "sheet": "Sheet",
+      "marker": "Marker",
+      "status": "Status"
+    },
+    "noBalloon": "No balloon number",
+    "noCoordinates": "No coordinates",
+    "noDrawing": "No drawing",
+    "noSheet": "No sheet",
+    "noMarker": "No marker",
+    "noData": {
+      "title": "No Positions Found",
+      "message": "Create your first position to get started"
+    }
+  },
+  "common": {
+    "position": "position"
+  }
+}

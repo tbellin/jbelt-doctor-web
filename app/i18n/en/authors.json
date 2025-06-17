@@ -1,0 +1,47 @@
+{
+  "page": {
+    "title": "Author Management",
+    "description": "Manage system authors and their team assignments",
+    "create": "New Author"
+  },
+  "modal": {
+    "create": {
+      "title": "Create New Author"
+    },
+    "edit": {
+      "title": "Edit Author"
+    }
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Search by name or email...",
+    "team": "Filter by Team",
+    "allTeams": "All Teams",
+    "status": "Filter by Status",
+    "allStatuses": "All Statuses",
+    "active": "Active Only",
+    "inactive": "Inactive Only"
+  },
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "team": "Team",
+    "role": "Role",
+    "status": "Status",
+    "noData": "No authors found"
+  },
+  "form": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "team": "Team",
+    "selectTeam": "Select a team...",
+    "role": "Role",
+    "isActive": "Active author"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  }
+}

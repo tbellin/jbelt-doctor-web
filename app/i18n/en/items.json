@@ -1,0 +1,144 @@
+{
+  "page": {
+    "title": "Item Management",
+    "description": "Manage hierarchical items, components and properties",
+    "create": "New Item",
+    "import": "Import Items",
+    "viewModes": {
+      "table": "Table",
+      "tree": "Tree"
+    }
+  },
+  "types": {
+    "COMPONENT": "Component",
+    "ASSEMBLY": "Assembly", 
+    "MATERIAL": "Material",
+    "TOOL": "Tool",
+    "DOCUMENT": "Document"
+  },
+  "tree": {
+    "noItems": {
+      "title": "No Items Found",
+      "message": "Start by creating your first item",
+      "addFirst": "Create First Item"
+    },
+    "node": {
+      "unnamed": "Unnamed Item",
+      "addChild": "Add Child Item"
+    },
+    "actions": {
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All"
+    },
+    "summary": "Total: {total} items, Root: {root} items"
+  },
+  "form": {
+    "fields": {
+      "code": {
+        "label": "Code",
+        "placeholder": "Enter item code"
+      },
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter item name"
+      },
+      "itemType": {
+        "label": "Item Type",
+        "placeholder": "Select item type",
+        "help": "Choose the appropriate item classification",
+        "options": {
+          "COMPONENT": "Component",
+          "ASSEMBLY": "Assembly",
+          "MATERIAL": "Material", 
+          "TOOL": "Tool",
+          "DOCUMENT": "Document"
+        }
+      },
+      "category": {
+        "label": "Category",
+        "placeholder": "Select category",
+        "options": {
+          "MECHANICAL": "Mechanical",
+          "ELECTRICAL": "Electrical",
+          "SOFTWARE": "Software",
+          "HYDRAULIC": "Hydraulic",
+          "PNEUMATIC": "Pneumatic",
+          "METAL": "Metal",
+          "PLASTIC": "Plastic",
+          "COMPOSITE": "Composite",
+          "RUBBER": "Rubber",
+          "ELECTRONIC": "Electronic",
+          "CUTTING": "Cutting",
+          "MEASURING": "Measuring",
+          "ASSEMBLY": "Assembly",
+          "TESTING": "Testing",
+          "MAINTENANCE": "Maintenance",
+          "SPECIFICATION": "Specification",
+          "MANUAL": "Manual",
+          "PROCEDURE": "Procedure",
+          "REPORT": "Report",
+          "DRAWING": "Drawing",
+          "SUBASSEMBLY": "Subassembly",
+          "MAIN_ASSEMBLY": "Main Assembly",
+          "MODULE": "Module",
+          "UNIT": "Unit",
+          "SYSTEM": "System",
+          "GENERAL": "General",
+          "CUSTOM": "Custom",
+          "OTHER": "Other"
+        }
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Enter item description"
+      },
+      "textValue": {
+        "label": "Text Value",
+        "placeholder": "Enter text value"
+      },
+      "numberValue": {
+        "label": "Number Value",
+        "placeholder": "Enter numeric value"
+      },
+      "unit": {
+        "placeholder": "Unit"
+      },
+      "booleanValue": {
+        "label": "Boolean Value",
+        "help": "Enable or disable this property"
+      },
+      "dateValue": {
+        "label": "Date Value"
+      },
+      "parent": {
+        "label": "Parent Item",
+        "placeholder": "Select parent item",
+        "help": "Choose a parent item to create hierarchy"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Add tags (press Enter or comma)",
+        "help": "Press Enter or comma to add tags"
+      }
+    },
+    "properties": {
+      "title": "Properties"
+    },
+    "children": {
+      "label": "Child Items",
+      "count": "This item has {count} child items"
+    },
+    "preview": {
+      "title": "Preview",
+      "noName": "No name",
+      "noCode": "No code",
+      "enabled": "Enabled"
+    }
+  },
+  "table": {
+    "noData": {
+      "title": "No Items Found",
+      "message": "Create your first item to get started"
+    }
+  }
+}

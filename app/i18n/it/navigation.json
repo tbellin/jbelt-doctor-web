@@ -1,0 +1,17 @@
+{
+  "entities": {
+    "title": "Gestione Entità",
+    "overview": "Panoramica",
+    "archives": "Archivi",
+    "formats": "Formati", 
+    "positions": "Posizioni",
+    "markers": "Marcatori",
+    "modelVersions": "Versioni Modelli",
+    "items": "Elementi",
+    "authors": "Autori",
+    "teams": "Team"
+  },
+  "models": "Modelli",
+  "sheets": "Fogli", 
+  "balloons": "Fumetti"
+}

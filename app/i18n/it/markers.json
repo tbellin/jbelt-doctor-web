@@ -1,0 +1,82 @@
+{
+  "page": {
+    "title": "Gestione Marcatori",
+    "description": "Gestisci marcatori, simboli e le loro proprietà per fumetti e annotazioni",
+    "create": "Nuovo Marcatore",
+    "symbolLibrary": "Libreria Simboli"
+  },
+  "stats": {
+    "total": "Marcatori Totali",
+    "balloonEnabled": "Abilitati Fumetti",
+    "annotationEnabled": "Abilitati Annotazioni",
+    "byType": "Tipi Unici"
+  },
+  "types": {
+    "BALLOON": "Fumetto",
+    "ANNOTATION": "Annotazione",
+    "SYMBOL": "Simbolo",
+    "DIMENSION": "Dimensione",
+    "REFERENCE": "Riferimento"
+  },
+  "shapes": {
+    "CIRCLE": "Cerchio",
+    "SQUARE": "Quadrato",
+    "ROUNDED_SQUARE": "Quadrato Arrotondato",
+    "TRIANGLE": "Triangolo",
+    "DIAMOND": "Diamante"
+  },
+  "search": {
+    "placeholder": "Cerca marcatori..."
+  },
+  "filters": {
+    "type": {
+      "all": "Tutti i Tipi"
+    },
+    "shape": {
+      "all": "Tutte le Forme"
+    },
+    "usage": {
+      "all": "Tutti gli Usi",
+      "balloons": "Solo Fumetti",
+      "annotations": "Solo Annotazioni",
+      "both": "Entrambi"
+    }
+  },
+  "table": {
+    "columns": {
+      "preview": "Anteprima",
+      "name": "Nome",
+      "type": "Tipo",
+      "properties": "Proprietà",
+      "usage": "Utilizzo"
+    },
+    "unnamed": "Marcatore Senza Nome",
+    "noType": "Nessun Tipo",
+    "useInBalloons": "Usa nei fumetti",
+    "useInAnnotations": "Usa nelle annotazioni",
+    "balloons": "Fumetti",
+    "annotations": "Annotazioni",
+    "noUsage": "Non utilizzato",
+    "noData": {
+      "title": "Nessun Marcatore Trovato",
+      "message": "Crea il tuo primo marcatore per iniziare"
+    }
+  },
+  "card": {
+    "unnamed": "Marcatore Senza Nome",
+    "color": "Colore",
+    "size": "Dimensione",
+    "shape": "Forma",
+    "useInBalloons": "Utilizzato nei fumetti",
+    "useInAnnotations": "Utilizzato nelle annotazioni",
+    "balloons": "Fumetti",
+    "annotations": "Annotazioni"
+  },
+  "noResults": {
+    "title": "Nessun Marcatore Trovato",
+    "message": "Prova a modificare i criteri di ricerca"
+  },
+  "common": {
+    "marker": "marcatore"
+  }
+}

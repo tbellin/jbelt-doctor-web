@@ -1,0 +1,75 @@
+{
+  "page": {
+    "title": "Gestione Versioni Modelli",
+    "description": "Gestisci versioni modelli, approvazioni e cronologia modifiche",
+    "create": "Nuova Versione",
+    "timeline": "Timeline Versioni"
+  },
+  "table": {
+    "noData": "Nessuna versione modello trovata"
+  },
+  "modal": {
+    "create": {
+      "title": "Crea Nuova Versione Modello"
+    },
+    "edit": {
+      "title": "Modifica Versione Modello"
+    }
+  },
+  "stats": {
+    "total": "Versioni Totali",
+    "approved": "Approvate",
+    "current": "Versioni Correnti",
+    "models": "Modelli Unici"
+  },
+  "status": {
+    "DRAFT": "Bozza",
+    "REVIEW": "In Revisione",
+    "APPROVED": "Approvata",
+    "REJECTED": "Rifiutata",
+    "OBSOLETE": "Obsoleta"
+  },
+  "search": {
+    "placeholder": "Cerca versioni..."
+  },
+  "filters": {
+    "model": {
+      "all": "Tutti i Modelli"
+    },
+    "status": {
+      "all": "Tutti gli Stati"
+    },
+    "current": {
+      "all": "Tutte le Versioni",
+      "current": "Solo Correnti",
+      "previous": "Solo Precedenti"
+    },
+    "approved": {
+      "all": "Tutti gli Stati Approvazione",
+      "approved": "Solo Approvate",
+      "pending": "In Attesa Approvazione"
+    }
+  },
+  "table": {
+    "title": "Versioni Modelli",
+    "columns": {
+      "version": "Versione",
+      "model": "Modello",
+      "status": "Stato",
+      "date": "Data",
+      "current": "Corrente",
+      "approved": "Approvata"
+    },
+    "noData": {
+      "title": "Nessuna Versione Trovata",
+      "message": "Crea la tua prima versione modello per iniziare"
+    }
+  },
+  "noResults": {
+    "title": "Nessuna Versione Trovata",
+    "message": "Prova a modificare i criteri di ricerca"
+  },
+  "common": {
+    "version": "versione"
+  }
+}

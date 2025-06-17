@@ -1,0 +1,144 @@
+{
+  "page": {
+    "title": "Gestione Elementi",
+    "description": "Gestisci elementi gerarchici, componenti e proprietà",
+    "create": "Nuovo Elemento",
+    "import": "Importa Elementi",
+    "viewModes": {
+      "table": "Tabella",
+      "tree": "Albero"
+    }
+  },
+  "types": {
+    "COMPONENT": "Componente",
+    "ASSEMBLY": "Assemblaggio", 
+    "MATERIAL": "Materiale",
+    "TOOL": "Strumento",
+    "DOCUMENT": "Documento"
+  },
+  "tree": {
+    "noItems": {
+      "title": "Nessun Elemento Trovato",
+      "message": "Inizia creando il tuo primo elemento",
+      "addFirst": "Crea Primo Elemento"
+    },
+    "node": {
+      "unnamed": "Elemento Senza Nome",
+      "addChild": "Aggiungi Elemento Figlio"
+    },
+    "actions": {
+      "expandAll": "Espandi Tutto",
+      "collapseAll": "Comprimi Tutto"
+    },
+    "summary": "Totale: {total} elementi, Radice: {root} elementi"
+  },
+  "form": {
+    "fields": {
+      "code": {
+        "label": "Codice",
+        "placeholder": "Inserisci codice elemento"
+      },
+      "name": {
+        "label": "Nome",
+        "placeholder": "Inserisci nome elemento"
+      },
+      "itemType": {
+        "label": "Tipo Elemento",
+        "placeholder": "Seleziona tipo elemento",
+        "help": "Scegli la classificazione appropriata",
+        "options": {
+          "COMPONENT": "Componente",
+          "ASSEMBLY": "Assemblaggio",
+          "MATERIAL": "Materiale", 
+          "TOOL": "Strumento",
+          "DOCUMENT": "Documento"
+        }
+      },
+      "category": {
+        "label": "Categoria",
+        "placeholder": "Seleziona categoria",
+        "options": {
+          "MECHANICAL": "Meccanico",
+          "ELECTRICAL": "Elettrico",
+          "SOFTWARE": "Software",
+          "HYDRAULIC": "Idraulico",
+          "PNEUMATIC": "Pneumatico",
+          "METAL": "Metallo",
+          "PLASTIC": "Plastica",
+          "COMPOSITE": "Composito",
+          "RUBBER": "Gomma",
+          "ELECTRONIC": "Elettronico",
+          "CUTTING": "Taglio",
+          "MEASURING": "Misurazione",
+          "ASSEMBLY": "Assemblaggio",
+          "TESTING": "Test",
+          "MAINTENANCE": "Manutenzione",
+          "SPECIFICATION": "Specifica",
+          "MANUAL": "Manuale",
+          "PROCEDURE": "Procedura",
+          "REPORT": "Report",
+          "DRAWING": "Disegno",
+          "SUBASSEMBLY": "Sottoassemblaggio",
+          "MAIN_ASSEMBLY": "Assemblaggio Principale",
+          "MODULE": "Modulo",
+          "UNIT": "Unità",
+          "SYSTEM": "Sistema",
+          "GENERAL": "Generale",
+          "CUSTOM": "Personalizzato",
+          "OTHER": "Altro"
+        }
+      },
+      "description": {
+        "label": "Descrizione",
+        "placeholder": "Inserisci descrizione elemento"
+      },
+      "textValue": {
+        "label": "Valore Testo",
+        "placeholder": "Inserisci valore testuale"
+      },
+      "numberValue": {
+        "label": "Valore Numerico",
+        "placeholder": "Inserisci valore numerico"
+      },
+      "unit": {
+        "placeholder": "Unità"
+      },
+      "booleanValue": {
+        "label": "Valore Booleano",
+        "help": "Abilita o disabilita questa proprietà"
+      },
+      "dateValue": {
+        "label": "Valore Data"
+      },
+      "parent": {
+        "label": "Elemento Padre",
+        "placeholder": "Seleziona elemento padre",
+        "help": "Scegli un elemento padre per creare gerarchia"
+      },
+      "tags": {
+        "label": "Tag",
+        "placeholder": "Aggiungi tag (premi Invio o virgola)",
+        "help": "Premi Invio o virgola per aggiungere tag"
+      }
+    },
+    "properties": {
+      "title": "Proprietà"
+    },
+    "children": {
+      "label": "Elementi Figlio",
+      "count": "Questo elemento ha {count} elementi figlio"
+    },
+    "preview": {
+      "title": "Anteprima",
+      "noName": "Nessun nome",
+      "noCode": "Nessun codice",
+      "enabled": "Abilitato"
+    }
+  },
+  "table": {
+    "noData": {
+      "title": "Nessun Elemento Trovato",
+      "message": "Crea il tuo primo elemento per iniziare"
+    }
+  }
+}

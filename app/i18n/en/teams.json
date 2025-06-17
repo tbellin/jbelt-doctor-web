@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Team Management",
+    "description": "Manage teams in hierarchical structure",
+    "create": "New Team"
+  },
+  "modal": {
+    "create": {
+      "title": "Create New Team"
+    },
+    "createChild": {
+      "title": "Create Sub-Team"
+    },
+    "edit": {
+      "title": "Edit Team"
+    }
+  },
+  "table": {
+    "name": "Team Name",
+    "members": "Members",
+    "location": "Location",
+    "contact": "Contact",
+    "status": "Status",
+    "noData": "No teams found",
+    "expandAll": "Expand All",
+    "collapseAll": "Collapse All"
+  },
+  "form": {
+    "name": "Team Name",
+    "description": "Description",
+    "department": "Department",
+    "parentTeam": "Parent Team",
+    "noParent": "No parent (root team)",
+    "contactEmail": "Contact Email",
+    "contactPhone": "Contact Phone",
+    "address": "Address",
+    "city": "City",
+    "isActive": "Active team"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "actions": {
+    "addChild": "Add Sub-Team"
+  },
+  "messages": {
+    "cannotDeleteWithChildren": "Cannot delete team with sub-teams. Please delete sub-teams first."
+  }
+}

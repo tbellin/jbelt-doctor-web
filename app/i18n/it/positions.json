@@ -1,0 +1,52 @@
+{
+  "page": {
+    "title": "Gestione Posizioni",
+    "description": "Gestisci posizioni fumetti, coordinate e associazioni marker",
+    "create": "Nuova Posizione"
+  },
+  "stats": {
+    "total": "Posizioni Totali",
+    "active": "Posizioni Attive",
+    "withCoordinates": "Con Coordinate",
+    "withMarkers": "Con Marcatori"
+  },
+  "search": {
+    "placeholder": "Cerca posizioni..."
+  },
+  "filters": {
+    "drawing": {
+      "all": "Tutti i Disegni"
+    },
+    "sheet": {
+      "all": "Tutti i Fogli"
+    },
+    "status": {
+      "all": "Tutti gli Stati",
+      "active": "Solo Attive",
+      "inactive": "Solo Inattive"
+    }
+  },
+  "table": {
+    "title": "Posizioni",
+    "columns": {
+      "balloon": "Fumetto",
+      "coordinates": "Coordinate", 
+      "drawing": "Disegno",
+      "sheet": "Foglio",
+      "marker": "Marcatore",
+      "status": "Stato"
+    },
+    "noBalloon": "Nessun numero fumetto",
+    "noCoordinates": "Nessuna coordinata",
+    "noDrawing": "Nessun disegno",
+    "noSheet": "Nessun foglio",
+    "noMarker": "Nessun marcatore",
+    "noData": {
+      "title": "Nessuna Posizione Trovata",
+      "message": "Crea la tua prima posizione per iniziare"
+    }
+  },
+  "common": {
+    "position": "posizione"
+  }
+}

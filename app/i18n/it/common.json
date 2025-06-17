@@ -75,12 +75,34 @@
     "deselectAll": "Deseleziona Tutti",
     "close": "Chiudi",
     "tryDifferentFilters": "Prova termini di ricerca o filtri diversi",
+    "refresh": "Aggiorna",
+    "showing": "Mostrando",
+    "of": "di",
+    "grid": "Griglia",
+    "table": "Tabella",
+    "preview": "Anteprima",
+    "duplicate": "Duplica",
+    "clearFilters": "Pulisci Filtri",
+    "yes": "Sì",
+    "no": "No",
     "error": {
       "required": "Questo campo è obbligatorio"
     },
     "navigation": {
       "models": "Modelli",
       "sheets": "Fogli",
-      "balloons": "Balloon"
+      "balloons": "Balloon",
+      "entities": {
+        "title": "Gestione Entità",
+        "overview": "Panoramica",
+        "archives": "Archivi",
+        "formats": "Formati", 
+        "positions": "Posizioni",
+        "markers": "Marcatori",
+        "modelVersions": "Versioni Modelli",
+        "items": "Elementi",
+        "authors": "Autori",
+        "teams": "Team"
+      }
     }
   }

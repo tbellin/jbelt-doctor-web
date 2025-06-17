@@ -1,0 +1,47 @@
+{
+  "page": {
+    "title": "Gestione Autori",
+    "description": "Gestisci gli autori di sistema e le loro assegnazioni ai team",
+    "create": "Nuovo Autore"
+  },
+  "modal": {
+    "create": {
+      "title": "Crea Nuovo Autore"
+    },
+    "edit": {
+      "title": "Modifica Autore"
+    }
+  },
+  "filters": {
+    "search": "Cerca",
+    "searchPlaceholder": "Cerca per nome o email...",
+    "team": "Filtra per Team",
+    "allTeams": "Tutti i Team",
+    "status": "Filtra per Stato",
+    "allStatuses": "Tutti gli Stati",
+    "active": "Solo Attivi",
+    "inactive": "Solo Inattivi"
+  },
+  "table": {
+    "name": "Nome",
+    "email": "Email",
+    "team": "Team",
+    "role": "Ruolo",
+    "status": "Stato",
+    "noData": "Nessun autore trovato"
+  },
+  "form": {
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "email": "Email",
+    "phoneNumber": "Telefono",
+    "team": "Team",
+    "selectTeam": "Seleziona un team...",
+    "role": "Ruolo",
+    "isActive": "Autore attivo"
+  },
+  "status": {
+    "active": "Attivo",
+    "inactive": "Inattivo"
+  }
+}

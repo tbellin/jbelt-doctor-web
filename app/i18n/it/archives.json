@@ -1,0 +1,62 @@
+{
+  "page": {
+    "title": "Gestione Archivi",
+    "description": "Gestisci file, documenti e risorse digitali",
+    "create": "Nuovo Archivio",
+    "import": "Importa File",
+    "export": "Esporta Archivi"
+  },
+  "stats": {
+    "total": "File Totali",
+    "cad": "File CAD", 
+    "images": "Immagini",
+    "size": "Dimensione Totale"
+  },
+  "form": {
+    "fields": {
+      "code": {
+        "label": "Codice",
+        "placeholder": "Inserisci codice archivio"
+      },
+      "name": {
+        "label": "Nome", 
+        "placeholder": "Inserisci nome archivio"
+      },
+      "type": {
+        "label": "Tipo"
+      },
+      "category": {
+        "label": "Categoria"
+      },
+      "fileName": {
+        "label": "Nome File"
+      },
+      "extension": {
+        "label": "Estensione"
+      },
+      "folder": {
+        "label": "Cartella"
+      },
+      "contentType": {
+        "label": "Tipo Contenuto"
+      }
+    }
+  },
+  "modal": {
+    "create": {
+      "title": "Crea Nuovo Archivio"
+    },
+    "edit": {
+      "title": "Modifica Archivio"
+    },
+    "view": {
+      "title": "Visualizza Archivio",
+      "preview": "Anteprima File",
+      "binaryFile": "File binario - Anteprima non disponibile"
+    },
+    "delete": {
+      "title": "Elimina Archivio",
+      "message": "Sei sicuro di voler eliminare '{name}'? Questa azione non può essere annullata."
+    }
+  }
+}

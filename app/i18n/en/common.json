@@ -75,12 +75,34 @@
     "deselectAll": "Deselect All",
     "close": "Close",
     "tryDifferentFilters": "Try different search terms or filters",
+    "refresh": "Refresh",
+    "showing": "Showing",
+    "of": "of",
+    "grid": "Grid",
+    "table": "Table",
+    "preview": "Preview",
+    "duplicate": "Duplicate",
+    "clearFilters": "Clear Filters",
+    "yes": "Yes",
+    "no": "No",
     "error": {
       "required": "This field is required"
     },
     "navigation": {
       "models": "Models",
       "sheets": "Sheets",
-      "balloons": "Balloons"
+      "balloons": "Balloons",
+      "entities": {
+        "title": "Entity Management",
+        "overview": "Overview",
+        "archives": "Archives",
+        "formats": "Formats", 
+        "positions": "Positions",
+        "markers": "Markers",
+        "modelVersions": "Model Versions",
+        "items": "Items",
+        "authors": "Authors",
+        "teams": "Teams"
+      }
     }
   }

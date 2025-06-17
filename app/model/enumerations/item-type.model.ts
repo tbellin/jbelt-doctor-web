@@ -1,0 +1,7 @@
+export enum ItemType {
+  COMPONENT = 'COMPONENT',
+  ASSEMBLY = 'ASSEMBLY',
+  MATERIAL = 'MATERIAL',
+  TOOL = 'TOOL',
+  DOCUMENT = 'DOCUMENT'
+}

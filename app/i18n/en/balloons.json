@@ -96,6 +96,11 @@
       "symbol": {
         "label": "Symbol/Marker",
         "placeholder": "Select symbol"
+      },
+      "box": {
+        "label": "Box",
+        "placeholder": "Enter box specification",
+        "help": "Bounding box or container specification"
       }
     },
     "validation": {

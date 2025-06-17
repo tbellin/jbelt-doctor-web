@@ -1,8 +1,8 @@
-import { type INote } from './note.model';
-import { type IModel } from './model.model';
-import { type IPost } from './post.model';
+import { type INote } from '@/shared/model/note.model';
+import { type IModel } from '@/shared/model/model.model';
+import { type IPost } from '@/shared/model/post.model';
 
-import { type TypeValue } from './enumerations/type-value.model';
+import { type TypeValue } from '@/shared/model/enumerations/type-value.model';
 export interface IAttributeEntity {
   id?: number;
   creoId?: string | null;

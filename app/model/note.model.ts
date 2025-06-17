@@ -10,6 +10,7 @@ export interface INote {
   noteValue?: string | null;
   noteType?: string | null;
   order?: number | null;
+  box?: string | null;
   position?: IPosition | null;
   baloon?: IBaloon | null;
 }
@@ -24,6 +25,7 @@ export class Note implements INote {
     public noteValue?: string | null,
     public noteType?: string | null,
     public order?: number | null,
+    public box?: string | null,
     public position?: IPosition | null,
     public baloon?: IBaloon | null,
   ) {}

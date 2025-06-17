@@ -1,6 +1,6 @@
-import { type IPostType } from './post-type.model';
-import { type IPostCategory } from './post-category.model';
-import { type IAuthor } from './author.model';
+import { type IPostType } from '@/shared/model/post-type.model';
+import { type IPostCategory } from '@/shared/model/post-category.model';
+import { type IAuthor } from '@/shared/model/author.model';
 
 export interface IPost {
   id?: number;

@@ -161,6 +161,36 @@
             </div>
           </div>
 
+          <div class="row">
+            <!-- Box -->
+            <div class="col-md-12 mb-2">
+              <label for="box" class="form-label">
+                {{ t('notes:form.fields.box.label') }}
+              </label>
+              <input
+                id="box"
+                v-model="formData.box"
+                type="text"
+                class="form-control"
+                :class="{ 'is-invalid': errors.box }"
+                :placeholder="t('notes:form.fields.box.placeholder')"
+              >
+              <div v-if="errors.box" class="invalid-feedback">
+                {{ errors.box }}
+              </div>
+              <div class="form-text">
+                {{ t('notes:form.fields.box.help') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <div class="row">
+              </div>
+            </div>
+          </div>
+
           <!-- Position Section -->
           <div class="row" v-if="formData.position || showAdvanced">
             <div class="col-12 mb-2">
@@ -174,7 +204,7 @@
                   </label>
                   <input
                     id="positionX"
-                    v-model.number="positionData.x"
+                    v-model.number="positionData.posX"
                     type="number"
                     step="0.01"
                     class="form-control"
@@ -187,7 +217,7 @@
                   </label>
                   <input
                     id="positionY"
-                    v-model.number="positionData.y"
+                    v-model.number="positionData.posY"
                     type="number"
                     step="0.01"
                     class="form-control"
@@ -200,7 +230,7 @@
                   </label>
                   <input
                     id="positionZ"
-                    v-model.number="positionData.z"
+                    v-model.number="positionData.posZ"
                     type="number"
                     step="0.01"
                     class="form-control"
@@ -327,14 +357,15 @@ const formData = ref<INote>({
   noteValue: null,
   noteType: null,
   order: null,
+  box: null,
   position: null,
   baloon: null
 })
 
 const positionData = ref({
-  x: 0,
-  y: 0,
-  z: 0
+  posX: 0,
+  posY: 0,
+  posZ: 0
 })
 
 const errors = ref<Record<string, string>>({})
@@ -417,11 +448,11 @@ const loadBalloons = async () => {
 }
 
 const updatePosition = () => {
-  if (positionData.value.x !== 0 || positionData.value.y !== 0 || positionData.value.z !== 0) {
+  if (positionData.value.posX !== 0 || positionData.value.posY !== 0 || positionData.value.posZ !== 0) {
     formData.value.position = {
-      x: positionData.value.x,
-      y: positionData.value.y,
-      z: positionData.value.z
+      posX: positionData.value.posX,
+      posY: positionData.value.posY,
+      posZ: positionData.value.posZ
     }
   } else {
     formData.value.position = null
@@ -445,6 +476,7 @@ const handleSubmit = async () => {
       formData.value.noteValue,
       formData.value.noteType,
       formData.value.order,
+      formData.value.box,
       formData.value.position,
       formData.value.baloon
     )
@@ -464,9 +496,9 @@ watch(() => props.initialData, (newData) => {
     formData.value = { ...newData }
     if (newData.position) {
       positionData.value = {
-        x: newData.position.x || 0,
-        y: newData.position.y || 0,
-        z: newData.position.z || 0
+        posX: newData.position.posX || 0,
+        posY: newData.position.posY || 0,
+        posZ: newData.position.posZ || 0
       }
       showAdvanced.value = true
     }

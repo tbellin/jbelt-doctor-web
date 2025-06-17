@@ -55,6 +55,11 @@
         "label": "Associated Balloon",
         "placeholder": "Select balloon",
         "help": "Optionally associate this note with a balloon"
+      },
+      "box": {
+        "label": "Box",
+        "placeholder": "Enter box specification",
+        "help": "Bounding box or container specification"
       }
     },
     "validation": {

@@ -10,6 +10,7 @@ export interface IBaloon {
   baloonName?: string | null;
   baloonValue?: string | null;
   baloonType?: string | null;
+  box?: string | null;
   position?: IPosition | null;
   sheet?: ISheet | null;
   symbol?: IMarker | null;
@@ -24,6 +25,7 @@ export class Baloon implements IBaloon {
     public baloonName?: string | null,
     public baloonValue?: string | null,
     public baloonType?: string | null,
+    public box?: string | null,
     public position?: IPosition | null,
     public sheet?: ISheet | null,
     public symbol?: IMarker | null,

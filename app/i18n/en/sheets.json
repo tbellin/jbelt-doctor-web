@@ -63,6 +63,50 @@
     "view": "View Sheet"
   },
   "form": {
+    "create_title": "Create New Sheet",
+    "edit_title": "Edit Sheet",
+    "fields": {
+      "creoId": {
+        "label": "Creo ID",
+        "placeholder": "Enter Creo identification code"
+      },
+      "code": {
+        "label": "Code",
+        "placeholder": "Enter sheet code"
+      },
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter sheet name"
+      },
+      "formatType": {
+        "label": "Format Type",
+        "placeholder": "Select DIN format type"
+      },
+      "format": {
+        "label": "Format",
+        "placeholder": "Select format template"
+      },
+      "drawing": {
+        "label": "Drawing Model",
+        "placeholder": "Select associated drawing"
+      },
+      "models": {
+        "label": "Associated Models",
+        "search_placeholder": "Search models by code, name or type...",
+        "selected": "Selected",
+        "no_models": "No models available",
+        "remove_model": "Remove model"
+      }
+    },
+    "validation": {
+      "code_required": "Sheet code is required",
+      "name_required": "Sheet name is required",
+      "formatType_required": "Format type is required",
+      "invalid_for_create": "Sheet data is not valid for creation",
+      "invalid_for_update": "Sheet data is not valid for update",
+      "submit_error": "Error submitting form",
+      "summary_title": "Please fix the following errors:"
+    },
     "code": "Code",
     "name": "Name",
     "format": "Format",

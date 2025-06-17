@@ -159,9 +159,9 @@
           </div>
         </div>
         
-        <!-- Row 2: Item -->
+        <!-- Row 2: Item and Designer -->
         <div class="row mt-3">
-          <div class="col-md-12">
+          <div class="col-md-6">
             <label for="itemId" class="form-label">{{ t('models:form.item') }}</label>
             <select
               id="itemId"
@@ -181,6 +181,29 @@
             </div>
             <div class="form-text">
               {{ t('models:form.itemHelp') }}
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="designerId" class="form-label">{{ t('models:form.designer') }}</label>
+            <select
+              id="designerId"
+              v-model="formData.designerId"
+              class="form-select"
+              :class="{ 'is-invalid': errors.designerId }"
+              @change="validateField('designerId')"
+            >
+              <option value="">{{ t('models:form.noDesigner') }}</option>
+              <option v-for="designer in availableDesigners" :key="designer.id" :value="designer.id">
+                {{ designer.firstName }} {{ designer.lastName }}
+                <span v-if="designer.email" class="text-muted">({{ designer.email }})</span>
+              </option>
+            </select>
+            <div v-if="errors.designerId" class="invalid-feedback">
+              {{ errors.designerId }}
+            </div>
+            <div class="form-text">
+              {{ t('models:form.designerHelp') }}
             </div>
           </div>
         </div>
@@ -356,6 +379,7 @@ import { type IArchive } from '~/model/archive.model'
 import { type IModelVersion } from '~/model/model-version.model'
 import { type IItem } from '~/model/item.model'
 import { type ISheet } from '~/model/sheet.model'
+import { type IAuthor } from '~/model/author.model'
 import { ModelType } from '~/model/enumerations/model-type.model'
 import { InstanceType } from '~/model/enumerations/instance-type.model'
 import { useI18n } from '~/composables/useI18n'
@@ -391,8 +415,10 @@ const formData = ref({
   fileId: null as number | null,
   versionId: null as number | null,
   itemId: null as number | null,
+  designerId: null as number | null,
   genericId: null as number | null,
   parentId: null as number | null,
+  instanceId: null as number | null,
   sheetIds: [] as string[]
 })
 
@@ -403,6 +429,7 @@ const errors = ref<Record<string, string>>({})
 const availableFiles = ref<IArchive[]>([])
 const availableVersions = ref<IModelVersion[]>([])
 const availableItems = ref<IItem[]>([])
+const availableDesigners = ref<IAuthor[]>([]) // AuthorDTO from backend
 const availableModels = ref<IModel[]>([])
 const availableSheets = ref<ISheet[]>([])
 

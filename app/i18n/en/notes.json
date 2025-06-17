@@ -1,0 +1,69 @@
+{
+  "form": {
+    "create_title": "Create New Note",
+    "edit_title": "Edit Note",
+    "fields": {
+      "creoId": {
+        "label": "Creo ID",
+        "placeholder": "Enter Creo identification code"
+      },
+      "code": {
+        "label": "Code",
+        "placeholder": "Enter note code"
+      },
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter note name"
+      },
+      "noteName": {
+        "label": "Note Name",
+        "placeholder": "Enter note display name"
+      },
+      "noteValue": {
+        "label": "Note Value",
+        "placeholder": "Enter note content/text"
+      },
+      "noteType": {
+        "label": "Note Type",
+        "placeholder": "Select note type",
+        "options": {
+          "TEXT": "Text",
+          "DIMENSION": "Dimension",
+          "TOLERANCE": "Tolerance",
+          "SURFACE": "Surface",
+          "MATERIAL": "Material",
+          "GENERAL": "General",
+          "REVISION": "Revision",
+          "CUSTOM": "Custom"
+        }
+      },
+      "order": {
+        "label": "Order",
+        "placeholder": "Enter display order (1-999)",
+        "help": "Display order for this note (1-999)"
+      },
+      "position": {
+        "label": "Position",
+        "x": "X Coordinate",
+        "y": "Y Coordinate",
+        "z": "Z Coordinate",
+        "placeholder_x": "Enter X position",
+        "placeholder_y": "Enter Y position",
+        "placeholder_z": "Enter Z position"
+      },
+      "baloon": {
+        "label": "Associated Balloon",
+        "placeholder": "Select balloon",
+        "help": "Optionally associate this note with a balloon"
+      }
+    },
+    "validation": {
+      "code_required": "Note code is required",
+      "name_required": "Note name is required",
+      "order_range": "Order must be between 1 and 999",
+      "submit_error": "Error submitting form",
+      "summary_title": "Please fix the following errors:"
+    },
+    "show_advanced": "Show advanced options"
+  }
+}

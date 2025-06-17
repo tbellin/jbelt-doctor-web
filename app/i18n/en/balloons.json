@@ -46,6 +46,65 @@
   },
   "confirmDelete": "Are you sure you want to delete this balloon-note association? This action cannot be undone.",
   "form": {
+    "create_title": "Create New Balloon",
+    "edit_title": "Edit Balloon",
+    "fields": {
+      "creoId": {
+        "label": "Creo ID",
+        "placeholder": "Enter Creo identification code"
+      },
+      "code": {
+        "label": "Code",
+        "placeholder": "Enter balloon code"
+      },
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter balloon name"
+      },
+      "baloonName": {
+        "label": "Balloon Name",
+        "placeholder": "Enter balloon display name"
+      },
+      "baloonValue": {
+        "label": "Balloon Value",
+        "placeholder": "Enter balloon value/content"
+      },
+      "baloonType": {
+        "label": "Balloon Type",
+        "placeholder": "Select balloon type",
+        "options": {
+          "CIRCLE": "Circle",
+          "SQUARE": "Square",
+          "DIAMOND": "Diamond",
+          "TRIANGLE": "Triangle",
+          "CUSTOM": "Custom"
+        }
+      },
+      "position": {
+        "label": "Position",
+        "x": "X Coordinate",
+        "y": "Y Coordinate",
+        "z": "Z Coordinate",
+        "placeholder_x": "Enter X position",
+        "placeholder_y": "Enter Y position",
+        "placeholder_z": "Enter Z position"
+      },
+      "sheet": {
+        "label": "Associated Sheet",
+        "placeholder": "Select sheet"
+      },
+      "symbol": {
+        "label": "Symbol/Marker",
+        "placeholder": "Select symbol"
+      }
+    },
+    "validation": {
+      "code_required": "Balloon code is required",
+      "name_required": "Balloon name is required",
+      "submit_error": "Error submitting form",
+      "summary_title": "Please fix the following errors:"
+    },
+    "show_advanced": "Show advanced options",
     "sheetAssociation": "Sheet Association",
     "drawing": "Drawing",
     "sheet": "Sheet",

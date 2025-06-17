@@ -9,7 +9,11 @@
     "modelVersions": "Versioni Modelli",
     "items": "Elementi",
     "authors": "Autori",
-    "teams": "Team"
+    "teams": "Team",
+    "models": "Modelli",
+    "sheets": "Fogli",
+    "balloons": "Fumetti",
+    "trackers": "Trackers"
   },
   "models": "Modelli",
   "sheets": "Fogli", 

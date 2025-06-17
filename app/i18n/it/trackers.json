@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Gestione Trackers",
+    "description": "Gestisci i tracker di progetto e il monitoraggio delle attività",
+    "create": "Crea Tracker"
+  },
+  "filters": {
+    "search": "Cerca",
+    "searchPlaceholder": "Cerca per nome, descrizione o assegnatario...",
+    "status": "Stato",
+    "priority": "Priorità",
+    "allStatuses": "Tutti gli Stati",
+    "allPriorities": "Tutte le Priorità"
+  },
+  "table": {
+    "name": "Nome",
+    "status": "Stato",
+    "priority": "Priorità", 
+    "assignedTo": "Assegnato a",
+    "progress": "Progresso",
+    "dates": "Date",
+    "noData": "Nessun tracker trovato",
+    "noDataDescription": "Inizia creando il tuo primo tracker per monitorare attività e progetti."
+  },
+  "form": {
+    "createTitle": "Crea Nuovo Tracker",
+    "editTitle": "Modifica Tracker",
+    "name": "Nome",
+    "description": "Descrizione",
+    "status": "Stato",
+    "priority": "Priorità",
+    "assignedTo": "Assegnato a",
+    "completionPercentage": "Completamento %",
+    "startDate": "Data Inizio",
+    "endDate": "Data Fine"
+  },
+  "statuses": {
+    "NEW": "Nuovo",
+    "IN_PROGRESS": "In Corso",
+    "COMPLETED": "Completato",
+    "CANCELLED": "Annullato"
+  },
+  "priorities": {
+    "LOW": "Bassa",
+    "MEDIUM": "Media", 
+    "HIGH": "Alta",
+    "URGENT": "Urgente"
+  },
+  "confirmDelete": "Sei sicuro di voler eliminare il tracker '{name}'? Questa azione non può essere annullata."
+}

@@ -29,7 +29,7 @@
     <div class="card mb-4">
       <div class="card-body">
         <div class="row g-3">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label class="form-label">{{ t('authors:filters.search') }}</label>
             <input
               v-model="searchTerm"
@@ -38,7 +38,7 @@
               :placeholder="t('authors:filters.searchPlaceholder')"
             >
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label class="form-label">{{ t('authors:filters.team') }}</label>
             <select v-model="selectedTeamFilter" class="form-select">
               <option value="">{{ t('authors:filters.allTeams') }}</option>
@@ -47,13 +47,22 @@
               </option>
             </select>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label class="form-label">{{ t('authors:filters.status') }}</label>
             <select v-model="selectedStatusFilter" class="form-select">
               <option value="">{{ t('authors:filters.allStatuses') }}</option>
               <option value="active">{{ t('authors:filters.active') }}</option>
               <option value="inactive">{{ t('authors:filters.inactive') }}</option>
             </select>
+          </div>
+          <div class="col-md-3 d-flex align-items-end">
+            <button
+              class="btn btn-outline-secondary w-100"
+              @click="clearFilters"
+            >
+              <i class="bi bi-funnel me-2"></i>
+              {{ t('common:clearFilters') }}
+            </button>
           </div>
         </div>
       </div>
@@ -65,6 +74,16 @@
         <div v-if="loading" class="text-center py-4">
           <i class="bi bi-hourglass-split me-2"></i>
           {{ t('common:loading') }}
+        </div>
+        
+        <div v-else-if="filteredAuthors.length === 0" class="text-center py-4">
+          <i class="bi bi-people fs-1 text-muted"></i>
+          <h5 class="mt-3">{{ t('authors:table.noData') }}</h5>
+          <p class="text-muted">{{ t('authors:table.noDataDescription') }}</p>
+          <button class="btn btn-primary" @click="openCreateModal">
+            <i class="bi bi-person-plus me-2"></i>
+            {{ t('authors:page.create') }}
+          </button>
         </div>
         
         <div v-else>
@@ -81,11 +100,6 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-if="filteredAuthors.length === 0">
-                  <td colspan="6" class="text-center text-muted">
-                    {{ t('authors:table.noData') }}
-                  </td>
-                </tr>
                 <tr v-for="author in filteredAuthors" :key="author.id">
                   <td>
                     <div class="d-flex align-items-center">
@@ -250,35 +264,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { type IAuthor } from '~/model/author.model'
-import { type ITeam } from '~/model/team.model'
+import { Modal } from 'bootstrap'
 
-// Page meta
+// Page setup
 definePageMeta({
-  middleware: 'admin',
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['auth', 'admin', 'i18n']
 })
 
-// Composables
 const { t } = useI18n()
+const { $axios } = useNuxtApp()
 
 // Reactive data
-const authors = ref<IAuthor[]>([])
-const teams = ref<ITeam[]>([])
-const selectedAuthor = ref<IAuthor | null>(null)
-const modalMode = ref<'create' | 'edit'>('create')
 const loading = ref(false)
-const modalRef = ref()
-
-// Filters
+const authors = ref([])
+const teams = ref([])
 const searchTerm = ref('')
 const selectedTeamFilter = ref('')
 const selectedStatusFilter = ref('')
 
-// Form data
+// Modal
+const modalRef = ref<HTMLElement>()
+const modalInstance = ref<Modal>()
+const isEditing = ref(false)
 const formData = ref({
-  id: undefined,
+  id: null,
   firstName: '',
   lastName: '',
   email: '',
@@ -289,12 +299,6 @@ const formData = ref({
 })
 
 // Computed
-const modalTitle = computed(() => {
-  return modalMode.value === 'create' 
-    ? t('authors:modal.create.title')
-    : t('authors:modal.edit.title')
-})
-
 const filteredAuthors = computed(() => {
   let filtered = authors.value
 
@@ -320,6 +324,10 @@ const filteredAuthors = computed(() => {
   return filtered
 })
 
+const modalTitle = computed(() => {
+  return isEditing.value ? t('authors:form.editTitle') : t('authors:form.createTitle')
+})
+
 // Methods
 const getFullName = (author: IAuthor) => {
   if (!author.firstName && !author.lastName) return '-'
@@ -329,19 +337,14 @@ const getFullName = (author: IAuthor) => {
 const refreshData = async () => {
   loading.value = true
   try {
-    const { $axios } = useNuxtApp()
-    
-    // Load teams first
-    const teamsResponse = await $axios.get('/api/teams')
+    const [teamsResponse, authorsResponse] = await Promise.all([
+      $axios.get('/api/teams'),
+      $axios.get('/api/authors')
+    ])
     teams.value = teamsResponse.data || []
-    
-    // Load authors
-    const authorsResponse = await $axios.get('/api/authors')
     authors.value = authorsResponse.data || []
-    
   } catch (error) {
     console.error('Error loading data:', error)
-    // Reset to empty arrays on error
     teams.value = []
     authors.value = []
   } finally {
@@ -349,11 +352,16 @@ const refreshData = async () => {
   }
 }
 
+const clearFilters = () => {
+  searchTerm.value = ''
+  selectedTeamFilter.value = ''
+  selectedStatusFilter.value = ''
+}
+
 const openCreateModal = () => {
-  modalMode.value = 'create'
-  selectedAuthor.value = null
+  isEditing.value = false
   formData.value = {
-    id: undefined,
+    id: null,
     firstName: '',
     lastName: '',
     email: '',
@@ -362,16 +370,11 @@ const openCreateModal = () => {
     role: '',
     isActive: true
   }
-  
-  if (modalRef.value) {
-    const modal = new (window as any).bootstrap.Modal(modalRef.value)
-    modal.show()
-  }
+  modalInstance.value?.show()
 }
 
-const handleEdit = (author: IAuthor) => {
-  modalMode.value = 'edit'
-  selectedAuthor.value = author
+const handleEdit = (author) => {
+  isEditing.value = true
   formData.value = {
     id: author.id,
     firstName: author.firstName || '',
@@ -382,81 +385,54 @@ const handleEdit = (author: IAuthor) => {
     role: author.role || '',
     isActive: author.isActive ?? true
   }
-  
-  if (modalRef.value) {
-    const modal = new (window as any).bootstrap.Modal(modalRef.value)
-    modal.show()
-  }
+  modalInstance.value?.show()
 }
 
-const handleDelete = async (author: IAuthor) => {
-  if (confirm(t('common:confirm'))) {
-    try {
-      const { $axios } = useNuxtApp()
-      await $axios.delete(`/api/authors/${author.id}`)
-      
-      // Remove from local array on success
-      const index = authors.value.findIndex(a => a.id === author.id)
-      if (index > -1) {
-        authors.value.splice(index, 1)
-      }
-    } catch (error) {
-      console.error('Error deleting author:', error)
-    }
+const handleDelete = async (author) => {
+  if (!confirm(t('authors:confirmDelete', { name: getFullName(author) }))) {
+    return
   }
-}
 
-const handleSubmit = async () => {
   try {
-    const { $axios } = useNuxtApp()
-    const selectedTeam = teams.value.find(t => t.id?.toString() === formData.value.teamId)
-    
-    // Prepare author data for API
-    const authorData = {
-      firstName: formData.value.firstName,
-      lastName: formData.value.lastName,
-      email: formData.value.email,
-      phoneNumber: formData.value.phoneNumber || null,
-      role: formData.value.role || null,
-      isActive: formData.value.isActive,
-      team: selectedTeam || null
-    }
-    
-    if (modalMode.value === 'create') {
-      const response = await $axios.post('/api/authors', authorData)
-      const newAuthor = response.data
-      authors.value.push(newAuthor)
-    } else {
-      const response = await $axios.put(`/api/authors/${formData.value.id}`, {
-        id: formData.value.id,
-        ...authorData
-      })
-      const updatedAuthor = response.data
-      
-      const index = authors.value.findIndex(a => a.id === formData.value.id)
-      if (index > -1) {
-        authors.value[index] = updatedAuthor
-      }
-    }
-    closeModal()
+    await $axios.delete(`/api/authors/${author.id}`)
+    await refreshData()
   } catch (error) {
-    console.error('Error submitting author:', error)
+    console.error('Error deleting author:', error)
   }
 }
 
 const closeModal = () => {
-  if (modalRef.value) {
-    const modal = (window as any).bootstrap.Modal.getInstance(modalRef.value)
-    if (modal) {
-      modal.hide()
+  modalInstance.value?.hide()
+}
+
+const handleSubmit = async () => {
+  try {
+    const submitData = { ...formData.value }
+    if (submitData.teamId) {
+      const selectedTeam = teams.value.find(t => t.id?.toString() === submitData.teamId)
+      submitData.team = selectedTeam || null
+      delete submitData.teamId
     }
+
+    if (isEditing.value) {
+      await $axios.put(`/api/authors/${formData.value.id}`, submitData)
+    } else {
+      await $axios.post('/api/authors', submitData)
+    }
+    closeModal()
+    await refreshData()
+  } catch (error) {
+    console.error('Error saving author:', error)
   }
-  selectedAuthor.value = null
 }
 
 // Lifecycle
-onMounted(() => {
-  refreshData()
+onMounted(async () => {
+  await refreshData()
+  
+  if (modalRef.value) {
+    modalInstance.value = new Modal(modalRef.value)
+  }
 })
 </script>
 

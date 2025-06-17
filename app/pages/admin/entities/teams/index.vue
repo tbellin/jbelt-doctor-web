@@ -254,31 +254,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { type ITeam } from '~/model/team.model'
+import { Modal } from 'bootstrap'
 
-// Page meta
+// Page setup
 definePageMeta({
-  middleware: 'admin',
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['auth', 'admin', 'i18n']
 })
 
-// Composables
 const { t } = useI18n()
+const { $axios } = useNuxtApp()
 
 // Reactive data
-const teams = ref<ITeam[]>([])
-const selectedTeam = ref<ITeam | null>(null)
-const modalMode = ref<'create' | 'edit'>('create')
 const loading = ref(false)
-const modalRef = ref()
+const teams = ref([])
 const expandedTeams = ref<Set<number>>(new Set())
 const allExpanded = ref(false)
 const parentTeamId = ref<number | null>(null)
 
-// Form data
+// Modal
+const modalRef = ref<HTMLElement>()
+const modalInstance = ref<Modal>()
+const isEditing = ref(false)
 const formData = ref({
-  id: undefined,
+  id: null,
   name: '',
   description: '',
   department: '',
@@ -292,12 +291,12 @@ const formData = ref({
 
 // Computed
 const modalTitle = computed(() => {
-  if (modalMode.value === 'create') {
-    return parentTeamId.value 
-      ? t('teams:modal.createChild.title')
-      : t('teams:modal.create.title')
+  if (isEditing.value) {
+    return t('teams:form.editTitle')
   }
-  return t('teams:modal.edit.title')
+  return parentTeamId.value 
+    ? t('teams:form.createChildTitle')
+    : t('teams:form.createTitle')
 })
 
 const rootTeams = computed(() => {
@@ -305,11 +304,11 @@ const rootTeams = computed(() => {
 })
 
 const availableParentTeams = computed(() => {
-  if (modalMode.value === 'edit' && selectedTeam.value) {
+  if (isEditing.value && formData.value.id) {
     // Exclude the team being edited and its descendants to prevent circular references
     return teams.value.filter(team => 
-      team.id !== selectedTeam.value!.id && 
-      !isDescendantOf(team, selectedTeam.value!)
+      team.id !== formData.value.id && 
+      !isDescendantOf(team, { id: formData.value.id } as any)
     )
   }
   return teams.value
@@ -426,7 +425,6 @@ const toggleExpandAll = () => {
 const refreshData = async () => {
   loading.value = true
   try {
-    const { $axios } = useNuxtApp()
     const response = await $axios.get('/api/teams')
     teams.value = response.data || []
   } catch (error) {
@@ -438,11 +436,10 @@ const refreshData = async () => {
 }
 
 const openCreateModal = () => {
-  modalMode.value = 'create'
-  selectedTeam.value = null
+  isEditing.value = false
   parentTeamId.value = null
   formData.value = {
-    id: undefined,
+    id: null,
     name: '',
     description: '',
     department: '',
@@ -453,39 +450,29 @@ const openCreateModal = () => {
     city: '',
     isActive: true
   }
-  
-  if (modalRef.value) {
-    const modal = new (window as any).bootstrap.Modal(modalRef.value)
-    modal.show()
-  }
+  modalInstance.value?.show()
 }
 
-const handleAddChild = (parentTeam: ITeam) => {
-  modalMode.value = 'create'
-  selectedTeam.value = null
-  parentTeamId.value = parentTeam.id!
+const handleAddChild = (parentTeam) => {
+  isEditing.value = false
+  parentTeamId.value = parentTeam.id
   formData.value = {
-    id: undefined,
+    id: null,
     name: '',
     description: '',
     department: parentTeam.department || '',
-    headQuarterId: parentTeam.id!.toString(),
+    headQuarterId: parentTeam.id.toString(),
     contactEmail: '',
     contactPhone: '',
     address: parentTeam.address || '',
     city: parentTeam.city || '',
     isActive: true
   }
-  
-  if (modalRef.value) {
-    const modal = new (window as any).bootstrap.Modal(modalRef.value)
-    modal.show()
-  }
+  modalInstance.value?.show()
 }
 
-const handleEdit = (team: ITeam) => {
-  modalMode.value = 'edit'
-  selectedTeam.value = team
+const handleEdit = (team) => {
+  isEditing.value = true
   parentTeamId.value = null
   formData.value = {
     id: team.id,
@@ -499,92 +486,60 @@ const handleEdit = (team: ITeam) => {
     city: team.city || '',
     isActive: team.isActive ?? true
   }
-  
-  if (modalRef.value) {
-    const modal = new (window as any).bootstrap.Modal(modalRef.value)
-    modal.show()
-  }
+  modalInstance.value?.show()
 }
 
-const handleDelete = async (team: ITeam) => {
+const handleDelete = async (team) => {
   const children = teams.value.filter(t => t.headQuarter?.id === team.id)
   if (children.length > 0) {
     alert(t('teams:messages.cannotDeleteWithChildren'))
     return
   }
   
-  if (confirm(t('common:confirm'))) {
-    try {
-      const { $axios } = useNuxtApp()
-      await $axios.delete(`/api/teams/${team.id}`)
-      
-      // Remove from local array on success
-      const index = teams.value.findIndex(t => t.id === team.id)
-      if (index > -1) {
-        teams.value.splice(index, 1)
-      }
-    } catch (error) {
-      console.error('Error deleting team:', error)
-    }
+  if (!confirm(t('teams:confirmDelete', { name: team.name }))) {
+    return
   }
-}
 
-const handleSubmit = async () => {
   try {
-    const { $axios } = useNuxtApp()
-    const parentTeam = formData.value.headQuarterId 
-      ? teams.value.find(t => t.id?.toString() === formData.value.headQuarterId)
-      : null
-    
-    // Prepare team data for API
-    const teamData = {
-      name: formData.value.name,
-      description: formData.value.description || null,
-      department: formData.value.department || null,
-      contactEmail: formData.value.contactEmail || null,
-      contactPhone: formData.value.contactPhone || null,
-      address: formData.value.address || null,
-      city: formData.value.city || null,
-      isActive: formData.value.isActive,
-      headQuarter: parentTeam || null
-    }
-    
-    if (modalMode.value === 'create') {
-      const response = await $axios.post('/api/teams', teamData)
-      const newTeam = response.data
-      teams.value.push(newTeam)
-    } else {
-      const response = await $axios.put(`/api/teams/${formData.value.id}`, {
-        id: formData.value.id,
-        ...teamData
-      })
-      const updatedTeam = response.data
-      
-      const index = teams.value.findIndex(t => t.id === formData.value.id)
-      if (index > -1) {
-        teams.value[index] = updatedTeam
-      }
-    }
-    closeModal()
+    await $axios.delete(`/api/teams/${team.id}`)
+    await refreshData()
   } catch (error) {
-    console.error('Error submitting team:', error)
+    console.error('Error deleting team:', error)
   }
 }
 
 const closeModal = () => {
-  if (modalRef.value) {
-    const modal = (window as any).bootstrap.Modal.getInstance(modalRef.value)
-    if (modal) {
-      modal.hide()
+  modalInstance.value?.hide()
+}
+
+const handleSubmit = async () => {
+  try {
+    const submitData = { ...formData.value }
+    if (submitData.headQuarterId) {
+      const parentTeam = teams.value.find(t => t.id?.toString() === submitData.headQuarterId)
+      submitData.headQuarter = parentTeam || null
+      delete submitData.headQuarterId
     }
+
+    if (isEditing.value) {
+      await $axios.put(`/api/teams/${formData.value.id}`, submitData)
+    } else {
+      await $axios.post('/api/teams', submitData)
+    }
+    closeModal()
+    await refreshData()
+  } catch (error) {
+    console.error('Error saving team:', error)
   }
-  selectedTeam.value = null
-  parentTeamId.value = null
 }
 
 // Lifecycle
-onMounted(() => {
-  refreshData()
+onMounted(async () => {
+  await refreshData()
+  
+  if (modalRef.value) {
+    modalInstance.value = new Modal(modalRef.value)
+  }
 })
 </script>
 

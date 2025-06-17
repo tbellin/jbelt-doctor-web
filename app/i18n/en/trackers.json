@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Trackers Management",
+    "description": "Manage project trackers and task monitoring",
+    "create": "Create Tracker"
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Search by name, description, or assignee...",
+    "status": "Status",
+    "priority": "Priority",
+    "allStatuses": "All Statuses",
+    "allPriorities": "All Priorities"
+  },
+  "table": {
+    "name": "Name",
+    "status": "Status", 
+    "priority": "Priority",
+    "assignedTo": "Assigned To",
+    "progress": "Progress",
+    "dates": "Dates",
+    "noData": "No trackers found",
+    "noDataDescription": "Start by creating your first tracker to monitor tasks and projects."
+  },
+  "form": {
+    "createTitle": "Create New Tracker",
+    "editTitle": "Edit Tracker",
+    "name": "Name",
+    "description": "Description",
+    "status": "Status",
+    "priority": "Priority",
+    "assignedTo": "Assigned To",
+    "completionPercentage": "Completion %",
+    "startDate": "Start Date",
+    "endDate": "End Date"
+  },
+  "statuses": {
+    "NEW": "New",
+    "IN_PROGRESS": "In Progress",
+    "COMPLETED": "Completed", 
+    "CANCELLED": "Cancelled"
+  },
+  "priorities": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "URGENT": "Urgent"
+  },
+  "confirmDelete": "Are you sure you want to delete tracker '{name}'? This action cannot be undone."
+}

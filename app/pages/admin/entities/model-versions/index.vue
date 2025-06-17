@@ -25,12 +25,58 @@
       </div>
     </div>
 
+    <!-- Filters -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">{{ t('modelVersions:filters.search') }}</label>
+            <input
+              v-model="searchTerm"
+              type="text"
+              class="form-control"
+              :placeholder="t('modelVersions:filters.searchPlaceholder')"
+            >
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ t('modelVersions:filters.status') }}</label>
+            <select v-model="selectedStatusFilter" class="form-select">
+              <option value="">{{ t('modelVersions:filters.allStatuses') }}</option>
+              <option value="DRAFT">{{ t('modelVersions:status.DRAFT') }}</option>
+              <option value="RELEASED">{{ t('modelVersions:status.RELEASED') }}</option>
+              <option value="SUPERSEDED">{{ t('modelVersions:status.SUPERSEDED') }}</option>
+              <option value="OBSOLETE">{{ t('modelVersions:status.OBSOLETE') }}</option>
+            </select>
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <button
+              class="btn btn-outline-secondary w-100"
+              @click="clearFilters"
+            >
+              <i class="bi bi-funnel me-2"></i>
+              {{ t('common:clearFilters') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Model Versions Table -->
     <div class="card">
       <div class="card-body">
         <div v-if="loading" class="text-center py-4">
-          <i class="bi bi-spinner-border"></i>
+          <i class="bi bi-hourglass-split me-2"></i>
           {{ t('common:loading') }}
+        </div>
+        
+        <div v-else-if="filteredModelVersions.length === 0" class="text-center py-4">
+          <i class="bi bi-clock-history fs-1 text-muted"></i>
+          <h5 class="mt-3">{{ t('modelVersions:table.noData') }}</h5>
+          <p class="text-muted">{{ t('modelVersions:table.noDataDescription') }}</p>
+          <button class="btn btn-primary" @click="openCreateModal">
+            <i class="bi bi-plus-circle me-2"></i>
+            {{ t('modelVersions:page.create') }}
+          </button>
         </div>
         
         <div v-else>
@@ -38,25 +84,45 @@
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>{{ t('modelVersions:form.fields.versionNumber.label') }}</th>
-                  <th>{{ t('modelVersions:form.fields.name.label') }}</th>
-                  <th>{{ t('modelVersions:form.fields.status.label') }}</th>
+                  <th>{{ t('modelVersions:table.versionNumber') }}</th>
+                  <th>{{ t('modelVersions:table.name') }}</th>
+                  <th>{{ t('modelVersions:table.status') }}</th>
+                  <th>{{ t('modelVersions:table.model') }}</th>
+                  <th>{{ t('modelVersions:table.createdDate') }}</th>
                   <th>{{ t('common:actions') }}</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-if="modelVersions.length === 0">
-                  <td colspan="5" class="text-center text-muted">
-                    {{ t('modelVersions:table.noData') }}
-                  </td>
-                </tr>
-                <tr v-for="version in modelVersions" :key="version.id">
-                  <td>{{ version.id }}</td>
-                  <td>{{ version.versionNumber }}</td>
-                  <td>{{ version.name }}</td>
+                <tr v-for="version in filteredModelVersions" :key="version.id">
                   <td>
-                    <span class="badge bg-secondary">{{ version.status || 'DRAFT' }}</span>
+                    <div class="fw-medium font-monospace">{{ version.versionNumber || '-' }}</div>
+                  </td>
+                  <td>
+                    <div class="fw-medium">{{ version.name || '-' }}</div>
+                    <small v-if="version.comments" class="text-muted">
+                      {{ version.comments }}
+                    </small>
+                  </td>
+                  <td>
+                    <span 
+                      class="badge"
+                      :class="getStatusBadgeClass(version.status)"
+                    >
+                      {{ getStatusLabel(version.status) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div v-if="version.model">
+                      <div class="fw-medium">{{ version.model.name || version.model.code }}</div>
+                      <small class="text-muted">{{ version.model.itemType }}</small>
+                    </div>
+                    <span v-else class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <span v-if="version.createdDate" class="text-muted">
+                      {{ formatDate(version.createdDate) }}
+                    </span>
+                    <span v-else class="text-muted">-</span>
                   </td>
                   <td>
                     <div class="btn-group btn-group-sm">
@@ -94,30 +160,64 @@
           </div>
           <div class="modal-body">
             <form @submit.prevent="handleSubmit">
-              <div class="mb-3">
-                <label class="form-label">{{ t('modelVersions:form.fields.versionNumber.label') }}</label>
-                <input
-                  v-model="formData.versionNumber"
-                  type="text"
-                  class="form-control"
-                  required
-                >
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('modelVersions:form.versionNumber') }} *</label>
+                    <input
+                      v-model="formData.versionNumber"
+                      type="text"
+                      class="form-control"
+                      required
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('modelVersions:form.name') }}</label>
+                    <input
+                      v-model="formData.name"
+                      type="text"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">{{ t('modelVersions:form.fields.name.label') }}</label>
-                <input
-                  v-model="formData.name"
-                  type="text"
-                  class="form-control"
-                >
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('modelVersions:form.status') }}</label>
+                    <select v-model="formData.status" class="form-select">
+                      <option value="DRAFT">{{ t('modelVersions:status.DRAFT') }}</option>
+                      <option value="RELEASED">{{ t('modelVersions:status.RELEASED') }}</option>
+                      <option value="SUPERSEDED">{{ t('modelVersions:status.SUPERSEDED') }}</option>
+                      <option value="OBSOLETE">{{ t('modelVersions:status.OBSOLETE') }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('modelVersions:form.model') }}</label>
+                    <select v-model="formData.modelId" class="form-select">
+                      <option value="">{{ t('modelVersions:form.selectModel') }}</option>
+                      <option v-for="model in availableModels" :key="model.id" :value="model.id">
+                        {{ model.name || model.code }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">{{ t('modelVersions:form.fields.comments.label') }}</label>
-                <textarea
-                  v-model="formData.comments"
-                  class="form-control"
-                  rows="3"
-                ></textarea>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('modelVersions:form.comments') }}</label>
+                    <textarea
+                      v-model="formData.comments"
+                      class="form-control"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                </div>
               </div>
               <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" @click="closeModal">
@@ -136,131 +236,174 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { type IModelVersion } from '~/model/model-version.model'
+import { Modal } from 'bootstrap'
 
-// Page meta
+// Page setup
 definePageMeta({
-  middleware: 'admin',
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['auth', 'admin', 'i18n']
 })
 
-// Composables
 const { t } = useI18n()
+const { $axios } = useNuxtApp()
 
 // Reactive data
-const modelVersions = ref<IModelVersion[]>([])
-const selectedVersion = ref<IModelVersion | null>(null)
-const modalMode = ref<'create' | 'edit'>('create')
 const loading = ref(false)
-const modalRef = ref()
+const modelVersions = ref([])
+const availableModels = ref([])
+const searchTerm = ref('')
+const selectedStatusFilter = ref('')
 
+// Modal
+const modalRef = ref<HTMLElement>()
+const modalInstance = ref<Modal>()
+const isEditing = ref(false)
 const formData = ref({
-  id: undefined,
+  id: null,
   versionNumber: '',
   name: '',
+  status: 'DRAFT',
   comments: '',
-  status: 'DRAFT'
+  modelId: null
 })
 
 // Computed
+const filteredModelVersions = computed(() => {
+  let filtered = modelVersions.value
+
+  if (searchTerm.value) {
+    const search = searchTerm.value.toLowerCase()
+    filtered = filtered.filter(version => 
+      version.versionNumber?.toLowerCase().includes(search) ||
+      version.name?.toLowerCase().includes(search) ||
+      version.comments?.toLowerCase().includes(search)
+    )
+  }
+
+  if (selectedStatusFilter.value) {
+    filtered = filtered.filter(version => version.status === selectedStatusFilter.value)
+  }
+
+  return filtered
+})
+
 const modalTitle = computed(() => {
-  return modalMode.value === 'create' 
-    ? t('modelVersions:modal.create.title')
-    : t('modelVersions:modal.edit.title')
+  return isEditing.value ? t('modelVersions:form.editTitle') : t('modelVersions:form.createTitle')
 })
 
 // Methods
 const refreshData = async () => {
   loading.value = true
   try {
-    // Mock data - replace with actual API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    modelVersions.value = []
+    const [versionsResponse, modelsResponse] = await Promise.all([
+      $axios.get('/api/model-versions'),
+      $axios.get('/api/models')
+    ])
+    modelVersions.value = versionsResponse.data || []
+    availableModels.value = modelsResponse.data || []
   } catch (error) {
-    console.error('Error loading model versions:', error)
+    console.error('Error loading data:', error)
+    modelVersions.value = []
+    availableModels.value = []
   } finally {
     loading.value = false
   }
 }
 
+const clearFilters = () => {
+  searchTerm.value = ''
+  selectedStatusFilter.value = ''
+}
+
 const openCreateModal = () => {
-  modalMode.value = 'create'
-  selectedVersion.value = null
+  isEditing.value = false
   formData.value = {
-    id: undefined,
+    id: null,
     versionNumber: '',
     name: '',
+    status: 'DRAFT',
     comments: '',
-    status: 'DRAFT'
+    modelId: null
   }
-  
-  if (modalRef.value) {
-    const modal = new (window as any).bootstrap.Modal(modalRef.value)
-    modal.show()
-  }
+  modalInstance.value?.show()
 }
 
-const handleEdit = (version: IModelVersion) => {
-  modalMode.value = 'edit'
-  selectedVersion.value = version
-  formData.value = { ...version }
-  
-  if (modalRef.value) {
-    const modal = new (window as any).bootstrap.Modal(modalRef.value)
-    modal.show()
+const handleEdit = (version) => {
+  isEditing.value = true
+  formData.value = {
+    id: version.id,
+    versionNumber: version.versionNumber || '',
+    name: version.name || '',
+    status: version.status || 'DRAFT',
+    comments: version.comments || '',
+    modelId: version.model?.id || null
   }
+  modalInstance.value?.show()
 }
 
-const handleDelete = async (version: IModelVersion) => {
-  if (confirm(t('common:confirm'))) {
-    try {
-      // Remove from local array
-      const index = modelVersions.value.findIndex(v => v.id === version.id)
-      if (index > -1) {
-        modelVersions.value.splice(index, 1)
-      }
-    } catch (error) {
-      console.error('Error deleting model version:', error)
-    }
+const handleDelete = async (version) => {
+  if (!confirm(t('modelVersions:confirmDelete', { name: version.name || version.versionNumber }))) {
+    return
   }
-}
 
-const handleSubmit = async () => {
   try {
-    if (modalMode.value === 'create') {
-      // Add to local array
-      const newVersion = {
-        ...formData.value,
-        id: Date.now() // Mock ID
-      }
-      modelVersions.value.push(newVersion)
-    } else {
-      // Update in local array
-      const index = modelVersions.value.findIndex(v => v.id === formData.value.id)
-      if (index > -1) {
-        modelVersions.value[index] = { ...formData.value }
-      }
-    }
-    closeModal()
+    await $axios.delete(`/api/model-versions/${version.id}`)
+    await refreshData()
   } catch (error) {
-    console.error('Error submitting model version:', error)
+    console.error('Error deleting model version:', error)
   }
 }
 
 const closeModal = () => {
-  if (modalRef.value) {
-    const modal = (window as any).bootstrap.Modal.getInstance(modalRef.value)
-    if (modal) {
-      modal.hide()
+  modalInstance.value?.hide()
+}
+
+const handleSubmit = async () => {
+  try {
+    const submitData = { ...formData.value }
+    if (submitData.modelId) {
+      submitData.model = { id: submitData.modelId }
+      delete submitData.modelId
     }
+
+    if (isEditing.value) {
+      await $axios.put(`/api/model-versions/${formData.value.id}`, submitData)
+    } else {
+      await $axios.post('/api/model-versions', submitData)
+    }
+    closeModal()
+    await refreshData()
+  } catch (error) {
+    console.error('Error saving model version:', error)
   }
-  selectedVersion.value = null
+}
+
+const getStatusBadgeClass = (status) => {
+  const classes = {
+    'DRAFT': 'bg-secondary',
+    'RELEASED': 'bg-success',
+    'SUPERSEDED': 'bg-warning',
+    'OBSOLETE': 'bg-danger'
+  }
+  return classes[status] || 'bg-secondary'
+}
+
+const getStatusLabel = (status) => {
+  return t(`modelVersions:status.${status}`) || status
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleDateString()
 }
 
 // Lifecycle
-onMounted(() => {
-  refreshData()
+onMounted(async () => {
+  await refreshData()
+  
+  if (modalRef.value) {
+    modalInstance.value = new Modal(modalRef.value)
+  }
 })
 </script>
 

@@ -9,7 +9,11 @@
     "modelVersions": "Model Versions",
     "items": "Items",
     "authors": "Authors",
-    "teams": "Teams"
+    "teams": "Teams",
+    "models": "Models",
+    "sheets": "Sheets", 
+    "balloons": "Balloons",
+    "trackers": "Trackers"
   },
   "models": "Models",
   "sheets": "Sheets", 

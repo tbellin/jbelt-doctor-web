@@ -16,560 +16,482 @@
         </button>
         <button
           class="btn btn-outline-secondary"
-          @click="handleImport"
+          @click="refreshData"
+          :disabled="loading"
         >
-          <i class="bi bi-upload me-2"></i>
-          {{ t('items:page.import') }}
+          <i class="bi bi-arrow-clockwise me-2"></i>
+          {{ t('common:refresh') }}
         </button>
-        <div class="btn-group">
-          <button
-            class="btn"
-            :class="viewMode === 'table' ? 'btn-info' : 'btn-outline-info'"
-            @click="setViewMode('table')"
-          >
-            <i class="bi bi-table me-1"></i>
-            {{ t('items:page.viewModes.table') }}
-          </button>
-          <button
-            class="btn"
-            :class="viewMode === 'tree' ? 'btn-info' : 'btn-outline-info'"
-            @click="setViewMode('tree')"
-          >
-            <i class="bi bi-diagram-3 me-1"></i>
-            {{ t('items:page.viewModes.tree') }}
-          </button>
-        </div>
       </div>
     </div>
 
-    <!-- Item Statistics Cards -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-2">
-        <div class="card bg-primary text-white">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-collection fs-2 me-2"></i>
-              <div>
-                <div class="fs-4 fw-bold">{{ itemStats.total }}</div>
-                <small>{{ t('items:stats.total') }}</small>
-              </div>
-            </div>
+    <!-- Filters -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">{{ t('items:filters.search') }}</label>
+            <input
+              v-model="searchTerm"
+              type="text"
+              class="form-control"
+              :placeholder="t('items:filters.searchPlaceholder')"
+            >
           </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card bg-success text-white">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-gear fs-2 me-2"></i>
-              <div>
-                <div class="fs-4 fw-bold">{{ itemStats.components }}</div>
-                <small>{{ t('items:stats.components') }}</small>
-              </div>
-            </div>
+          <div class="col-md-3">
+            <label class="form-label">{{ t('items:filters.type') }}</label>
+            <select v-model="selectedTypeFilter" class="form-select">
+              <option value="">{{ t('items:filters.allTypes') }}</option>
+              <option value="COMPONENT">{{ t('items:types.COMPONENT') }}</option>
+              <option value="ASSEMBLY">{{ t('items:types.ASSEMBLY') }}</option>
+              <option value="MATERIAL">{{ t('items:types.MATERIAL') }}</option>
+              <option value="TOOL">{{ t('items:types.TOOL') }}</option>
+              <option value="DOCUMENT">{{ t('items:types.DOCUMENT') }}</option>
+            </select>
           </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card bg-info text-white">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-boxes fs-2 me-2"></i>
-              <div>
-                <div class="fs-4 fw-bold">{{ itemStats.assemblies }}</div>
-                <small>{{ t('items:stats.assemblies') }}</small>
-              </div>
-            </div>
+          <div class="col-md-3">
+            <label class="form-label">{{ t('items:filters.category') }}</label>
+            <input
+              v-model="selectedCategoryFilter"
+              type="text"
+              class="form-control"
+              :placeholder="t('items:filters.categoryPlaceholder')"
+            >
           </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card bg-warning text-dark">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-layers fs-2 me-2"></i>
-              <div>
-                <div class="fs-4 fw-bold">{{ itemStats.materials }}</div>
-                <small>{{ t('items:stats.materials') }}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card bg-secondary text-white">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-tools fs-2 me-2"></i>
-              <div>
-                <div class="fs-4 fw-bold">{{ itemStats.tools }}</div>
-                <small>{{ t('items:stats.tools') }}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card bg-dark text-white">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-file-earmark-text fs-2 me-2"></i>
-              <div>
-                <div class="fs-4 fw-bold">{{ itemStats.documents }}</div>
-                <small>{{ t('items:stats.documents') }}</small>
-              </div>
-            </div>
+          <div class="col-md-3 d-flex align-items-end">
+            <button
+              class="btn btn-outline-secondary w-100"
+              @click="clearFilters"
+            >
+              <i class="bi bi-funnel me-2"></i>
+              {{ t('common:clearFilters') }}
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Items Content -->
+    <!-- Items Table -->
     <div class="card">
       <div class="card-body">
-        <div v-if="viewMode === 'table'">
-          <ItemTable
-            :items="items"
-            :loading="loading"
-            :view-mode="viewMode"
-            @view="handleView"
-            @edit="handleEdit"
-            @delete="handleDelete"
-            @copy="handleCopy"
-            @view-children="handleViewChildren"
-            @create="openCreateModal"
-            @import="handleImport"
-            @refresh="loadItems"
-            @set-view-mode="setViewMode"
-          />
+        <div v-if="loading" class="text-center py-4">
+          <i class="bi bi-hourglass-split me-2"></i>
+          {{ t('common:loading') }}
         </div>
-        <div v-else class="tree-view">
-          <ItemTreeView
-            :items="treeItems"
-            :loading="loading"
-            @view="handleView"
-            @edit="handleEdit"
-            @delete="handleDelete"
-            @add-child="handleAddChild"
-          />
+        
+        <div v-else-if="filteredItems.length === 0" class="text-center py-4">
+          <i class="bi bi-collection fs-1 text-muted"></i>
+          <h5 class="mt-3">{{ t('items:table.noData') }}</h5>
+          <p class="text-muted">{{ t('items:table.noDataDescription') }}</p>
+          <button class="btn btn-primary" @click="openCreateModal">
+            <i class="bi bi-plus-circle me-2"></i>
+            {{ t('items:page.create') }}
+          </button>
+        </div>
+        
+        <div v-else>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>{{ t('items:table.code') }}</th>
+                  <th>{{ t('items:table.name') }}</th>
+                  <th>{{ t('items:table.type') }}</th>
+                  <th>{{ t('items:table.category') }}</th>
+                  <th>{{ t('items:table.values') }}</th>
+                  <th>{{ t('common:actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in filteredItems" :key="item.id">
+                  <td>
+                    <div class="fw-medium font-monospace">{{ item.code || '-' }}</div>
+                  </td>
+                  <td>
+                    <div class="fw-medium">{{ item.name || '-' }}</div>
+                    <small v-if="item.description" class="text-muted">
+                      {{ item.description }}
+                    </small>
+                  </td>
+                  <td>
+                    <span v-if="item.itemType" class="badge bg-primary">
+                      {{ getTypeLabel(item.itemType) }}
+                    </span>
+                    <span v-else class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <span v-if="item.category" class="badge bg-info">
+                      {{ item.category }}
+                    </span>
+                    <span v-else class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <div class="item-values">
+                      <small v-if="item.textValue" class="d-block">
+                        <i class="bi bi-text-left me-1"></i>{{ item.textValue }}
+                      </small>
+                      <small v-if="item.numberValue !== null && item.numberValue !== undefined" class="d-block">
+                        <i class="bi bi-123 me-1"></i>{{ item.numberValue }} {{ item.unit || '' }}
+                      </small>
+                      <small v-if="item.booleanValue !== null && item.booleanValue !== undefined" class="d-block">
+                        <i class="bi bi-check-circle me-1"></i>{{ item.booleanValue ? t('common:yes') : t('common:no') }}
+                      </small>
+                      <small v-if="item.dateValue" class="d-block">
+                        <i class="bi bi-calendar me-1"></i>{{ formatDate(item.dateValue) }}
+                      </small>
+                      <span v-if="!hasValues(item)" class="text-muted">-</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button
+                        class="btn btn-outline-primary"
+                        @click="handleEdit(item)"
+                        :title="t('common:edit')"
+                      >
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        class="btn btn-outline-danger"
+                        @click="handleDelete(item)"
+                        :title="t('common:delete')"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Create/Edit Modal -->
-    <EntityModal
-      ref="itemModal"
-      :title="modalTitle"
-      size="lg"
-    >
-      <ItemForm
-        :mode="modalMode"
-        :initial-data="selectedItem"
-        @submit="handleSubmit"
-        @cancel="closeModal"
-      />
-    </EntityModal>
-
-    <!-- View Modal -->
-    <EntityModal
-      ref="viewModal"
-      :title="t('items:modal.view.title')"
-      size="lg"
-    >
-      <div v-if="selectedItem" class="item-details">
-        <div class="row">
-          <div class="col-md-6">
-            <EntityCard
-              :data="selectedItem"
-              :fields="viewFields"
-            />
+    <div class="modal fade" ref="modalRef" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ modalTitle }}</h5>
+            <button type="button" class="btn-close" @click="closeModal"></button>
           </div>
-          <div class="col-md-6">
-            <div class="item-relationships">
-              <h6>{{ t('items:modal.view.relationships') }}</h6>
-              
-              <!-- Parent Item -->
-              <div v-if="selectedItem.parent" class="mb-3">
-                <label class="form-label small">{{ t('items:modal.view.parent') }}</label>
-                <div class="border rounded p-2">
-                  <div class="d-flex align-items-center">
-                    <i :class="getItemTypeIcon(selectedItem.parent.itemType)" class="me-2"></i>
-                    <div>
-                      <div class="fw-medium">{{ selectedItem.parent.name }}</div>
-                      <small class="text-muted">{{ selectedItem.parent.code }}</small>
-                    </div>
+          <div class="modal-body">
+            <form @submit.prevent="handleSubmit">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.code') }} *</label>
+                    <input
+                      v-model="formData.code"
+                      type="text"
+                      class="form-control"
+                      required
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.name') }} *</label>
+                    <input
+                      v-model="formData.name"
+                      type="text"
+                      class="form-control"
+                      required
+                    >
                   </div>
                 </div>
               </div>
-              
-              <!-- Child Items -->
-              <div v-if="selectedItem.children && selectedItem.children.length > 0" class="mb-3">
-                <label class="form-label small">{{ t('items:modal.view.children') }} ({{ selectedItem.children.length }})</label>
-                <div class="children-list">
-                  <div 
-                    v-for="child in selectedItem.children.slice(0, 5)"
-                    :key="child.id"
-                    class="border rounded p-2 mb-1"
-                  >
-                    <div class="d-flex align-items-center">
-                      <i :class="getItemTypeIcon(child.itemType)" class="me-2"></i>
-                      <div>
-                        <div class="fw-medium">{{ child.name }}</div>
-                        <small class="text-muted">{{ child.code }}</small>
-                      </div>
-                    </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.itemType') }}</label>
+                    <select v-model="formData.itemType" class="form-select">
+                      <option value="">{{ t('items:form.selectType') }}</option>
+                      <option value="COMPONENT">{{ t('items:types.COMPONENT') }}</option>
+                      <option value="ASSEMBLY">{{ t('items:types.ASSEMBLY') }}</option>
+                      <option value="MATERIAL">{{ t('items:types.MATERIAL') }}</option>
+                      <option value="TOOL">{{ t('items:types.TOOL') }}</option>
+                      <option value="DOCUMENT">{{ t('items:types.DOCUMENT') }}</option>
+                    </select>
                   </div>
-                  <div v-if="selectedItem.children.length > 5" class="text-muted small">
-                    {{ t('items:modal.view.moreChildren', { count: selectedItem.children.length - 5 }) }}
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.category') }}</label>
+                    <input
+                      v-model="formData.category"
+                      type="text"
+                      class="form-control"
+                    >
                   </div>
                 </div>
               </div>
-              
-              <!-- Tags -->
-              <div v-if="selectedItem.tags && selectedItem.tags.length > 0" class="mb-3">
-                <label class="form-label small">{{ t('items:modal.view.tags') }}</label>
-                <div>
-                  <span
-                    v-for="tag in selectedItem.tags"
-                    :key="tag"
-                    class="badge bg-secondary me-1 mb-1"
-                  >
-                    {{ tag }}
-                  </span>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.description') }}</label>
+                    <textarea
+                      v-model="formData.description"
+                      class="form-control"
+                      rows="2"
+                    ></textarea>
+                  </div>
                 </div>
               </div>
-            </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.textValue') }}</label>
+                    <input
+                      v-model="formData.textValue"
+                      type="text"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.numberValue') }}</label>
+                    <input
+                      v-model.number="formData.numberValue"
+                      type="number"
+                      step="0.01"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.unit') }}</label>
+                    <input
+                      v-model="formData.unit"
+                      type="text"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check mb-3">
+                    <input
+                      v-model="formData.booleanValue"
+                      class="form-check-input"
+                      type="checkbox"
+                      id="booleanValue"
+                    >
+                    <label class="form-check-label" for="booleanValue">
+                      {{ t('items:form.booleanValue') }}
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('items:form.dateValue') }}</label>
+                    <input
+                      v-model="formData.dateValue"
+                      type="date"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary" @click="closeModal">
+                  {{ t('common:cancel') }}
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  {{ t('common:save') }}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-    </EntityModal>
-
-    <!-- Children View Modal -->
-    <EntityModal
-      ref="childrenModal"
-      :title="t('items:modal.children.title')"
-      size="xl"
-    >
-      <div v-if="selectedItem" class="children-view">
-        <div class="d-flex align-items-center mb-3">
-          <i :class="getItemTypeIcon(selectedItem.itemType)" class="fs-4 me-3"></i>
-          <div>
-            <h5 class="mb-0">{{ selectedItem.name }}</h5>
-            <small class="text-muted">{{ selectedItem.code }}</small>
-          </div>
-        </div>
-        
-        <ItemTable
-          :items="selectedItem.children || []"
-          :loading="false"
-          view-mode="table"
-          @view="handleView"
-          @edit="handleEdit"
-          @delete="handleDelete"
-        />
-      </div>
-    </EntityModal>
-
-    <!-- Delete Confirmation Modal -->
-    <EntityModal
-      ref="deleteModal"
-      :title="t('items:modal.delete.title')"
-      size="sm"
-    >
-      <div v-if="selectedItem" class="text-center">
-        <i class="bi bi-exclamation-triangle text-warning fs-1 mb-3"></i>
-        <p>{{ t('items:modal.delete.message', { name: selectedItem.name }) }}</p>
-        <div v-if="selectedItem.children && selectedItem.children.length > 0" class="alert alert-warning">
-          <i class="bi bi-info-circle me-2"></i>
-          {{ t('items:modal.delete.hasChildren', { count: selectedItem.children.length }) }}
-        </div>
-        <div class="d-flex gap-2 justify-content-center">
-          <button class="btn btn-secondary" @click="closeDeleteModal">
-            {{ t('common:cancel') }}
-          </button>
-          <button 
-            class="btn btn-danger" 
-            @click="confirmDelete" 
-            :disabled="deleting || (selectedItem.children && selectedItem.children.length > 0)"
-          >
-            <i v-if="deleting" class="bi bi-spinner-border me-2"></i>
-            {{ t('common:delete') }}
-          </button>
-        </div>
-      </div>
-    </EntityModal>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { type IItem } from '~/model/item.model'
-import { ItemType } from '~/model/enumerations/item-type.model'
-import ItemTable from '~/components/entities/item/ItemTable.vue'
-import ItemForm from '~/components/entities/item/ItemForm.vue'
-import EntityModal from '~/components/entities/shared/EntityModal.vue'
-import EntityCard from '~/components/entities/shared/EntityCard.vue'
-import { useEntityAPI } from '~/components/entities/shared/composables/useEntityAPI'
+import { Modal } from 'bootstrap'
 
-// Page meta
+// Page setup
 definePageMeta({
-  middleware: 'admin',
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['auth', 'admin', 'i18n']
 })
 
-// Composables
 const { t } = useI18n()
-
-// API setup
-const itemAPI = useEntityAPI<IItem>({
-  baseUrl: '/api',
-  entityName: 'items'
-})
+const { $axios } = useNuxtApp()
 
 // Reactive data
-const items = ref<IItem[]>([])
-const selectedItem = ref<IItem | null>(null)
-const modalMode = ref<'create' | 'edit'>('create')
 const loading = ref(false)
-const deleting = ref(false)
-const viewMode = ref<'table' | 'tree'>('table')
+const items = ref([])
+const searchTerm = ref('')
+const selectedTypeFilter = ref('')
+const selectedCategoryFilter = ref('')
 
-// Modal refs
-const itemModal = ref()
-const viewModal = ref()
-const childrenModal = ref()
-const deleteModal = ref()
+// Modal
+const modalRef = ref<HTMLElement>()
+const modalInstance = ref<Modal>()
+const isEditing = ref(false)
+const formData = ref({
+  id: null,
+  code: '',
+  name: '',
+  itemType: '',
+  category: '',
+  description: '',
+  textValue: '',
+  numberValue: null,
+  unit: '',
+  booleanValue: false,
+  dateValue: ''
+})
 
 // Computed
+const filteredItems = computed(() => {
+  let filtered = items.value
+
+  if (searchTerm.value) {
+    const search = searchTerm.value.toLowerCase()
+    filtered = filtered.filter(item => 
+      item.code?.toLowerCase().includes(search) ||
+      item.name?.toLowerCase().includes(search) ||
+      item.description?.toLowerCase().includes(search) ||
+      item.category?.toLowerCase().includes(search)
+    )
+  }
+
+  if (selectedTypeFilter.value) {
+    filtered = filtered.filter(item => item.itemType === selectedTypeFilter.value)
+  }
+
+  if (selectedCategoryFilter.value) {
+    const categorySearch = selectedCategoryFilter.value.toLowerCase()
+    filtered = filtered.filter(item => 
+      item.category?.toLowerCase().includes(categorySearch)
+    )
+  }
+
+  return filtered
+})
+
 const modalTitle = computed(() => {
-  return modalMode.value === 'create' 
-    ? t('items:modal.create.title')
-    : t('items:modal.edit.title')
+  return isEditing.value ? t('items:form.editTitle') : t('items:form.createTitle')
 })
-
-const itemStats = computed(() => {
-  const stats = {
-    total: items.value.length,
-    components: 0,
-    assemblies: 0,
-    materials: 0,
-    tools: 0,
-    documents: 0
-  }
-  
-  items.value.forEach(item => {
-    switch (item.itemType) {
-      case ItemType.COMPONENT: stats.components++; break
-      case ItemType.ASSEMBLY: stats.assemblies++; break
-      case ItemType.MATERIAL: stats.materials++; break
-      case ItemType.TOOL: stats.tools++; break
-      case ItemType.DOCUMENT: stats.documents++; break
-    }
-  })
-  
-  return stats
-})
-
-const treeItems = computed(() => {
-  // Build tree structure from flat items
-  const tree = items.value.filter(item => !item.parent)
-  
-  function buildTree(parentItems: IItem[]): IItem[] {
-    return parentItems.map(parent => {
-      const children = items.value.filter(item => item.parent?.id === parent.id)
-      return {
-        ...parent,
-        children: children.length > 0 ? buildTree(children) : []
-      }
-    })
-  }
-  
-  return buildTree(tree)
-})
-
-const viewFields = computed(() => [
-  { key: 'code', label: t('items:form.fields.code.label') },
-  { key: 'name', label: t('items:form.fields.name.label') },
-  { key: 'itemType', label: t('items:form.fields.itemType.label') },
-  { key: 'category', label: t('items:form.fields.category.label') },
-  { key: 'textValue', label: t('items:form.fields.textValue.label') },
-  { key: 'numberValue', label: t('items:form.fields.numberValue.label') },
-  { key: 'unit', label: t('items:form.fields.unit.label') },
-  { key: 'booleanValue', label: t('items:form.fields.booleanValue.label') },
-  { key: 'dateValue', label: t('items:form.fields.dateValue.label') },
-  { key: 'description', label: t('items:form.fields.description.label') }
-])
 
 // Methods
-const loadItems = async () => {
+const refreshData = async () => {
   loading.value = true
   try {
-    const result = await itemAPI.getAll()
-    if (result.success && result.data) {
-      items.value = result.data
-    }
+    const response = await $axios.get('/api/items')
+    items.value = response.data || []
   } catch (error) {
     console.error('Error loading items:', error)
+    items.value = []
   } finally {
     loading.value = false
   }
 }
 
+const clearFilters = () => {
+  searchTerm.value = ''
+  selectedTypeFilter.value = ''
+  selectedCategoryFilter.value = ''
+}
+
 const openCreateModal = () => {
-  modalMode.value = 'create'
-  selectedItem.value = null
-  itemModal.value?.open()
-}
-
-const handleView = (item: IItem) => {
-  selectedItem.value = item
-  viewModal.value?.open()
-}
-
-const handleEdit = (item: IItem) => {
-  modalMode.value = 'edit'
-  selectedItem.value = item
-  itemModal.value?.open()
-}
-
-const handleCopy = (item: IItem) => {
-  modalMode.value = 'create'
-  selectedItem.value = {
-    ...item,
-    id: undefined,
-    code: item.code + '_COPY',
-    name: item.name + ' (Copy)',
-    parent: item.parent // Keep parent relationship
+  isEditing.value = false
+  formData.value = {
+    id: null,
+    code: '',
+    name: '',
+    itemType: '',
+    category: '',
+    description: '',
+    textValue: '',
+    numberValue: null,
+    unit: '',
+    booleanValue: false,
+    dateValue: ''
   }
-  itemModal.value?.open()
+  modalInstance.value?.show()
 }
 
-const handleAddChild = (parentItem: IItem) => {
-  modalMode.value = 'create'
-  selectedItem.value = {
-    parent: parentItem
-  } as IItem
-  itemModal.value?.open()
-}
-
-const handleViewChildren = (item: IItem) => {
-  selectedItem.value = item
-  childrenModal.value?.open()
-}
-
-const handleDelete = (item: IItem) => {
-  selectedItem.value = item
-  deleteModal.value?.open()
-}
-
-const handleSubmit = async (item: IItem) => {
-  try {
-    let result
-    if (modalMode.value === 'create') {
-      result = await itemAPI.create(item)
-    } else {
-      result = await itemAPI.update(item.id!, item)
-    }
-    
-    if (result.success) {
-      closeModal()
-      await loadItems()
-    }
-  } catch (error) {
-    console.error('Error submitting item:', error)
+const handleEdit = (item) => {
+  isEditing.value = true
+  formData.value = {
+    id: item.id,
+    code: item.code || '',
+    name: item.name || '',
+    itemType: item.itemType || '',
+    category: item.category || '',
+    description: item.description || '',
+    textValue: item.textValue || '',
+    numberValue: item.numberValue || null,
+    unit: item.unit || '',
+    booleanValue: item.booleanValue || false,
+    dateValue: item.dateValue || ''
   }
+  modalInstance.value?.show()
 }
 
-const confirmDelete = async () => {
-  if (!selectedItem.value) return
-  
-  deleting.value = true
+const handleDelete = async (item) => {
+  if (!confirm(t('items:confirmDelete', { name: item.name || item.code }))) {
+    return
+  }
+
   try {
-    const result = await itemAPI.remove(selectedItem.value.id!)
-    if (result.success) {
-      closeDeleteModal()
-      await loadItems()
-    }
+    await $axios.delete(`/api/items/${item.id}`)
+    await refreshData()
   } catch (error) {
     console.error('Error deleting item:', error)
-  } finally {
-    deleting.value = false
-  }
-}
-
-const handleImport = () => {
-  // Create file input element
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = '.json,.csv,.xlsx'
-  input.onchange = async (event) => {
-    const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
-
-    try {
-      loading.value = true
-      
-      // Handle different file types
-      if (file.name.endsWith('.json')) {
-        const text = await file.text()
-        const data = JSON.parse(text)
-        await importItems(data)
-      } else if (file.name.endsWith('.csv')) {
-        // TODO: Implement CSV parsing
-        console.warn('CSV import not yet implemented')
-      } else if (file.name.endsWith('.xlsx')) {
-        // TODO: Implement Excel parsing
-        console.warn('Excel import not yet implemented')
-      }
-    } catch (error) {
-      console.error('Error importing items:', error)
-    } finally {
-      loading.value = false
-    }
-  }
-  input.click()
-}
-
-const importItems = async (data: any[]) => {
-  try {
-    const result = await itemAPI.createBatch(data)
-    if (result.success) {
-      await loadItems()
-      // Show success notification
-    }
-  } catch (error) {
-    console.error('Error importing items:', error)
-  }
-}
-
-const setViewMode = (mode: 'table' | 'tree') => {
-  viewMode.value = mode
-}
-
-const getItemTypeIcon = (itemType?: ItemType): string => {
-  switch (itemType) {
-    case ItemType.COMPONENT: return 'bi bi-gear text-primary'
-    case ItemType.ASSEMBLY: return 'bi bi-boxes text-success'
-    case ItemType.MATERIAL: return 'bi bi-layers text-warning'
-    case ItemType.TOOL: return 'bi bi-tools text-info'
-    case ItemType.DOCUMENT: return 'bi bi-file-earmark-text text-secondary'
-    default: return 'bi bi-square text-muted'
   }
 }
 
 const closeModal = () => {
-  itemModal.value?.close()
-  selectedItem.value = null
+  modalInstance.value?.hide()
 }
 
-const closeDeleteModal = () => {
-  deleteModal.value?.close()
-  selectedItem.value = null
+const handleSubmit = async () => {
+  try {
+    if (isEditing.value) {
+      await $axios.put(`/api/items/${formData.value.id}`, formData.value)
+    } else {
+      await $axios.post('/api/items', formData.value)
+    }
+    closeModal()
+    await refreshData()
+  } catch (error) {
+    console.error('Error saving item:', error)
+  }
+}
+
+const getTypeLabel = (type) => {
+  return t(`items:types.${type}`) || type
+}
+
+const hasValues = (item) => {
+  return item.textValue || 
+         (item.numberValue !== null && item.numberValue !== undefined) || 
+         (item.booleanValue !== null && item.booleanValue !== undefined) || 
+         item.dateValue
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleDateString()
 }
 
 // Lifecycle
-onMounted(() => {
-  loadItems()
+onMounted(async () => {
+  await refreshData()
+  
+  if (modalRef.value) {
+    modalInstance.value = new Modal(modalRef.value)
+  }
 })
 </script>
 
@@ -578,29 +500,12 @@ onMounted(() => {
   padding: 1rem;
 }
 
-.children-list {
-  max-height: 300px;
-  overflow-y: auto;
+.item-values {
+  max-width: 200px;
 }
 
-.tree-view {
-  min-height: 400px;
-}
-
-.card {
-  border: none;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.btn-group .btn {
-  border-radius: 0.375rem;
-}
-
-.btn-group .btn:not(:first-child) {
-  margin-left: 0.5rem;
-}
-
-.item-relationships .border {
-  background-color: #f8f9fa;
+.item-values small {
+  font-size: 0.75rem;
+  line-height: 1.2;
 }
 </style>

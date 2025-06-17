@@ -148,6 +148,26 @@
                     <i class="bi bi-diagram-3 me-2"></i> {{ t('navigation.entities.teams') }}
                   </NuxtLink>
                 </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/models" class="nav-link">
+                    <i class="bi bi-box-seam me-2"></i> {{ t('navigation.entities.models') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/sheets" class="nav-link">
+                    <i class="bi bi-file-earmark-text me-2"></i> {{ t('navigation.entities.sheets') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/balloons" class="nav-link">
+                    <i class="bi bi-geo-alt me-2"></i> {{ t('navigation.entities.balloons') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/admin/entities/trackers" class="nav-link">
+                    <i class="bi bi-activity me-2"></i> {{ t('navigation.entities.trackers') }}
+                  </NuxtLink>
+                </li>
               </ul>
             </div>
           </div>

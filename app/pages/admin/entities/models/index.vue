@@ -1,10 +1,10 @@
 <template>
-  <div class="admin-archives-page">
+  <div class="admin-models-page">
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
-        <h1 class="h3 mb-1">{{ t('archives:page.title') }}</h1>
-        <p class="text-muted mb-0">{{ t('archives:page.description') }}</p>
+        <h1 class="h3 mb-1">{{ t('models:page.title') }}</h1>
+        <p class="text-muted mb-0">{{ t('models:page.description') }}</p>
       </div>
       <div class="btn-group">
         <button
@@ -12,7 +12,7 @@
           @click="openCreateModal"
         >
           <i class="bi bi-plus-circle me-2"></i>
-          {{ t('archives:page.create') }}
+          {{ t('models:page.create') }}
         </button>
         <button
           class="btn btn-outline-secondary"
@@ -29,26 +29,34 @@
     <div class="card mb-4">
       <div class="card-body">
         <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label">{{ t('archives:filters.search') }}</label>
+          <div class="col-md-3">
+            <label class="form-label">{{ t('models:filters.search') }}</label>
             <input
               v-model="searchTerm"
               type="text"
               class="form-control"
-              :placeholder="t('archives:filters.searchPlaceholder')"
+              :placeholder="t('models:filters.searchPlaceholder')"
             >
           </div>
-          <div class="col-md-4">
-            <label class="form-label">{{ t('archives:filters.type') }}</label>
+          <div class="col-md-3">
+            <label class="form-label">{{ t('models:filters.type') }}</label>
             <select v-model="selectedTypeFilter" class="form-select">
-              <option value="">{{ t('archives:filters.allTypes') }}</option>
-              <option value="CAD">{{ t('archives:types.CAD') }}</option>
-              <option value="IMAGE">{{ t('archives:types.IMAGE') }}</option>
-              <option value="DOCUMENT">{{ t('archives:types.DOCUMENT') }}</option>
-              <option value="OTHER">{{ t('archives:types.OTHER') }}</option>
+              <option value="">{{ t('models:filters.allTypes') }}</option>
+              <option value="PART">{{ t('models:types.PART') }}</option>
+              <option value="ASSEMBLY">{{ t('models:types.ASSEMBLY') }}</option>
+              <option value="DRAWING">{{ t('models:types.DRAWING') }}</option>
+              <option value="FORMAT">{{ t('models:types.FORMAT') }}</option>
             </select>
           </div>
-          <div class="col-md-4 d-flex align-items-end">
+          <div class="col-md-3">
+            <label class="form-label">{{ t('models:filters.instance') }}</label>
+            <select v-model="selectedInstanceFilter" class="form-select">
+              <option value="">{{ t('models:filters.allInstances') }}</option>
+              <option value="GENERIC">{{ t('models:instances.GENERIC') }}</option>
+              <option value="INSTANCE">{{ t('models:instances.INSTANCE') }}</option>
+            </select>
+          </div>
+          <div class="col-md-3 d-flex align-items-end">
             <button
               class="btn btn-outline-secondary w-100"
               @click="clearFilters"
@@ -61,7 +69,7 @@
       </div>
     </div>
 
-    <!-- Archives Table -->
+    <!-- Models Table -->
     <div class="card">
       <div class="card-body">
         <div v-if="loading" class="text-center py-4">
@@ -69,13 +77,13 @@
           {{ t('common:loading') }}
         </div>
         
-        <div v-else-if="filteredArchives.length === 0" class="text-center py-4">
-          <i class="bi bi-archive fs-1 text-muted"></i>
-          <h5 class="mt-3">{{ t('archives:table.noData') }}</h5>
-          <p class="text-muted">{{ t('archives:table.noDataDescription') }}</p>
+        <div v-else-if="filteredModels.length === 0" class="text-center py-4">
+          <i class="bi bi-box-seam fs-1 text-muted"></i>
+          <h5 class="mt-3">{{ t('models:table.noData') }}</h5>
+          <p class="text-muted">{{ t('models:table.noDataDescription') }}</p>
           <button class="btn btn-primary" @click="openCreateModal">
             <i class="bi bi-plus-circle me-2"></i>
-            {{ t('archives:page.create') }}
+            {{ t('models:page.create') }}
           </button>
         </div>
         
@@ -84,45 +92,45 @@
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>{{ t('archives:table.code') }}</th>
-                  <th>{{ t('archives:table.name') }}</th>
-                  <th>{{ t('archives:table.type') }}</th>
-                  <th>{{ t('archives:table.fileName') }}</th>
-                  <th>{{ t('archives:table.size') }}</th>
+                  <th>{{ t('models:table.code') }}</th>
+                  <th>{{ t('models:table.name') }}</th>
+                  <th>{{ t('models:table.type') }}</th>
+                  <th>{{ t('models:table.instance') }}</th>
+                  <th>{{ t('models:table.version') }}</th>
                   <th>{{ t('common:actions') }}</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="archive in filteredArchives" :key="archive.id">
+                <tr v-for="model in filteredModels" :key="model.id">
                   <td>
-                    <div class="fw-medium font-monospace">{{ archive.code || '-' }}</div>
+                    <div class="fw-medium font-monospace">{{ model.code || '-' }}</div>
                   </td>
                   <td>
-                    <div class="fw-medium">{{ archive.name || '-' }}</div>
-                    <small v-if="archive.category" class="text-muted">
-                      <i class="bi bi-tag me-1"></i>{{ archive.category }}
+                    <div class="fw-medium">{{ model.name || '-' }}</div>
+                    <small v-if="model.file" class="text-muted">
+                      <i class="bi bi-file-earmark me-1"></i>{{ model.file.fileName }}
                     </small>
                   </td>
                   <td>
                     <span 
                       class="badge"
-                      :class="getTypeBadgeClass(archive.type)"
+                      :class="getTypeBadgeClass(model.modelType)"
                     >
-                      {{ getTypeLabel(archive.type) }}
+                      {{ getTypeLabel(model.modelType) }}
                     </span>
                   </td>
                   <td>
-                    <div v-if="archive.fileName">
-                      <div class="fw-medium">{{ archive.fileName }}</div>
-                      <small v-if="archive.extension" class="text-muted">
-                        {{ archive.extension }}
-                      </small>
-                    </div>
+                    <span 
+                      v-if="model.instanceType"
+                      class="badge bg-info"
+                    >
+                      {{ getInstanceLabel(model.instanceType) }}
+                    </span>
                     <span v-else class="text-muted">-</span>
                   </td>
                   <td>
-                    <span v-if="archive.fileSize" class="badge bg-secondary">
-                      {{ formatFileSize(archive.fileSize) }}
+                    <span v-if="model.version" class="badge bg-secondary">
+                      v{{ model.version.versionNumber }}
                     </span>
                     <span v-else class="text-muted">-</span>
                   </td>
@@ -130,14 +138,14 @@
                     <div class="btn-group btn-group-sm">
                       <button
                         class="btn btn-outline-primary"
-                        @click="handleEdit(archive)"
+                        @click="handleEdit(model)"
                         :title="t('common:edit')"
                       >
                         <i class="bi bi-pencil"></i>
                       </button>
                       <button
                         class="btn btn-outline-danger"
-                        @click="handleDelete(archive)"
+                        @click="handleDelete(model)"
                         :title="t('common:delete')"
                       >
                         <i class="bi bi-trash"></i>
@@ -165,7 +173,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="mb-3">
-                    <label class="form-label">{{ t('archives:form.code') }} *</label>
+                    <label class="form-label">{{ t('models:form.code') }} *</label>
                     <input
                       v-model="formData.code"
                       type="text"
@@ -176,7 +184,7 @@
                 </div>
                 <div class="col-md-6">
                   <div class="mb-3">
-                    <label class="form-label">{{ t('archives:form.name') }} *</label>
+                    <label class="form-label">{{ t('models:form.name') }} *</label>
                     <input
                       v-model="formData.name"
                       type="text"
@@ -189,46 +197,24 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="mb-3">
-                    <label class="form-label">{{ t('archives:form.type') }}</label>
-                    <select v-model="formData.type" class="form-select">
-                      <option value="">{{ t('archives:form.selectType') }}</option>
-                      <option value="CAD">{{ t('archives:types.CAD') }}</option>
-                      <option value="IMAGE">{{ t('archives:types.IMAGE') }}</option>
-                      <option value="DOCUMENT">{{ t('archives:types.DOCUMENT') }}</option>
-                      <option value="OTHER">{{ t('archives:types.OTHER') }}</option>
+                    <label class="form-label">{{ t('models:form.type') }} *</label>
+                    <select v-model="formData.modelType" class="form-select" required>
+                      <option value="">{{ t('models:form.selectType') }}</option>
+                      <option value="PART">{{ t('models:types.PART') }}</option>
+                      <option value="ASSEMBLY">{{ t('models:types.ASSEMBLY') }}</option>
+                      <option value="DRAWING">{{ t('models:types.DRAWING') }}</option>
+                      <option value="FORMAT">{{ t('models:types.FORMAT') }}</option>
                     </select>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="mb-3">
-                    <label class="form-label">{{ t('archives:form.category') }}</label>
-                    <input
-                      v-model="formData.category"
-                      type="text"
-                      class="form-control"
-                    >
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label class="form-label">{{ t('archives:form.fileName') }}</label>
-                    <input
-                      v-model="formData.fileName"
-                      type="text"
-                      class="form-control"
-                    >
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label class="form-label">{{ t('archives:form.folder') }}</label>
-                    <input
-                      v-model="formData.folder"
-                      type="text"
-                      class="form-control"
-                    >
+                    <label class="form-label">{{ t('models:form.instance') }}</label>
+                    <select v-model="formData.instanceType" class="form-select">
+                      <option value="">{{ t('models:form.selectInstance') }}</option>
+                      <option value="GENERIC">{{ t('models:instances.GENERIC') }}</option>
+                      <option value="INSTANCE">{{ t('models:instances.INSTANCE') }}</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -262,9 +248,10 @@ const { $axios } = useNuxtApp()
 
 // Reactive data
 const loading = ref(false)
-const archives = ref([])
+const models = ref([])
 const searchTerm = ref('')
 const selectedTypeFilter = ref('')
+const selectedInstanceFilter = ref('')
 
 // Modal
 const modalRef = ref<HTMLElement>()
@@ -274,45 +261,46 @@ const formData = ref({
   id: null,
   code: '',
   name: '',
-  type: '',
-  category: '',
-  fileName: '',
-  folder: ''
+  modelType: '',
+  instanceType: ''
 })
 
 // Computed
-const filteredArchives = computed(() => {
-  let filtered = archives.value
+const filteredModels = computed(() => {
+  let filtered = models.value
 
   if (searchTerm.value) {
     const search = searchTerm.value.toLowerCase()
-    filtered = filtered.filter(archive => 
-      archive.code?.toLowerCase().includes(search) ||
-      archive.name?.toLowerCase().includes(search) ||
-      archive.fileName?.toLowerCase().includes(search)
+    filtered = filtered.filter(model => 
+      model.code?.toLowerCase().includes(search) ||
+      model.name?.toLowerCase().includes(search)
     )
   }
 
   if (selectedTypeFilter.value) {
-    filtered = filtered.filter(archive => archive.type === selectedTypeFilter.value)
+    filtered = filtered.filter(model => model.modelType === selectedTypeFilter.value)
+  }
+
+  if (selectedInstanceFilter.value) {
+    filtered = filtered.filter(model => model.instanceType === selectedInstanceFilter.value)
   }
 
   return filtered
 })
 
 const modalTitle = computed(() => {
-  return isEditing.value ? t('archives:form.editTitle') : t('archives:form.createTitle')
+  return isEditing.value ? t('models:form.editTitle') : t('models:form.createTitle')
 })
 
 // Methods
 const refreshData = async () => {
   loading.value = true
   try {
-    const response = await $axios.get('/api/archives')
-    archives.value = response.data || []
+    const response = await $axios.get('/api/models')
+    models.value = response.data || []
   } catch (error) {
-    console.error('Error loading archives:', error)
-    archives.value = []
+    console.error('Error loading models:', error)
+    models.value = []
   } finally {
     loading.value = false
   }
@@ -321,6 +309,7 @@ const refreshData = async () => {
 const clearFilters = () => {
   searchTerm.value = ''
   selectedTypeFilter.value = ''
+  selectedInstanceFilter.value = ''
 }
 
 const openCreateModal = () => {
@@ -329,38 +318,34 @@ const openCreateModal = () => {
     id: null,
     code: '',
     name: '',
-    type: '',
-    category: '',
-    fileName: '',
-    folder: ''
+    modelType: '',
+    instanceType: ''
   }
   modalInstance.value?.show()
 }
 
-const handleEdit = (archive) => {
+const handleEdit = (model) => {
   isEditing.value = true
   formData.value = {
-    id: archive.id,
-    code: archive.code || '',
-    name: archive.name || '',
-    type: archive.type || '',
-    category: archive.category || '',
-    fileName: archive.fileName || '',
-    folder: archive.folder || ''
+    id: model.id,
+    code: model.code || '',
+    name: model.name || '',
+    modelType: model.modelType || '',
+    instanceType: model.instanceType || ''
   }
   modalInstance.value?.show()
 }
 
-const handleDelete = async (archive) => {
-  if (!confirm(t('archives:confirmDelete', { name: archive.name || archive.code }))) {
+const handleDelete = async (model) => {
+  if (!confirm(t('models:confirmDelete', { name: model.name || model.code }))) {
     return
   }
 
   try {
-    await $axios.delete(`/api/archives/${archive.id}`)
+    await $axios.delete(`/api/models/${model.id}`)
     await refreshData()
   } catch (error) {
-    console.error('Error deleting archive:', error)
+    console.error('Error deleting model:', error)
   }
 }
 
@@ -371,37 +356,33 @@ const closeModal = () => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      await $axios.put(`/api/archives/${formData.value.id}`, formData.value)
+      await $axios.put(`/api/models/${formData.value.id}`, formData.value)
     } else {
-      await $axios.post('/api/archives', formData.value)
+      await $axios.post('/api/models', formData.value)
     }
     closeModal()
     await refreshData()
   } catch (error) {
-    console.error('Error saving archive:', error)
+    console.error('Error saving model:', error)
   }
 }
 
 const getTypeBadgeClass = (type) => {
   const classes = {
-    'CAD': 'bg-primary',
-    'IMAGE': 'bg-success',
-    'DOCUMENT': 'bg-info',
-    'OTHER': 'bg-secondary'
+    'PART': 'bg-primary',
+    'ASSEMBLY': 'bg-success',
+    'DRAWING': 'bg-info',
+    'FORMAT': 'bg-warning'
   }
   return classes[type] || 'bg-secondary'
 }
 
 const getTypeLabel = (type) => {
-  return t(`archives:types.${type}`) || type
+  return t(`models:types.${type}`) || type
 }
 
-const formatFileSize = (bytes) => {
-  if (!bytes || bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+const getInstanceLabel = (instance) => {
+  return t(`models:instances.${instance}`) || instance
 }
 
 // Lifecycle
@@ -415,31 +396,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.admin-archives-page {
+.admin-models-page {
   padding: 1rem;
-}
-
-.file-preview {
-  max-height: 400px;
-  overflow: auto;
-}
-
-.text-preview pre {
-  font-size: 0.875rem;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.card {
-  border: none;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.btn-group .btn {
-  border-radius: 0.375rem;
-}
-
-.btn-group .btn:not(:first-child) {
-  margin-left: 0.5rem;
 }
 </style>

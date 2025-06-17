@@ -1,4 +1,3 @@
-<!-- app/pages/admin/entities/markers/index.vue -->
 <template>
   <div class="admin-markers-page">
     <!-- Page Header -->
@@ -11,7 +10,6 @@
         <button
           class="btn btn-primary"
           @click="openCreateModal"
-          :disabled="loading"
         >
           <i class="bi bi-plus-circle me-2"></i>
           {{ t('markers:page.create') }}
@@ -21,527 +19,467 @@
           @click="refreshData"
           :disabled="loading"
         >
-          <i class="bi bi-arrow-clockwise me-2" :class="{ 'fa-spin': loading }"></i>
+          <i class="bi bi-arrow-clockwise me-2"></i>
           {{ t('common:refresh') }}
         </button>
-        <button
-          class="btn btn-outline-info"
-          @click="openSymbolLibrary"
-        >
-          <i class="bi bi-collection me-2"></i>
-          {{ t('markers:page.symbolLibrary') }}
-        </button>
       </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-      <div class="col-md-3">
-        <div class="card border-0 bg-primary text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="card-title mb-0">{{ t('markers:stats.total') }}</h6>
-                <h4 class="mb-0">{{ markers.length }}</h4>
-              </div>
-              <i class="bi bi-bookmark-fill fs-1 opacity-75"></i>
-            </div>
+    <!-- Filters -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">{{ t('markers:filters.search') }}</label>
+            <input
+              v-model="searchTerm"
+              type="text"
+              class="form-control"
+              :placeholder="t('markers:filters.searchPlaceholder')"
+            >
           </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 bg-success text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="card-title mb-0">{{ t('markers:stats.balloonEnabled') }}</h6>
-                <h4 class="mb-0">{{ balloonsEnabledCount }}</h4>
-              </div>
-              <i class="bi bi-chat-dots-fill fs-1 opacity-75"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 bg-info text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="card-title mb-0">{{ t('markers:stats.annotationEnabled') }}</h6>
-                <h4 class="mb-0">{{ annotationsEnabledCount }}</h4>
-              </div>
-              <i class="bi bi-pencil-fill fs-1 opacity-75"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 bg-warning text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="card-title mb-0">{{ t('markers:stats.byType') }}</h6>
-                <h4 class="mb-0">{{ uniqueTypesCount }}</h4>
-              </div>
-              <i class="bi bi-tags-fill fs-1 opacity-75"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters and Search -->
-    <div class="card border-0 bg-light mb-4">
-      <div class="card-body py-3">
-        <div class="row g-3 align-items-center">
-          <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text">
-                <i class="bi bi-search"></i>
-              </span>
-              <input
-                v-model="searchQuery"
-                type="text"
-                class="form-control"
-                :placeholder="t('markers:search.placeholder')"
-              >
-            </div>
-          </div>
-          <div class="col-md-2">
-            <select v-model="selectedType" class="form-select">
-              <option value="">{{ t('markers:filters.type.all') }}</option>
-              <option v-for="type in markerTypes" :key="type" :value="type">
-                {{ t(`markers:types.${type}`) }}
-              </option>
+          <div class="col-md-3">
+            <label class="form-label">{{ t('markers:filters.type') }}</label>
+            <select v-model="selectedTypeFilter" class="form-select">
+              <option value="">{{ t('markers:filters.allTypes') }}</option>
+              <option value="DIMENSION">{{ t('markers:types.DIMENSION') }}</option>
+              <option value="GEOMETRIC">{{ t('markers:types.GEOMETRIC') }}</option>
+              <option value="TOLERANCE">{{ t('markers:types.TOLERANCE') }}</option>
+              <option value="ANNOTATION">{{ t('markers:types.ANNOTATION') }}</option>
             </select>
           </div>
-          <div class="col-md-2">
-            <select v-model="selectedShape" class="form-select">
-              <option value="">{{ t('markers:filters.shape.all') }}</option>
-              <option v-for="shape in markerShapes" :key="shape" :value="shape">
-                {{ t(`markers:shapes.${shape}`) }}
-              </option>
+          <div class="col-md-3">
+            <label class="form-label">{{ t('markers:filters.shape') }}</label>
+            <select v-model="selectedShapeFilter" class="form-select">
+              <option value="">{{ t('markers:filters.allShapes') }}</option>
+              <option value="CIRCLE">{{ t('markers:shapes.CIRCLE') }}</option>
+              <option value="SQUARE">{{ t('markers:shapes.SQUARE') }}</option>
+              <option value="TRIANGLE">{{ t('markers:shapes.TRIANGLE') }}</option>
+              <option value="DIAMOND">{{ t('markers:shapes.DIAMOND') }}</option>
             </select>
           </div>
-          <div class="col-md-2">
-            <select v-model="usageFilter" class="form-select">
-              <option value="">{{ t('markers:filters.usage.all') }}</option>
-              <option value="balloons">{{ t('markers:filters.usage.balloons') }}</option>
-              <option value="annotations">{{ t('markers:filters.usage.annotations') }}</option>
-              <option value="both">{{ t('markers:filters.usage.both') }}</option>
-            </select>
-          </div>
-          <div class="col-md-2">
+          <div class="col-md-3 d-flex align-items-end">
             <button
               class="btn btn-outline-secondary w-100"
               @click="clearFilters"
             >
-              <i class="bi bi-x-circle me-2"></i>
-              {{ t('common:clear') }}
+              <i class="bi bi-funnel me-2"></i>
+              {{ t('common:clearFilters') }}
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- View Toggle -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="btn-group btn-group-sm">
-        <button
-          class="btn"
-          :class="viewMode === 'grid' ? 'btn-primary' : 'btn-outline-primary'"
-          @click="viewMode = 'grid'"
-        >
-          <i class="bi bi-grid-3x3-gap me-1"></i>
-          {{ t('common:grid') }}
-        </button>
-        <button
-          class="btn"
-          :class="viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary'"
-          @click="viewMode = 'table'"
-        >
-          <i class="bi bi-list me-1"></i>
-          {{ t('common:table') }}
-        </button>
-      </div>
-      <small class="text-muted">
-        {{ t('common:showing') }} {{ filteredMarkers.length }} {{ t('common:of') }} {{ markers.length }}
-      </small>
-    </div>
-
-    <!-- Markers Display -->
+    <!-- Markers Table -->
     <div class="card">
-      <div class="card-body p-0">
-        <!-- Grid View -->
-        <div v-if="viewMode === 'grid'" class="p-3">
-          <div class="row g-3">
-            <div v-for="marker in paginatedMarkers" :key="marker.id" class="col-lg-3 col-md-4 col-sm-6">
-              <MarkerCard
-                :marker="marker"
-                @edit="openEditModal"
-                @delete="confirmDelete"
-                @preview="previewMarker"
-              />
-            </div>
+      <div class="card-body">
+        <div v-if="loading" class="text-center py-4">
+          <i class="bi bi-hourglass-split me-2"></i>
+          {{ t('common:loading') }}
+        </div>
+        
+        <div v-else-if="filteredMarkers.length === 0" class="text-center py-4">
+          <i class="bi bi-bookmark fs-1 text-muted"></i>
+          <h5 class="mt-3">{{ t('markers:table.noData') }}</h5>
+          <p class="text-muted">{{ t('markers:table.noDataDescription') }}</p>
+          <button class="btn btn-primary" @click="openCreateModal">
+            <i class="bi bi-plus-circle me-2"></i>
+            {{ t('markers:page.create') }}
+          </button>
+        </div>
+        
+        <div v-else>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>{{ t('markers:table.code') }}</th>
+                  <th>{{ t('markers:table.name') }}</th>
+                  <th>{{ t('markers:table.type') }}</th>
+                  <th>{{ t('markers:table.shape') }}</th>
+                  <th>{{ t('markers:table.symbol') }}</th>
+                  <th>{{ t('markers:table.usage') }}</th>
+                  <th>{{ t('common:actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="marker in filteredMarkers" :key="marker.id">
+                  <td>
+                    <div class="fw-medium font-monospace">{{ marker.code || '-' }}</div>
+                  </td>
+                  <td>
+                    <div class="fw-medium">{{ marker.name || '-' }}</div>
+                    <small v-if="marker.description" class="text-muted">
+                      {{ marker.description }}
+                    </small>
+                  </td>
+                  <td>
+                    <span v-if="marker.markerType" class="badge bg-primary">
+                      {{ getTypeLabel(marker.markerType) }}
+                    </span>
+                    <span v-else class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <span v-if="marker.shape" class="badge bg-info">
+                      {{ getShapeLabel(marker.shape) }}
+                    </span>
+                    <span v-else class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <div v-if="marker.symbol" class="fw-medium font-monospace">
+                      {{ marker.symbol }}
+                    </div>
+                    <span v-else class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-wrap gap-1">
+                      <span v-if="marker.useInBalloons" class="badge bg-success">
+                        {{ t('markers:usage.balloons') }}
+                      </span>
+                      <span v-if="marker.useInAnnotations" class="badge bg-warning">
+                        {{ t('markers:usage.annotations') }}
+                      </span>
+                      <span v-if="!marker.useInBalloons && !marker.useInAnnotations" class="text-muted">
+                        -
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button
+                        class="btn btn-outline-primary"
+                        @click="handleEdit(marker)"
+                        :title="t('common:edit')"
+                      >
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        class="btn btn-outline-danger"
+                        @click="handleDelete(marker)"
+                        :title="t('common:delete')"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-
-        <!-- Table View -->
-        <MarkerTable
-          v-else
-          :markers="paginatedMarkers"
-          :loading="loading"
-          @edit="openEditModal"
-          @delete="confirmDelete"
-          @preview="previewMarker"
-        />
-      </div>
-
-      <!-- Pagination -->
-      <div v-if="totalPages > 1" class="card-footer bg-transparent">
-        <nav aria-label="Markers pagination">
-          <ul class="pagination justify-content-center mb-0">
-            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <button class="page-link" @click="currentPage = 1" :disabled="currentPage === 1">
-                <i class="bi bi-chevron-double-left"></i>
-              </button>
-            </li>
-            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <button class="page-link" @click="currentPage--" :disabled="currentPage === 1">
-                <i class="bi bi-chevron-left"></i>
-              </button>
-            </li>
-            <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: page === currentPage }">
-              <button class="page-link" @click="currentPage = page">{{ page }}</button>
-            </li>
-            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-              <button class="page-link" @click="currentPage++" :disabled="currentPage === totalPages">
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </li>
-            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-              <button class="page-link" @click="currentPage = totalPages" :disabled="currentPage === totalPages">
-                <i class="bi bi-chevron-double-right"></i>
-              </button>
-            </li>
-          </ul>
-        </nav>
       </div>
     </div>
 
-    <!-- No Results -->
-    <div v-if="filteredMarkers.length === 0 && !loading" class="text-center py-5">
-      <i class="bi bi-bookmark display-1 text-muted"></i>
-      <h4 class="text-muted mt-3">{{ t('markers:noResults.title') }}</h4>
-      <p class="text-muted">{{ t('markers:noResults.message') }}</p>
-      <button class="btn btn-outline-primary" @click="clearFilters">
-        <i class="bi bi-arrow-clockwise me-2"></i>
-        {{ t('common:clearFilters') }}
-      </button>
+    <!-- Create/Edit Modal -->
+    <div class="modal fade" ref="modalRef" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ modalTitle }}</h5>
+            <button type="button" class="btn-close" @click="closeModal"></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="handleSubmit">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('markers:form.code') }} *</label>
+                    <input
+                      v-model="formData.code"
+                      type="text"
+                      class="form-control"
+                      required
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('markers:form.name') }} *</label>
+                    <input
+                      v-model="formData.name"
+                      type="text"
+                      class="form-control"
+                      required
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('markers:form.markerType') }}</label>
+                    <select v-model="formData.markerType" class="form-select">
+                      <option value="">{{ t('markers:form.selectType') }}</option>
+                      <option value="DIMENSION">{{ t('markers:types.DIMENSION') }}</option>
+                      <option value="GEOMETRIC">{{ t('markers:types.GEOMETRIC') }}</option>
+                      <option value="TOLERANCE">{{ t('markers:types.TOLERANCE') }}</option>
+                      <option value="ANNOTATION">{{ t('markers:types.ANNOTATION') }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('markers:form.shape') }}</label>
+                    <select v-model="formData.shape" class="form-select">
+                      <option value="">{{ t('markers:form.selectShape') }}</option>
+                      <option value="CIRCLE">{{ t('markers:shapes.CIRCLE') }}</option>
+                      <option value="SQUARE">{{ t('markers:shapes.SQUARE') }}</option>
+                      <option value="TRIANGLE">{{ t('markers:shapes.TRIANGLE') }}</option>
+                      <option value="DIAMOND">{{ t('markers:shapes.DIAMOND') }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('markers:form.symbol') }}</label>
+                    <input
+                      v-model="formData.symbol"
+                      type="text"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('markers:form.size') }}</label>
+                    <input
+                      v-model.number="formData.size"
+                      type="number"
+                      step="0.1"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label class="form-label">{{ t('markers:form.description') }}</label>
+                    <textarea
+                      v-model="formData.description"
+                      class="form-control"
+                      rows="2"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check mb-3">
+                    <input
+                      v-model="formData.useInBalloons"
+                      class="form-check-input"
+                      type="checkbox"
+                      id="useInBalloons"
+                    >
+                    <label class="form-check-label" for="useInBalloons">
+                      {{ t('markers:form.useInBalloons') }}
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check mb-3">
+                    <input
+                      v-model="formData.useInAnnotations"
+                      class="form-check-input"
+                      type="checkbox"
+                      id="useInAnnotations"
+                    >
+                    <label class="form-check-label" for="useInAnnotations">
+                      {{ t('markers:form.useInAnnotations') }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary" @click="closeModal">
+                  {{ t('common:cancel') }}
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  {{ t('common:save') }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <!-- Marker Form Modal -->
-    <MarkerModal
-      v-if="showModal"
-      :mode="modalMode"
-      :marker="selectedMarker"
-      :archives="archives"
-      @save="handleSave"
-      @close="closeModal"
-    />
-
-    <!-- Delete Confirmation Modal -->
-    <DeleteConfirmModal
-      v-if="showDeleteModal"
-      :item-name="markerToDelete?.name || 'marker'"
-      :item-type="t('markers:common.marker')"
-      @confirm="handleDelete"
-      @cancel="showDeleteModal = false"
-    />
-
-    <!-- Symbol Library Modal -->
-    <SymbolLibraryModal
-      v-if="showSymbolLibrary"
-      @select="handleSymbolSelect"
-      @close="showSymbolLibrary = false"
-    />
-
-    <!-- Marker Preview Modal -->
-    <MarkerPreviewModal
-      v-if="showPreviewModal"
-      :marker="selectedPreviewMarker"
-      @close="showPreviewModal = false"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { type IMarker } from '~/model/marker.model'
-import { type IArchive } from '~/model/archive.model'
-import { MarkerType } from '~/model/enumerations/marker-type.model'
-import { Shape } from '~/model/enumerations/shape.model'
+import { Modal } from 'bootstrap'
 
-// Layout and Auth
+// Page setup
 definePageMeta({
-  middleware: 'admin',
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['auth', 'admin', 'i18n']
 })
 
-// Composables
 const { t } = useI18n()
-const { $api } = useNuxtApp()
+const { $axios } = useNuxtApp()
 
-// Reactive Data
-const markers = ref<IMarker[]>([])
-const archives = ref<IArchive[]>([])
+// Reactive data
 const loading = ref(false)
-const searchQuery = ref('')
-const selectedType = ref('')
-const selectedShape = ref('')
-const usageFilter = ref('')
-const viewMode = ref<'grid' | 'table'>('grid')
-const currentPage = ref(1)
-const itemsPerPage = ref(12)
+const markers = ref([])
+const searchTerm = ref('')
+const selectedTypeFilter = ref('')
+const selectedShapeFilter = ref('')
 
-// Modal State
-const showModal = ref(false)
-const modalMode = ref<'create' | 'edit'>('create')
-const selectedMarker = ref<IMarker | null>(null)
-const showDeleteModal = ref(false)
-const markerToDelete = ref<IMarker | null>(null)
-const showSymbolLibrary = ref(false)
-const showPreviewModal = ref(false)
-const selectedPreviewMarker = ref<IMarker | null>(null)
-
-// Constants
-const markerTypes = computed(() => Object.values(MarkerType))
-const markerShapes = computed(() => Object.values(Shape))
+// Modal
+const modalRef = ref<HTMLElement>()
+const modalInstance = ref<Modal>()
+const isEditing = ref(false)
+const formData = ref({
+  id: null,
+  code: '',
+  name: '',
+  markerType: '',
+  shape: '',
+  symbol: '',
+  size: null,
+  description: '',
+  useInBalloons: false,
+  useInAnnotations: false
+})
 
 // Computed
 const filteredMarkers = computed(() => {
-  let filtered = [...markers.value]
+  let filtered = markers.value
 
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(marker =>
-      marker.name?.toLowerCase().includes(query) ||
-      marker.code?.toLowerCase().includes(query) ||
-      marker.description?.toLowerCase().includes(query) ||
-      marker.symbol?.toLowerCase().includes(query)
+  if (searchTerm.value) {
+    const search = searchTerm.value.toLowerCase()
+    filtered = filtered.filter(marker => 
+      marker.code?.toLowerCase().includes(search) ||
+      marker.name?.toLowerCase().includes(search) ||
+      marker.description?.toLowerCase().includes(search) ||
+      marker.symbol?.toLowerCase().includes(search)
     )
   }
 
-  // Type filter
-  if (selectedType.value) {
-    filtered = filtered.filter(marker => marker.markerType === selectedType.value)
+  if (selectedTypeFilter.value) {
+    filtered = filtered.filter(marker => marker.markerType === selectedTypeFilter.value)
   }
 
-  // Shape filter
-  if (selectedShape.value) {
-    filtered = filtered.filter(marker => marker.shape === selectedShape.value)
-  }
-
-  // Usage filter
-  if (usageFilter.value) {
-    switch (usageFilter.value) {
-      case 'balloons':
-        filtered = filtered.filter(marker => marker.useInBalloons)
-        break
-      case 'annotations':
-        filtered = filtered.filter(marker => marker.useInAnnotations)
-        break
-      case 'both':
-        filtered = filtered.filter(marker => marker.useInBalloons && marker.useInAnnotations)
-        break
-    }
+  if (selectedShapeFilter.value) {
+    filtered = filtered.filter(marker => marker.shape === selectedShapeFilter.value)
   }
 
   return filtered
 })
 
-const totalPages = computed(() => Math.ceil(filteredMarkers.value.length / itemsPerPage.value))
-
-const paginatedMarkers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredMarkers.value.slice(start, end)
+const modalTitle = computed(() => {
+  return isEditing.value ? t('markers:form.editTitle') : t('markers:form.createTitle')
 })
-
-const visiblePages = computed(() => {
-  const pages = []
-  const maxVisible = 5
-  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
-  let end = Math.min(totalPages.value, start + maxVisible - 1)
-
-  if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1)
-  }
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
-  }
-  return pages
-})
-
-const balloonsEnabledCount = computed(() => 
-  markers.value.filter(m => m.useInBalloons).length
-)
-
-const annotationsEnabledCount = computed(() => 
-  markers.value.filter(m => m.useInAnnotations).length
-)
-
-const uniqueTypesCount = computed(() => 
-  new Set(markers.value.map(m => m.markerType).filter(Boolean)).size
-)
 
 // Methods
-const loadMarkers = async () => {
+const refreshData = async () => {
   loading.value = true
   try {
-    const response = await $api.get('/api/markers')
+    const response = await $axios.get('/api/markers')
     markers.value = response.data || []
   } catch (error) {
     console.error('Error loading markers:', error)
-    // Handle error notification
+    markers.value = []
   } finally {
     loading.value = false
   }
-}
-
-const loadArchives = async () => {
-  try {
-    const response = await $api.get('/api/archives')
-    archives.value = response.data || []
-  } catch (error) {
-    console.error('Error loading archives:', error)
-  }
-}
-
-const refreshData = async () => {
-  await Promise.all([
-    loadMarkers(),
-    loadArchives()
-  ])
-}
-
-const openCreateModal = () => {
-  selectedMarker.value = null
-  modalMode.value = 'create'
-  showModal.value = true
-}
-
-const openEditModal = (marker: IMarker) => {
-  selectedMarker.value = { ...marker }
-  modalMode.value = 'edit'
-  showModal.value = true
-}
-
-const closeModal = () => {
-  showModal.value = false
-  selectedMarker.value = null
-}
-
-const handleSave = async (markerData: IMarker) => {
-  loading.value = true
-  try {
-    if (modalMode.value === 'create') {
-      await $api.post('/api/markers', markerData)
-    } else {
-      await $api.put(`/api/markers/${markerData.id}`, markerData)
-    }
-    await loadMarkers()
-    closeModal()
-  } catch (error) {
-    console.error('Error saving marker:', error)
-    // Handle error notification
-  } finally {
-    loading.value = false
-  }
-}
-
-const confirmDelete = (marker: IMarker) => {
-  markerToDelete.value = marker
-  showDeleteModal.value = true
-}
-
-const handleDelete = async () => {
-  if (!markerToDelete.value) return
-
-  loading.value = true
-  try {
-    await $api.delete(`/api/markers/${markerToDelete.value.id}`)
-    await loadMarkers()
-    showDeleteModal.value = false
-    markerToDelete.value = null
-  } catch (error) {
-    console.error('Error deleting marker:', error)
-    // Handle error notification
-  } finally {
-    loading.value = false
-  }
-}
-
-const previewMarker = (marker: IMarker) => {
-  selectedPreviewMarker.value = marker
-  showPreviewModal.value = true
-}
-
-const openSymbolLibrary = () => {
-  showSymbolLibrary.value = true
-}
-
-const handleSymbolSelect = (symbol: string) => {
-  // Handle symbol selection from library
-  showSymbolLibrary.value = false
 }
 
 const clearFilters = () => {
-  searchQuery.value = ''
-  selectedType.value = ''
-  selectedShape.value = ''
-  usageFilter.value = ''
-  currentPage.value = 1
+  searchTerm.value = ''
+  selectedTypeFilter.value = ''
+  selectedShapeFilter.value = ''
+}
+
+const openCreateModal = () => {
+  isEditing.value = false
+  formData.value = {
+    id: null,
+    code: '',
+    name: '',
+    markerType: '',
+    shape: '',
+    symbol: '',
+    size: null,
+    description: '',
+    useInBalloons: false,
+    useInAnnotations: false
+  }
+  modalInstance.value?.show()
+}
+
+const handleEdit = (marker) => {
+  isEditing.value = true
+  formData.value = {
+    id: marker.id,
+    code: marker.code || '',
+    name: marker.name || '',
+    markerType: marker.markerType || '',
+    shape: marker.shape || '',
+    symbol: marker.symbol || '',
+    size: marker.size || null,
+    description: marker.description || '',
+    useInBalloons: marker.useInBalloons || false,
+    useInAnnotations: marker.useInAnnotations || false
+  }
+  modalInstance.value?.show()
+}
+
+const handleDelete = async (marker) => {
+  if (!confirm(t('markers:confirmDelete', { name: marker.name || marker.code }))) {
+    return
+  }
+
+  try {
+    await $axios.delete(`/api/markers/${marker.id}`)
+    await refreshData()
+  } catch (error) {
+    console.error('Error deleting marker:', error)
+  }
+}
+
+const closeModal = () => {
+  modalInstance.value?.hide()
+}
+
+const handleSubmit = async () => {
+  try {
+    if (isEditing.value) {
+      await $axios.put(`/api/markers/${formData.value.id}`, formData.value)
+    } else {
+      await $axios.post('/api/markers', formData.value)
+    }
+    closeModal()
+    await refreshData()
+  } catch (error) {
+    console.error('Error saving marker:', error)
+  }
+}
+
+const getTypeLabel = (type) => {
+  return t(`markers:types.${type}`) || type
+}
+
+const getShapeLabel = (shape) => {
+  return t(`markers:shapes.${shape}`) || shape
 }
 
 // Lifecycle
-onMounted(() => {
-  refreshData()
+onMounted(async () => {
+  await refreshData()
+  
+  if (modalRef.value) {
+    modalInstance.value = new Modal(modalRef.value)
+  }
 })
 </script>
 
 <style scoped>
 .admin-markers-page {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.card {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  border: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.fa-spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.pagination .page-link {
-  border-color: #dee2e6;
-}
-
-.pagination .page-item.active .page-link {
-  background-color: var(--bs-primary);
-  border-color: var(--bs-primary);
+  padding: 1rem;
 }
 </style>

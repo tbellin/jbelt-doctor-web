@@ -1,0 +1,98 @@
+{
+  "title": "Documentazione API",
+  "subtitle": "Riferimento completo per gli endpoint REST API di JBelt Doctor",
+  "meta": {
+    "title": "Documentazione API - JBelt Doctor",
+    "description": "Documentazione completa REST API per il sistema CAD/PLM JBelt Doctor con endpoint, esempi e codici di risposta"
+  },
+  "overview": {
+    "title": "Panoramica API",
+    "description": "L'API REST di JBelt Doctor fornisce accesso programmatico a tutte le entità del sistema. Tutti gli endpoint richiedono autenticazione JWT e restituiscono risposte JSON.",
+    "baseUrl": "URL Base",
+    "auth": "Autenticazione",
+    "authDescription": "Token JWT Bearer richiesto",
+    "format": "Formato Risposta",
+    "formatDescription": "JSON con struttura consistente"
+  },
+  "endpoints": {
+    "title": "Endpoint API per Entità"
+  },
+  "entities": {
+    "archives": {
+      "title": "API Archivi",
+      "description": "Gestisci archivi digitali e riferimenti file"
+    },
+    "authors": {
+      "title": "API Autori",
+      "description": "Gestisci autori, membri del team e informazioni utente"
+    },
+    "teams": {
+      "title": "API Team",
+      "description": "Gestisci team organizzativi e gerarchie"
+    },
+    "models": {
+      "title": "API Modelli",
+      "description": "Gestisci modelli CAD, parti, assemblaggi e disegni"
+    },
+    "sheets": {
+      "title": "API Fogli",
+      "description": "Gestisci fogli di disegno e specifiche formato"
+    },
+    "balloons": {
+      "title": "API Balloon",
+      "description": "Gestisci balloon di annotazione e richiami"
+    },
+    "others": {
+      "title": "Entità Aggiuntive"
+    },
+    "formats": {
+      "title": "API Formati",
+      "description": "Gestisci formati fogli e template"
+    },
+    "markers": {
+      "title": "API Marcatori",
+      "description": "Gestisci marcatori di annotazione e simboli"
+    },
+    "positions": {
+      "title": "API Posizioni",
+      "description": "Gestisci posizioni coordinate e dati spaziali"
+    },
+    "items": {
+      "title": "API Elementi",
+      "description": "Gestisci elementi generici e componenti"
+    }
+  },
+  "common": {
+    "requiresAuth": "Richiede Autenticazione",
+    "example": "Esempio",
+    "exampleRequest": "Richiesta di Esempio",
+    "exampleResponse": "Risposta di Esempio",
+    "copy": "Copia"
+  },
+  "responses": {
+    "title": "Codici di Risposta HTTP",
+    "code": "Codice",
+    "description": "Descrizione",
+    "success": {
+      "title": "Risposte di Successo",
+      "200": "OK - Richiesta completata con successo",
+      "201": "Creato - Risorsa creata con successo",
+      "204": "Nessun Contenuto - Richiesta completata, nessun contenuto restituito"
+    },
+    "error": {
+      "title": "Risposte di Errore",
+      "400": "Richiesta Errata - Dati richiesta non validi",
+      "401": "Non Autorizzato - Autenticazione richiesta",
+      "404": "Non Trovato - Risorsa non trovata",
+      "500": "Errore Server Interno - Errore del server"
+    }
+  },
+  "navigation": {
+    "workflow": "Documentazione Workflow",
+    "workflowDescription": "Scopri il workflow Disegno-Foglio-Modello-Balloon",
+    "viewWorkflow": "Vedi Workflow",
+    "admin": "Gestione Entità",
+    "adminDescription": "Accedi all'interfaccia admin per gestire le entità",
+    "viewAdmin": "Gestisci Entità"
+  }
+}

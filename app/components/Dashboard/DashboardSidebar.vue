@@ -51,6 +51,16 @@
                     <i class="bi bi-key me-2"></i> {{ t('lost_password') }}
                   </NuxtLink>
                 </li>
+                <li class="nav-item">
+                  <NuxtLink to="/documentation-workflow" class="nav-link">
+                    <i class="bi bi-diagram-3 me-2"></i> {{ t('documentation_workflow') }}
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/documentation-api" class="nav-link">
+                    <i class="bi bi-code-slash me-2"></i> {{ t('documentation_api') }}
+                  </NuxtLink>
+                </li>
               </ul>
             </div>
           </div>

@@ -18,7 +18,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   const initialRoute = nuxtApp.$router.currentRoute.value;
   const path = initialRoute.path;
   const segments = path.split('/').filter(Boolean);
-  const initialNamespace = segments.length ? segments[segments.length - 1] : 'home';
+  
+  // Handle special documentation routes
+  let initialNamespace = segments.length ? segments[segments.length - 1] : 'home';
+  if (initialNamespace === 'documentation-workflow') {
+    initialNamespace = 'workflow';
+  } else if (initialNamespace === 'documentation-api') {
+    initialNamespace = 'api';
+  }
   
   // Carica il namespace della pagina iniziale
   if (initialNamespace !== 'common') {
@@ -36,7 +43,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   nuxtApp.hook('page:start', async (page) => {
     const path = page?.path || nuxtApp.$router.currentRoute.value.path;
     const segments = path.split('/').filter(Boolean);
-    const pageNamespace = segments.length ? segments[segments.length - 1] : 'home';
+    let pageNamespace = segments.length ? segments[segments.length - 1] : 'home';
+    
+    // Handle special documentation routes
+    if (pageNamespace === 'documentation-workflow') {
+      pageNamespace = 'workflow';
+    } else if (pageNamespace === 'documentation-api') {
+      pageNamespace = 'api';
+    }
     
     if (isDebugMode) {
       console.log(`[i18n Plugin] Page changed, loading namespace: ${pageNamespace}`);
@@ -52,4 +66,4 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   nuxtApp.provide('i18n', useI18n());
 });
 
-// Version: 2.0.0
+// Version: 2.1.0 - Fixed namespace loading for documentation routes

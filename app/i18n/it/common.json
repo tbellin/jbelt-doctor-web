@@ -85,6 +85,8 @@
     "clearFilters": "Pulisci Filtri",
     "yes": "Sì",
     "no": "No",
+    "documentation_workflow": "Documentazione Workflow",
+    "documentation_api": "Documentazione API",
     "error": {
       "required": "Questo campo è obbligatorio"
     },

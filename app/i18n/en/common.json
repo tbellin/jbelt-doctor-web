@@ -85,6 +85,8 @@
     "clearFilters": "Clear Filters",
     "yes": "Yes",
     "no": "No",
+    "documentation_workflow": "Workflow Documentation",
+    "documentation_api": "API Documentation",
     "error": {
       "required": "This field is required"
     },

@@ -44,7 +44,7 @@ async function loadNamespaceTranslations(lang: string, namespace: string) {
   }
   
   // Se il namespace è già caricato, non fare nulla
-  if (translations.value[lang][namespace]) {
+  if (translations.value[lang]?.[namespace]) {
     return;
   }
   
@@ -119,7 +119,16 @@ export function useI18n(namespace: string = 'common') {
       if (segments.length === 0) return 'home';
       
       // Prendi l'ultimo segmento del percorso come namespace
-      return segments[segments.length - 1] || 'home';
+      let ns = segments[segments.length - 1] || 'home';
+      
+      // Handle special documentation routes (same logic as i18n plugin)
+      if (ns === 'documentation-workflow') {
+        ns = 'workflow';
+      } else if (ns === 'documentation-api') {
+        ns = 'api';
+      }
+      
+      return ns;
     } catch (e) {
       console.error('[useI18n] Error determining namespace:', e);
       return 'home';
@@ -153,6 +162,7 @@ export function useI18n(namespace: string = 'common') {
       lang = 'it';
     }
     
+    const previousLang = currentLanguage.value;
     currentLanguage.value = lang;
     
     if (process.client) {
@@ -161,20 +171,25 @@ export function useI18n(namespace: string = 'common') {
       // Aggiorna l'attributo lang dell'HTML
       document.documentElement.setAttribute('lang', lang);
       
-      // Carica le traduzioni per il namespace corrente nella nuova lingua
-      await loadNamespaceTranslations(lang, pageNamespace.value);
+      // Carica sempre common per la nuova lingua
+      await loadNamespaceTranslations(lang, 'common');
+      
+      // Carica tutti i namespace già caricati per la nuova lingua
+      const namespacesToLoad = Array.from(loadedNamespaces.value);
+      for (const ns of namespacesToLoad) {
+        if (ns !== 'common') {
+          await loadNamespaceTranslations(lang, ns);
+        }
+      }
+      
+      // Assicurati che il namespace corrente sia caricato
+      if (pageNamespace.value !== 'common' && !namespacesToLoad.includes(pageNamespace.value)) {
+        await loadNamespaceTranslations(lang, pageNamespace.value);
+      }
     }
   };
 
-  // Osserva i cambiamenti della lingua
-  if (process.client) {
-    watch(currentLanguage, async (newLang) => {
-      document.documentElement.setAttribute('lang', newLang);
-      
-      // Carica le traduzioni per il namespace corrente nella nuova lingua
-      await loadNamespaceTranslations(newLang, pageNamespace.value);
-    });
-  }
+  // Il watch per currentLanguage è rimosso perché setLanguage gestisce tutto
 
   // Funzione di traduzione con supporto per namespace
   const t = (key: string, params?: Record<string, any>) => {
@@ -290,4 +305,4 @@ export function useI18n(namespace: string = 'common') {
   };
 }
 
-// Version: 2.1.0
+// Version: 2.1.0 - Fixed namespace mapping for documentation routes

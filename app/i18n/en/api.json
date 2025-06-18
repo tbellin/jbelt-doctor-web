@@ -1,0 +1,98 @@
+{
+  "title": "API Documentation",
+  "subtitle": "Complete reference for JBelt Doctor REST API endpoints",
+  "meta": {
+    "title": "API Documentation - JBelt Doctor",
+    "description": "Complete REST API documentation for JBelt Doctor CAD/PLM system with endpoints, examples, and response codes"
+  },
+  "overview": {
+    "title": "API Overview",
+    "description": "The JBelt Doctor REST API provides programmatic access to all system entities. All endpoints require JWT authentication and return JSON responses.",
+    "baseUrl": "Base URL",
+    "auth": "Authentication",
+    "authDescription": "JWT Bearer Token required",
+    "format": "Response Format",
+    "formatDescription": "JSON with consistent structure"
+  },
+  "endpoints": {
+    "title": "API Endpoints by Entity"
+  },
+  "entities": {
+    "archives": {
+      "title": "Archives API",
+      "description": "Manage digital archives and file references"
+    },
+    "authors": {
+      "title": "Authors API", 
+      "description": "Manage authors, team members, and user information"
+    },
+    "teams": {
+      "title": "Teams API",
+      "description": "Manage organizational teams and hierarchies"
+    },
+    "models": {
+      "title": "Models API",
+      "description": "Manage CAD models, parts, assemblies, and drawings"
+    },
+    "sheets": {
+      "title": "Sheets API",
+      "description": "Manage drawing sheets and format specifications"
+    },
+    "balloons": {
+      "title": "Balloons API",
+      "description": "Manage annotation balloons and callouts"
+    },
+    "others": {
+      "title": "Additional Entities"
+    },
+    "formats": {
+      "title": "Formats API",
+      "description": "Manage sheet formats and templates"
+    },
+    "markers": {
+      "title": "Markers API",
+      "description": "Manage annotation markers and symbols"
+    },
+    "positions": {
+      "title": "Positions API",
+      "description": "Manage coordinate positions and spatial data"
+    },
+    "items": {
+      "title": "Items API",
+      "description": "Manage generic items and components"
+    }
+  },
+  "common": {
+    "requiresAuth": "Requires Authentication",
+    "example": "Example",
+    "exampleRequest": "Example Request",
+    "exampleResponse": "Example Response",
+    "copy": "Copy"
+  },
+  "responses": {
+    "title": "HTTP Response Codes",
+    "code": "Code",
+    "description": "Description",
+    "success": {
+      "title": "Success Responses",
+      "200": "OK - Request successful",
+      "201": "Created - Resource created successfully",
+      "204": "No Content - Request successful, no content returned"
+    },
+    "error": {
+      "title": "Error Responses",
+      "400": "Bad Request - Invalid request data",
+      "401": "Unauthorized - Authentication required",
+      "404": "Not Found - Resource not found",
+      "500": "Internal Server Error - Server error occurred"
+    }
+  },
+  "navigation": {
+    "workflow": "Workflow Documentation",
+    "workflowDescription": "Learn about the Drawing-Sheet-Model-Balloon workflow",
+    "viewWorkflow": "View Workflow",
+    "admin": "Entity Management", 
+    "adminDescription": "Access the admin interface for managing entities",
+    "viewAdmin": "Manage Entities"
+  }
+}

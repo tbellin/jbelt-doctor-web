@@ -1,0 +1,106 @@
+{
+  "title": "Workflow Disegni, Fogli, Modelli e Balloon",
+  "subtitle": "Guida completa al processo di documentazione CAD/PLM",
+  "meta": {
+    "title": "Documentazione Workflow - JBelt Doctor",
+    "description": "Guida completa al workflow di Disegni, Fogli, Modelli e Balloon nel sistema CAD/PLM JBelt Doctor"
+  },
+  "overview": {
+    "title": "Panoramica del Workflow",
+    "description": "Il sistema JBelt Doctor segue un workflow strutturato per la gestione della documentazione CAD. Questo processo garantisce una corretta organizzazione, tracciabilità e integrazione con PTC Creo Parametric.",
+    "tip": "Buona Pratica:",
+    "tipDescription": "Segui sempre la sequenza: Disegni → Fogli → Modelli → Balloon e Note per un'organizzazione ottimale e integrità dei dati."
+  },
+  "steps": {
+    "title": "Passaggi del Workflow",
+    "step1": {
+      "title": "Creazione Disegni",
+      "description": "I disegni sono la base del processo di documentazione. Rappresentano la documentazione tecnica iniziale creata in PTC Creo Parametric.",
+      "purpose": "Scopo e Contenuto:",
+      "purposes": {
+        "technical": "Specifiche tecniche e quote",
+        "assembly": "Istruzioni di assemblaggio e viste",
+        "documentation": "Documentazione di produzione e qualità"
+      },
+      "creoIntegration": "Integrazione Creo:",
+      "creoDescription": "Sincronizzazione automatica con PTC Creo Parametric tramite API J-Link per aggiornamenti in tempo reale"
+    },
+    "step2": {
+      "title": "Definizione Fogli",
+      "description": "I fogli definiscono il layout fisico e le specifiche di formato per i disegni. Stabiliscono la tela e le regole di formattazione.",
+      "formats": "Formati Standard:",
+      "properties": "Proprietà Fogli:",
+      "props": {
+        "scale": "Rapporto di scala (1:1, 1:2, ecc.)",
+        "dimensions": "Dimensioni fisiche (mm)",
+        "orientation": "Verticale o orizzontale"
+      },
+      "associations": "Associazioni Modelli:",
+      "associationDescription": "Ogni foglio può essere associato a più modelli attraverso relazioni molti-a-molti"
+    },
+    "step3": {
+      "title": "Gestione Modelli",
+      "description": "I modelli rappresentano gli oggetti CAD 3D e le loro relazioni. Formano la struttura dati ingegneristici centrale.",
+      "types": {
+        "part": "Parti",
+        "partDesc": "Componenti individuali",
+        "assembly": "Assemblaggi",
+        "assemblyDesc": "Collezioni di componenti",
+        "drawing": "Disegni",
+        "drawingDesc": "Rappresentazioni 2D",
+        "format": "Formati",
+        "formatDesc": "Definizioni template"
+      },
+      "hierarchy": "Gestione Gerarchia:",
+      "hierarchyDesc": "I modelli supportano relazioni padre-figlio per assemblaggi complessi e sotto-assemblaggi"
+    },
+    "step4": {
+      "title": "Balloon e Note",
+      "description": "I balloon e le note forniscono annotazioni, richiami e informazioni aggiuntive sui disegni.",
+      "balloons": {
+        "title": "Balloon",
+        "positioning": "Posizionamento preciso X,Y sui fogli",
+        "numbering": "Sistema di numerazione sequenziale",
+        "markers": "Associazione con simboli marcatori"
+      },
+      "notes": {
+        "title": "Note Tecniche",
+        "annotations": "Annotazioni dimensionali",
+        "specifications": "Specifiche materiali",
+        "tolerances": "Informazioni di tolleranza"
+      }
+    }
+  },
+  "bestPractices": {
+    "title": "Migliori Pratiche",
+    "dos": {
+      "title": "Pratiche Raccomandate",
+      "consistent": "Usa convenzioni di denominazione coerenti per tutte le entità",
+      "validate": "Valida tutte le associazioni prima di finalizzare",
+      "backup": "Mantieni backup regolari dei dati critici",
+      "document": "Documenta accuratamente modifiche e cambiamenti"
+    },
+    "donts": {
+      "title": "Errori Comuni da Evitare",
+      "circular": "Evita riferimenti circolari nelle gerarchie dei modelli",
+      "orphan": "Non lasciare associazioni orfane",
+      "duplicates": "Previeni assegnazioni di codici duplicati",
+      "inconsistent": "Evita uso inconsistente di scala o formato"
+    }
+  },
+  "diagram": {
+    "title": "Diagramma del Workflow",
+    "drawings": "Disegni",
+    "sheets": "Fogli",
+    "models": "Modelli",
+    "balloons": "Balloon e Note"
+  },
+  "navigation": {
+    "api": "Documentazione API",
+    "apiDescription": "Esplora gli endpoint REST API per tutte le entità",
+    "viewApi": "Vedi Docs API",
+    "admin": "Gestione Entità",
+    "adminDescription": "Accedi all'interfaccia admin per gestire le entità",
+    "viewAdmin": "Gestisci Entità"
+  }
+}

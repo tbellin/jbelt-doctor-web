@@ -1,0 +1,106 @@
+{
+  "title": "Drawing, Sheet, Model & Balloon Workflow",
+  "subtitle": "Complete guide to the CAD/PLM documentation process",
+  "meta": {
+    "title": "Workflow Documentation - JBelt Doctor",
+    "description": "Complete guide to the Drawing, Sheet, Model, and Balloon workflow in JBelt Doctor CAD/PLM system"
+  },
+  "overview": {
+    "title": "Workflow Overview",
+    "description": "The JBelt Doctor system follows a structured workflow for managing CAD documentation. This process ensures proper organization, traceability, and integration with PTC Creo Parametric.",
+    "tip": "Best Practice:",
+    "tipDescription": "Always follow the sequence: Drawings → Sheets → Models → Balloons & Notes for optimal organization and data integrity."
+  },
+  "steps": {
+    "title": "Workflow Steps",
+    "step1": {
+      "title": "Drawings Creation",
+      "description": "Drawings are the foundation of the documentation process. They represent the initial technical documentation created in PTC Creo Parametric.",
+      "purpose": "Purpose & Content:",
+      "purposes": {
+        "technical": "Technical specifications and dimensions",
+        "assembly": "Assembly instructions and views",
+        "documentation": "Manufacturing and quality documentation"
+      },
+      "creoIntegration": "Creo Integration:",
+      "creoDescription": "Automatically synchronized with PTC Creo Parametric via J-Link API for real-time updates"
+    },
+    "step2": {
+      "title": "Sheets Definition",
+      "description": "Sheets define the physical layout and format specifications for the drawings. They establish the canvas and formatting rules.",
+      "formats": "Standard Formats:",
+      "properties": "Sheet Properties:",
+      "props": {
+        "scale": "Scale ratio (1:1, 1:2, etc.)",
+        "dimensions": "Physical dimensions (mm)",
+        "orientation": "Portrait or landscape"
+      },
+      "associations": "Model Associations:",
+      "associationDescription": "Each sheet can be associated with multiple models through many-to-many relationships"
+    },
+    "step3": {
+      "title": "Models Management",
+      "description": "Models represent the 3D CAD objects and their relationships. They form the core engineering data structure.",
+      "types": {
+        "part": "Parts",
+        "partDesc": "Individual components",
+        "assembly": "Assemblies", 
+        "assemblyDesc": "Component collections",
+        "drawing": "Drawings",
+        "drawingDesc": "2D representations",
+        "format": "Formats",
+        "formatDesc": "Template definitions"
+      },
+      "hierarchy": "Hierarchy Management:",
+      "hierarchyDesc": "Models support parent-child relationships for complex assemblies and sub-assemblies"
+    },
+    "step4": {
+      "title": "Balloons & Notes",
+      "description": "Balloons and notes provide annotations, callouts, and additional information on the drawings.",
+      "balloons": {
+        "title": "Balloons",
+        "positioning": "Precise X,Y positioning on sheets",
+        "numbering": "Sequential numbering system",
+        "markers": "Association with marker symbols"
+      },
+      "notes": {
+        "title": "Technical Notes",
+        "annotations": "Dimensional annotations",
+        "specifications": "Material specifications",
+        "tolerances": "Tolerance information"
+      }
+    }
+  },
+  "bestPractices": {
+    "title": "Best Practices",
+    "dos": {
+      "title": "Recommended Practices",
+      "consistent": "Use consistent naming conventions across all entities",
+      "validate": "Validate all associations before finalizing",
+      "backup": "Maintain regular backups of critical data",
+      "document": "Document changes and modifications thoroughly"
+    },
+    "donts": {
+      "title": "Common Pitfalls to Avoid",
+      "circular": "Avoid circular references in model hierarchies",
+      "orphan": "Don't leave orphaned associations",
+      "duplicates": "Prevent duplicate code assignments",
+      "inconsistent": "Avoid inconsistent scale or format usage"
+    }
+  },
+  "diagram": {
+    "title": "Workflow Diagram",
+    "drawings": "Drawings",
+    "sheets": "Sheets", 
+    "models": "Models",
+    "balloons": "Balloons & Notes"
+  },
+  "navigation": {
+    "api": "API Documentation",
+    "apiDescription": "Explore the REST API endpoints for all entities",
+    "viewApi": "View API Docs",
+    "admin": "Entity Management",
+    "adminDescription": "Access the admin interface for managing entities",
+    "viewAdmin": "Manage Entities"
+  }
+}

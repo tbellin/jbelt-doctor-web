@@ -106,5 +106,31 @@
         "authors": "Autori",
         "teams": "Team"
       }
-    }
+    },
+    "notifications": {
+      "error": "Errore",
+      "warning": "Avviso",
+      "info": "Informazione",
+      "success": "Successo"
+    },
+    "errors": {
+      "general": "Si è verificato un errore imprevisto",
+      "api": {
+        "general": "Errore di comunicazione con il server"
+      },
+      "validation": {
+        "general": "Controlla i dati inseriti"
+      },
+      "network": {
+        "general": "Errore di connessione di rete"
+      },
+      "auth": {
+        "general": "Errore di autenticazione"
+      }
+    },
+    "messages": {
+      "retrySuccess": "Operazione completata con successo"
+    },
+    "cancelAll": "Annulla Tutto",
+    "confirmCancelAll": "Annullare tutte le operazioni?"
   }

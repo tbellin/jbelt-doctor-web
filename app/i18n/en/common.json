@@ -106,5 +106,31 @@
         "authors": "Authors",
         "teams": "Teams"
       }
-    }
+    },
+    "notifications": {
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Information",
+      "success": "Success"
+    },
+    "errors": {
+      "general": "An unexpected error occurred",
+      "api": {
+        "general": "Server communication error"
+      },
+      "validation": {
+        "general": "Please check your input"
+      },
+      "network": {
+        "general": "Network connection error"
+      },
+      "auth": {
+        "general": "Authentication error"
+      }
+    },
+    "messages": {
+      "retrySuccess": "Operation completed successfully"
+    },
+    "cancelAll": "Cancel All",
+    "confirmCancelAll": "Cancel all operations?"
   }

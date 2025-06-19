@@ -1,0 +1,88 @@
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+# Integrated configuration for JBelt Doctor Service with Spring Boot, PostgreSQL and PgAdmin
+name: jbelt-map-srv
+
+services:
+  app:
+    image: jbeltmapsrv:3.1.0
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=prod,api-docs
+      - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/jbeltMapSrv
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/jbeltMapSrv
+    volumes:
+      - jbelt-map-data:/app/resources
+    ports:
+      - 0.0.0.0:8080:8080
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/management/health
+      interval: 5s
+      timeout: 5s
+      retries: 40
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - jbelt-network
+    profiles:
+      - ''
+      - prod
+
+  postgresql:
+    image: postgres:17.4
+    volumes:
+      - postgres-map-data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=jbeltMapSrv
+      - POSTGRES_PASSWORD=jbeltMapSrv
+      - POSTGRES_DB=jbeltMapSrv
+    #      - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 5432:5432
+    networks:
+      - jbelt-network
+    profiles:
+      - ''
+      - prod
+
+  pgadmin:
+    image: dpage/pgadmin4:9.3
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=info@ivytech.it
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=True
+    ports:
+      - 0.0.0.0:5050:80
+    volumes:
+      - pgadmin-map-data:/var/lib/pgadmin
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - jbelt-network
+    profiles:
+      - ''
+      - prod
+
+volumes:
+  jbelt-map-data:
+    name: jbelt-map-data
+  postgres-map-data:
+    name: postgres-map-data
+  pgadmin-map-data:
+    name: pgadmin-map-data
+
+networks:
+  jbelt-network:
+    driver: bridge

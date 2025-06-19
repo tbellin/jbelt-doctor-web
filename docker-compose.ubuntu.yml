@@ -1,17 +1,17 @@
-# Docker Compose per sviluppo Mac - Frontend JBelt Doctor Web
+# Docker Compose per produzione Ubuntu con Plesk
+# Frontend: jbelt.org:80, API: jbelt.org:8080
 # Compatibile con backend docker-compose-srv.yml esistente
-# Frontend: atlante.local:80, API: localhost:8080
 
 version: '3.8'
 
-name: jbelt-frontend-dev
+name: jbelt-ubuntu-prod
 
 services:
-  frontend-dev:
+  frontend-prod:
     build:
       context: .
-      dockerfile: Dockerfile.dev
-    container_name: jbelt-frontend-dev
+      dockerfile: Dockerfile.ubuntu
+    container_name: jbelt-frontend-ubuntu
     environment:
       - NODE_ENV=${NODE_ENV}
       - NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE}
@@ -20,42 +20,36 @@ services:
       - NUXT_PUBLIC_FRONTEND_HOST=${NUXT_PUBLIC_FRONTEND_HOST}
       - NUXT_PUBLIC_FRONTEND_PORT=${NUXT_PUBLIC_FRONTEND_PORT}
       - NUXT_DEBUG=${NUXT_DEBUG}
-      - HOST=${HOST}
-      - PORT=${PORT}
-      - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING}
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - NODE_OPTIONS=${NODE_OPTIONS}
+      - SSL_ENABLED=${SSL_ENABLED}
     networks:
       - jbelt-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      timeout: 5s
+      retries: 3
 
-  nginx-dev:
+  nginx-ubuntu:
     image: nginx:alpine
-    container_name: jbelt-nginx-dev
+    container_name: jbelt-nginx-ubuntu
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ubuntu.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
-      - frontend-dev
+      - frontend-prod
     networks:
       - jbelt-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
-      start_period: 30s
 
 networks:
   jbelt-network:

@@ -1,58 +1,77 @@
-# .dockerignore - Configurazione di esclusione file per Docker build
-# --------------------------------------------------------------
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Node modules e dipendenze
-app/node_modules
-app/.pnpm-store
-app/npm-debug.log
-app/yarn-debug.log
-app/yarn-error.log
-app/pnpm-debug.log
+# Nuxt build artifacts  
+.nuxt/
+.output/
+.nitro/
 
-# Directory di build e cache Nuxt
-app/.nuxt/dev
-app/.output
-app/dist
-app/.cache
-app/.nitro
-app/.nuxt/analyze
+# Development files
+.env
+.env.local
+.env.*.local
 
-# File di sviluppo
-.git
-.github
-.vscode
-.idea
-**/*.swp
-**/*.swo
-**/*.env*
-!app/.env.example
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Directory di test
-app/test
-app/tests
-app/coverage
-app/__tests__
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# File di configurazione editor/IDE
-app/.editorconfig
-app/.prettierrc
-app/.eslintrc
-app/.eslintcache
+# Git
+.git/
+.gitignore
 
-# File di sistema
-**/.DS_Store
-**/Thumbs.db
+# Documentation and non-essential files
+*.md
+doc/
+docs/
+tmp/
 
-# Script e file temporanei
-**/*.log
-**/*.backup
-**/*.bak
-**/*.tmp
+# Test files
+test/
+tests/
+__tests__/
+coverage/
 
-# Devtools specifici di Nuxt che causano problemi
-app/.nuxt/devtools
-app/.nuxt/devtools/**/*
-app/node_modules/@nuxt/devtools
-app/node_modules/@nuxt/devtools/**/*
+# Backup files
+*.bak
+*.backup
+backups/
 
-# Version: 1.0.0
+# Log files
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# ESLint cache
+.eslintcache
+
+# Misc
+*.tgz
+*.tar.gz
+

@@ -1,0 +1,123 @@
+version: '3.8'
+
+name: jbelt-doctor-production
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: jbelt-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - jbelt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: jbelt-frontend
+    environment:
+      - NUXT_PUBLIC_API_BASE=http://backend:8080
+      - NUXT_PUBLIC_API_HOST=backend
+      - NUXT_PUBLIC_API_PORT=8080
+      - NUXT_PUBLIC_FRONTEND_HOST=localhost
+      - NUXT_PUBLIC_FRONTEND_PORT=80
+      - NODE_ENV=production
+      - NUXT_DEBUG=false
+    networks:
+      - jbelt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    image: jbeltmapsrv:3.1.0
+    container_name: jbelt-backend
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=prod,api-docs
+      - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/jbeltMapSrv
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/jbeltMapSrv
+      - SPRING_DATASOURCE_USERNAME=jbeltMapSrv
+      - SPRING_DATASOURCE_PASSWORD=jbeltMapSrv
+    volumes:
+      - jbelt-map-data:/app/resources
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - jbelt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/management/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  postgresql:
+    image: postgres:17.4
+    container_name: jbelt-postgres
+    environment:
+      - POSTGRES_DB=jbeltMapSrv
+      - POSTGRES_USER=jbeltMapSrv
+      - POSTGRES_PASSWORD=jbeltMapSrv
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - jbelt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:9.3
+    container_name: jbelt-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=info@ivytech.it
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=True
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - jbelt-network
+    restart: unless-stopped
+    profiles:
+      - admin
+
+volumes:
+  jbelt-map-data:
+    name: jbelt-map-data
+  postgres_data:
+    name: jbelt-postgres-data
+  pgadmin_data:
+    name: jbelt-pgadmin-data
+
+networks:
+  jbelt-network:
+    external: true
+    name: jbelt-network

@@ -1,0 +1,46 @@
+# Multi-stage build per produzione JBelt Doctor Web
+
+# Stage 1: Build stage
+FROM node:lts-alpine as builder
+
+# Installa pnpm globalmente
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Imposta directory di lavoro
+WORKDIR /app
+
+# Copia file di configurazione delle dipendenze
+COPY package.json pnpm-lock.yaml ./
+
+# Installa dipendenze (con fallback se lockfile non sincronizzato)
+RUN pnpm install --frozen-lockfile || pnpm install
+
+# Copia tutto il codice sorgente
+COPY . .
+
+# Build dell'applicazione per produzione
+RUN pnpm build
+
+# Stage 2: Production stage con Nginx
+FROM nginx:alpine as production
+
+# Installa curl per health checks
+RUN apk add --no-cache curl
+
+# Rimuovi configurazione default di nginx
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copia i file build dalla stage precedente
+COPY --from=builder /app/.output/public /usr/share/nginx/html
+
+# Copia configurazione nginx personalizzata
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# Crea directory per SSL (opzionale)
+RUN mkdir -p /etc/nginx/ssl
+
+# Esponi porta 80
+EXPOSE 80
+
+# Comando per avviare nginx
+CMD ["nginx", "-g", "daemon off;"]

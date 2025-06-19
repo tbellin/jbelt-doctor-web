@@ -1,4 +1,59 @@
 // nuxt.config.ts
+
+// Helper functions per configurazione dinamica Mac/Ubuntu
+function getApiBase(): string {
+  if (process.env.NUXT_PUBLIC_API_BASE) {
+    return process.env.NUXT_PUBLIC_API_BASE
+  }
+  
+  // Determina ambiente basato su hostname o variabili
+  const frontendHost = process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost'
+  
+  if (frontendHost.includes('atlante.local')) {
+    // Mac development: API tramite proxy nginx
+    return 'http://atlante.local'
+  } else if (frontendHost.includes('jbelt.org')) {
+    // Ubuntu production: API tramite reverse proxy
+    return 'https://jbelt.org'
+  } else {
+    // Default development
+    return 'http://localhost:8080'
+  }
+}
+
+function getDefaultApiHost(): string {
+  const frontendHost = process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost'
+  
+  if (frontendHost.includes('jbelt.org')) {
+    return 'jbelt.org'
+  } else if (frontendHost.includes('atlante.local')) {
+    return 'atlante.local'
+  }
+  return 'localhost'
+}
+
+function getDefaultApiPort(): string {
+  const frontendHost = process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost'
+  
+  if (frontendHost.includes('jbelt.org')) {
+    return '443'  // HTTPS
+  } else if (frontendHost.includes('atlante.local')) {
+    return '80'   // API tramite proxy nginx
+  }
+  return '8080'
+}
+
+function getDefaultFrontendHost(): string {
+  if (process.env.NODE_ENV === 'production') {
+    return 'jbelt.org'
+  }
+  return 'atlante.local'
+}
+
+function getDefaultFrontendPort(): string {
+  return '80'
+}
+
 export default defineNuxtConfig({
   // Specifica della directory app come source
   srcDir: 'app/',
@@ -6,7 +61,7 @@ export default defineNuxtConfig({
   // Configurazioni originali preservate
   devtools: { enabled: true },
   compatibilityDate: '2025-03-14',
-  ssr: false,
+  ssr: false, // SPA mode - originale
 
   app: {
     head: {
@@ -35,6 +90,10 @@ export default defineNuxtConfig({
 
   // Configurazione per servire file statici
   nitro: {
+    preset: process.env.NODE_ENV === 'production' ? 'static' : undefined,
+    prerender: process.env.NODE_ENV === 'production' ? {
+      routes: ['/']
+    } : undefined,
     publicAssets: [
       {
         baseURL: '/',
@@ -68,14 +127,19 @@ export default defineNuxtConfig({
     '@/plugins/i18n.client.ts'
   ],
 
-  // MANTIENE LA PORTA 8080 PER I SERVIZI BACKEND ESISTENTI
+  // Configurazione runtime dinamica per Mac/Ubuntu
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080',
-      apiHost: process.env.NUXT_PUBLIC_API_HOST || 'localhost',
-      apiPort: process.env.NUXT_PUBLIC_API_PORT || '8080',
-      frontendHost: process.env.NUXT_PUBLIC_FRONTEND_HOST || 'localhost',
-      frontendPort: process.env.NUXT_PUBLIC_FRONTEND_PORT || '3000',
+      // API Base URL configuration
+      apiBase: getApiBase(),
+      apiHost: process.env.NUXT_PUBLIC_API_HOST || getDefaultApiHost(),
+      apiPort: process.env.NUXT_PUBLIC_API_PORT || getDefaultApiPort(),
+      
+      // Frontend configuration
+      frontendHost: process.env.NUXT_PUBLIC_FRONTEND_HOST || getDefaultFrontendHost(),
+      frontendPort: process.env.NUXT_PUBLIC_FRONTEND_PORT || getDefaultFrontendPort(),
+      
+      // Debug and assets
       debug: process.env.NUXT_DEBUG || 'false',
       templatePath: '/templates/template-01.xlsx',
       htmlPath: '/Maundy/index.html'

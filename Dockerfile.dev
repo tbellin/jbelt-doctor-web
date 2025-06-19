@@ -1,0 +1,23 @@
+# Dockerfile per sviluppo con hot reload
+FROM node:lts-alpine
+
+# Installa curl per health checks
+RUN apk add --no-cache curl
+
+# Installa pnpm globalmente
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Imposta directory di lavoro
+WORKDIR /usr/src/app
+
+# Copia file di configurazione delle dipendenze
+COPY package.json pnpm-lock.yaml ./
+
+# Installa dipendenze
+RUN pnpm install
+
+# Esponi porta 3000 per Nuxt dev server
+EXPOSE 3000
+
+# Comando per sviluppo con hot reload
+CMD ["pnpm", "dev", "--host", "0.0.0.0"]

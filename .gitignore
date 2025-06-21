@@ -11,7 +11,9 @@ npm-debug.log.*
 ######################
 # Custom
 ######################
-.env
+# Custom build output directories ripristinato la visione del del file .env
+# per evitare di committare accidentalmente le variabili d'ambiente
+## .env
 .output/
 .nuxt/
 .vscode/

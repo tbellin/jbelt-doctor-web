@@ -1,26 +1,42 @@
-# (Posizionato nella root del progetto)
+# JBelt Doctor Web - Multi-stage Dockerfile
+# Supports both development and production builds
 
-# Usa un'immagine Node.js ufficiale recente (Alpine è più leggera)
 FROM node:lts-alpine as base
 
-# Imposta la directory di lavoro all'interno del container
+# Install pnpm globally
+RUN npm install -g pnpm@10.6.3
+
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copia prima i file di dipendenze dalla sottocartella 'app'
-COPY ./package*.json ./
-# Se usi pnpm: COPY app/package.json app/pnpm-lock.yaml ./
-# Se usi yarn: COPY app/package.json app/yarn.lock ./
+# Copy package files for dependency installation
+COPY package.json pnpm-lock.yaml ./
 
-# Installa le dipendenze (usa la versione specificata nel lock file)
-RUN npm install --frozen-lockfile
-# Se usi pnpm: RUN npm install -g pnpm && pnpm install --frozen-lockfile
-# Se usi yarn: RUN yarn install --frozen-lockfile
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
-# Copia TUTTO il contenuto della directory 'app' locale nella WORKDIR del container
-COPY ./ .
+# Development stage
+FROM base as development
+COPY . .
+EXPOSE 3000
+CMD ["pnpm", "dev", "--host", "0.0.0.0"]
 
-# Esponi la porta su cui Nuxt (Nitro) gira di default
+# Production build stage
+FROM base as build
+COPY . .
+RUN pnpm build
+
+# Production runtime stage
+FROM node:lts-alpine as production
+RUN npm install -g pnpm@10.6.3
+
+WORKDIR /usr/src/app
+
+# Copy built application
+COPY --from=build /usr/src/app/.output /usr/src/app/.output
+COPY --from=build /usr/src/app/package.json /usr/src/app/
+
 EXPOSE 3000
 
-# Comando di default per avviare l'app in modalità sviluppo usando il codice COPIATO nell'immagine
-CMD ["npx", "nuxi", "dev", "--host", "0.0.0.0"]
+# Start the production server
+CMD ["node", ".output/server/index.mjs"]

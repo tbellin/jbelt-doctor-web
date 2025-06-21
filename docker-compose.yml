@@ -1,39 +1,41 @@
-name: jbeltdoctorsrv
+name: jbelt-doctor-web
 version: '3.8'
 
 services:
-  nuxt_app:
+  # Frontend Nuxt.js application (standalone)
+  jbelt-doctor-web:
     build:
       context: .
       dockerfile: Dockerfile
-    image: jbelt-doctor-web:1.0.0 # Nome immagine leggermente diverso per chiarezza
-    container_name: web # Nome container leggermente diverso
-    working_dir: /usr/src/app
-
-    volumes:
-      # Volume nominato per node_modules. Può ancora essere utile per velocizzare
-      # le build successive se le dipendenze non cambiano spesso, mantenendo
-      # la cache dei moduli tra una build e l'altra.
-      - node_modules_volume:/usr/src/app/node_modules
-      - nuxt-app:/usr/src/app/app
+      target: development
+    image: jbelt-doctor-web:${JBELT_APP_VERSION:-1.0.0}
+    container_name: jbelt-doctor-web
+    
     ports:
       - "3000:3000"
 
     environment:
       - HOST=0.0.0.0
-      # Nota: Anche se non c'è live reload, potresti voler eseguire
-      # il server di sviluppo per testare il build specifico.
-      # Se fosse per produzione, imposteresti NODE_ENV=production
-      # e cambieresti il Dockerfile/CMD per lanciare il server buildato.
-      - NODE_ENV=development
-      # - PORT=3000
+      - NODE_ENV=${NODE_ENV:-development}
+      # API configuration for external backend
+      - NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE:-http://atlante.local:8080}
+      - NUXT_PUBLIC_API_HOST=${NUXT_PUBLIC_API_HOST:-atlante.local}
+      - NUXT_PUBLIC_API_PORT=${NUXT_PUBLIC_API_PORT:-8080}
+      - NUXT_PUBLIC_FRONTEND_HOST=${NUXT_PUBLIC_FRONTEND_HOST:-localhost}
+      - NUXT_PUBLIC_FRONTEND_PORT=${NUXT_PUBLIC_FRONTEND_PORT:-3000}
+      - NUXT_DEBUG=${NUXT_DEBUG:-false}
 
     networks:
       - jbelt-network
 
     restart: unless-stopped
-    # Il comando di default del Dockerfile (CMD) verrà usato,
-    # avviando 'npx nuxi dev' con il codice presente nell'immagine.
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
   # Volume per node_modules (il nome può rimanere o cambiarlo)

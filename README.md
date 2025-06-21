@@ -20,6 +20,29 @@ Prima di iniziare, assicurati di avere installato:
 
 1.  **Docker Engine:** [Installa Docker](https://docs.docker.com/engine/install/)
 2.  **Docker Compose:** Solitamente incluso con Docker Desktop (Windows/Mac). Per Linux, potrebbe essere necessario installarlo separatamente. [Installa Docker Compose](https://docs.docker.com/compose/install/)
+3.  **Backend Spring Boot:** Il backend JBelt Map Service deve essere attivo su `http://atlante.local:8080`
+
+## ⚙️ Configurazione Environment
+
+Il progetto utilizza diversi file `.env` per configurazioni specifiche:
+
+- **`.env.development`** - Sviluppo Mac (API: `http://atlante.local:8080`)
+- **`.env.production`** - Produzione (API: `http://localhost:80`)
+- **`.env`** - Configurazione base/fallback
+
+Per dettagli completi, consulta [ENV_CONFIGURATION.md](./ENV_CONFIGURATION.md).
+
+### Configurazione per Sviluppo Mac:
+```bash
+# Verifica che il backend sia attivo
+curl http://atlante.local:8080/management/health
+
+# Imposta l'ambiente di sviluppo
+export NODE_ENV=development
+
+# Avvia il frontend
+pnpm dev
+```
 
 ## Struttura dei File
 

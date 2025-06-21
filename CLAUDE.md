@@ -63,6 +63,30 @@ pnpm generate
 pnpm preview
 ```
 
+### Testing and Code Quality
+⚠️ **Testing Infrastructure Not Configured** - The project currently lacks automated testing frameworks. Manual testing is documented in `COMPLETE_TESTING_GUIDE.md`.
+
+**Available Testing Utilities:**
+```bash
+# Manual backend testing
+node app/utils/testBackend.ts
+
+# Architecture validation
+pnpm dlx tsx scripts/validate-optimization.ts
+
+# Integration testing with Docker
+./test-ubuntu-local.sh
+```
+
+**Debug and Monitoring Tools:**
+```bash
+# Enable debug mode for detailed API logging
+NUXT_DEBUG=true pnpm dev
+
+# Access debug panel at /panel in development
+# Export debug reports from browser console
+```
+
 ### Using Makefile
 ```bash
 # Development environment
@@ -85,14 +109,22 @@ make prune        # Clean unused containers
 # Create required network (one-time setup)
 docker network create jbelt-network
 
-# Build and run with Docker Compose
-docker-compose up --build -d
+# Development with hot-reload
+docker-compose -f docker-compose.dev.yml up --build
+
+# Production environment
+docker-compose -f docker-compose.production.yml up --build -d
+
+# Ubuntu/Plesk deployment
+docker-compose -f docker-compose.ubuntu.yml up --build -d
 
 # Run with helper script
-./run-docker.sh dev
+./run-docker.sh dev        # Development mode
+./run-docker.sh prod       # Production mode
 
-# Stop containers
-docker-compose down
+# Platform-specific deployment
+./deploy-mac.sh           # Mac development
+./deploy-ubuntu.sh        # Ubuntu production
 ```
 
 ## Configuration
@@ -106,11 +138,38 @@ The application uses runtime config with these defaults:
 - `NUXT_PUBLIC_FRONTEND_PORT`: Frontend port (default: `3000`)
 - `NUXT_DEBUG`: Enable debug mode (default: `false`)
 
+### Multi-Environment Setup
+The project supports three distinct deployment environments:
+
+**Development (Mac - atlante.local):**
+```bash
+NUXT_PUBLIC_FRONTEND_HOST=atlante.local
+NUXT_PUBLIC_API_BASE=http://atlante.local
+CHOKIDAR_USEPOLLING=true
+NUXT_DEBUG=true
+```
+
+**Production (Docker):**
+```bash
+NUXT_PUBLIC_FRONTEND_HOST=localhost
+NUXT_PUBLIC_API_BASE=http://localhost
+NODE_ENV=production
+```
+
+**Ubuntu/Plesk (jbelt.org):**
+```bash
+NUXT_PUBLIC_FRONTEND_HOST=jbelt.org
+NUXT_PUBLIC_API_BASE=https://jbelt.org
+SSL_ENABLED=true
+```
+
 ### Debug Mode
 Set `NUXT_DEBUG=true` to enable:
 - Detailed console logging in auth and API operations
 - Mock authentication utilities
 - Token display in development
+- API request/response logging
+- Performance monitoring tools
 
 ## API Integration
 
@@ -195,12 +254,43 @@ const authStore = useAuthStore()
 
 ## Docker Configuration
 
-The project uses a multi-stage Docker setup:
-- Base image: `node:lts-alpine`
-- Development mode: Live code copying (not bind mount)
-- Network: External `jbelt-network`
-- Volumes: Separate for `node_modules` and app files
-- Port mapping: 3000:3000
+The project uses a sophisticated multi-environment Docker setup:
+
+### Container Architecture
+- **Base image**: `node:lts-alpine`
+- **Network**: External `jbelt-network` (shared across services)
+- **Package Manager**: pnpm 10.6.3+
+- **Multi-stage builds**: Separate development and production configurations
+
+### Development Environment
+- **File**: `docker-compose.dev.yml` with `Dockerfile.dev`
+- **Features**: Hot reload, volume mounting, nginx reverse proxy
+- **Ports**: 3000 (frontend), 80 (nginx proxy)
+- **API Routing**: nginx proxy routes `/api/*` to `host.docker.internal:8080`
+
+### Production Environment
+- **File**: `docker-compose.production.yml` with `Dockerfile.production`
+- **Features**: Multi-stage build, static file serving, full backend stack
+- **Services**: Frontend (nginx), Backend (Spring Boot), Database (PostgreSQL), PgAdmin
+- **Ports**: 80/443 (nginx), 8080 (backend), 5432 (postgres), 5050 (pgadmin)
+
+### Ubuntu/Plesk Deployment
+- **File**: `docker-compose.ubuntu.yml` with `Dockerfile.ubuntu`
+- **Features**: SSL/TLS, Let's Encrypt, HTTPS redirects, production optimizations
+- **Domain**: jbelt.org with proper SSL certificates
+
+### Volume Strategy
+```yaml
+# Development
+- .:/usr/src/app                    # Live code mounting
+- /usr/src/app/node_modules         # Node modules cache
+
+# Production  
+- jbelt-map-data:/app/resources     # Backend data
+- postgres_data:/var/lib/postgresql/data  # Database
+- ./nginx/ssl:/etc/nginx/ssl:ro     # SSL certificates
+- ./backups:/backups                # Database backups
+```
 
 ## Common Development Patterns
 
@@ -257,3 +347,77 @@ const { simulateAuth, resetAuth } = useAuth()
 - Frontend validates and enriches incomplete data
 - Classes provide validation methods (`isComplete`, `isPartialFromAssociation`)
 - Clean object methods prevent circular references in API calls
+
+## Excel Template System
+
+The application includes a sophisticated Excel template system for data export/import:
+
+### Template Engine
+- **Location**: `app/utils/excel-template-engine.ts`
+- **Properties Parser**: `app/utils/properties-parser.ts`
+- **Configuration**: `excel.properties` file with coordinate mappings
+- **Templates**: Stored in `public/templates/` and `app/assets/excel-templates/`
+
+### Server API Endpoints
+- **Template Validation**: `/api/checkTemplate.get.ts` 
+- **Excel Generation**: `/api/generateExcel.post.ts`
+- **Drawings Export**: `/api/generateExcelDrawings.post.ts`
+- **Health Check**: `/api/health.get.ts`
+
+### Usage Pattern
+```javascript
+// Generate Excel with template
+const excelData = await $fetch('/api/generateExcel', {
+  method: 'POST',
+  body: { data: exportData, templateType: 'drawings' }
+})
+```
+
+## Performance and Optimization
+
+### Built-in Monitoring
+- **Performance Validator**: `app/composables/usePerformanceValidator.ts`
+- **API Optimization**: `app/composables/useApiOptimized.ts`
+- **Loading States**: `app/composables/useLoadingState.ts`
+- **Error Handling**: `app/composables/useErrorHandler.ts`
+
+### Component Optimization
+Many components have optimized versions:
+- `ModelsTableOptimized.vue` vs `ModelsTable.vue`
+- `SheetsTableOptimized.vue` vs `SheetsTable.vue`
+- `ModelFormModalOptimized.vue` vs `ModelFormModal.vue`
+
+### Accessibility Support
+- **Composable**: `app/composables/useAccessibility.ts`
+- **ARIA labels** and semantic HTML throughout components
+- **Keyboard navigation** support
+- **Screen reader** optimizations
+
+## Entity Management System
+
+The application manages complex CAD/PLM entities with full CRUD operations:
+
+### Supported Entities
+- **Models**: Parts, Assemblies, Drawings, Formats
+- **Sheets**: Technical drawing sheets with DIN standards
+- **Authors**: Design team members
+- **Teams**: Organizational units
+- **Markers**: Annotation system
+- **Archives**: Document storage
+- **Positions**: Spatial/assembly positioning
+- **Items**: Generic catalog items
+- **Balloons**: Drawing annotations
+- **Notes**: Textual annotations
+- **Trackers**: Progress monitoring
+
+### Generic Entity Framework
+- **Base Components**: `app/components/entities/shared/`
+- **Entity API**: `app/components/entities/shared/composables/useEntityAPI.ts`
+- **Form Handling**: `app/components/entities/shared/composables/useEntityForm.ts`
+- **Consistent UI**: EntityCard, EntityForm, EntityModal, EntityTable
+
+### Admin Interface
+- **Entity Management**: `/admin/entities/` routes for all entity types
+- **User Management**: `/admin/users/` with role-based access
+- **Bulk Operations**: Import/export capabilities
+- **Data Validation**: Client-side and server-side validation
